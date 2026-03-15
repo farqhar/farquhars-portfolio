@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const cards = [
   {
@@ -117,26 +117,19 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
   </motion.div>
 );
 
+const DOT_SIZE = 16; // w-4 h-4 = 16px
+
 const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: number; onClick: () => void }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
   const isAbove = index % 2 === 0;
 
   return (
     <div
-      ref={ref}
       className="flex-shrink-0 flex flex-col items-center"
       style={{ width: "280px" }}
     >
       {/* Card above or spacer */}
       {isAbove ? (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="cursor-pointer group mb-3 w-full"
-          onClick={onClick}
-        >
+        <div className="cursor-pointer group mb-3 w-full" onClick={onClick}>
           <div className="relative">
             <div
               className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-[30px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -163,21 +156,15 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <div style={{ height: "180px" }} />
+        <div style={{ height: "160px" }} />
       )}
 
       {/* Stem + dot */}
-      <motion.div
-        initial={{ opacity: 0, scaleY: 0 }}
-        animate={inView ? { opacity: 1, scaleY: 1 } : {}}
-        transition={{ duration: 0.4 }}
-        className="flex flex-col items-center"
-        style={{ originY: isAbove ? 1 : 0 }}
-      >
+      <div className="flex flex-col items-center">
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
-        <div className="relative">
+        <div className="relative" style={{ width: DOT_SIZE, height: DOT_SIZE }}>
           <div
             className="w-4 h-4 rounded-full border-2"
             style={{ borderColor: "hsl(var(--indigo))", background: "hsl(var(--background))" }}
@@ -188,28 +175,19 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
           />
         </div>
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
-      </motion.div>
+      </div>
 
       {/* Year label */}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={inView ? { opacity: 1 } : {}}
-        transition={{ duration: 0.4, delay: 0.2 }}
+      <span
         className="text-[10px] font-semibold tracking-wider uppercase my-1"
         style={{ color: "hsl(var(--indigo))" }}
       >
         {card.year}
-      </motion.span>
+      </span>
 
       {/* Card below or spacer */}
       {!isAbove ? (
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="cursor-pointer group mt-3 w-full"
-          onClick={onClick}
-        >
+        <div className="cursor-pointer group mt-3 w-full" onClick={onClick}>
           <div className="relative">
             <div
               className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-[30px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -236,71 +214,83 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <div style={{ height: "180px" }} />
+        <div style={{ height: "160px" }} />
       )}
     </div>
   );
 };
 
 const TimelineCarousel = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [expandedCard, setExpandedCard] = useState<typeof cards[0] | null>(null);
 
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
+    target: wrapperRef,
+    offset: ["start start", "end end"],
   });
 
-  const lineWidth = useTransform(scrollYProgress, [0.1, 0.8], ["0%", "100%"]);
+  // Map vertical scroll to horizontal translation
+  // Total width of all cards: 5 * 280 + gaps. We translate from 0 to -(totalWidth - viewportWidth)
+  // Use a percentage-based approach: translate the row from 0% to -60% (roughly)
+  const x = useTransform(scrollYProgress, [0, 1], ["5%", "-65%"]);
+  const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
     <>
-      <section ref={sectionRef} className="relative py-20 sm:py-28 overflow-hidden">
-        {/* Background orbs */}
-        <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
+      {/* Tall wrapper to give scroll room */}
+      <div ref={wrapperRef} style={{ height: "300vh" }} className="relative">
+        {/* Sticky inner section */}
+        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+          {/* Background orbs */}
+          <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="relative z-10"
-        >
-          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-16 sm:mb-20">
+          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-10 sm:mb-14 relative z-10">
             A few moments that shaped how I think
           </p>
 
           {/* Timeline container */}
-          <div className="relative max-w-6xl mx-auto px-4">
-            {/* Horizontal line */}
-            <div
-              className="absolute left-0 right-0 h-px"
-              style={{
-                top: "50%",
-                background: "hsla(var(--indigo), 0.12)",
-              }}
-            />
-            <motion.div
-              className="absolute left-0 h-px"
-              style={{
-                top: "50%",
-                width: lineWidth,
-                background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))",
-              }}
-            />
+          <div className="relative w-full">
+            {/* 
+              The dot is positioned inside each card column:
+              spacer/card height (~160px) + stem (32px) + dot center (8px) = ~200px from top of card column.
+              We position the line at the same vertical offset as the dot centers.
+            */}
+            <div className="relative" style={{ height: "auto" }}>
+              {/* Horizontal base line — anchored to dot centers */}
+              {/* Each card column: top spacer/card (~160px) + stem (32px) + half dot (8px) = 200px from top */}
+              <div
+                className="absolute left-0 right-0 h-px pointer-events-none"
+                style={{
+                  top: "calc(160px + 32px + 8px)",
+                  background: "hsla(var(--indigo), 0.12)",
+                }}
+              />
+              {/* Animated progress line */}
+              <motion.div
+                className="absolute left-0 h-px pointer-events-none"
+                style={{
+                  top: "calc(160px + 32px + 8px)",
+                  width: lineWidth,
+                  background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))",
+                }}
+              />
 
-            {/* Cards row */}
-            <div className="flex justify-between items-center gap-2 sm:gap-4">
-              {cards.map((card, i) => (
-                <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
-              ))}
+              {/* Cards row — translated horizontally */}
+              <motion.div
+                className="flex gap-4 sm:gap-8 pl-[10vw]"
+                style={{ x }}
+              >
+                {cards.map((card, i) => (
+                  <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
+                ))}
+              </motion.div>
             </div>
           </div>
-        </motion.div>
-      </section>
+        </div>
+      </div>
 
       <AnimatePresence>
         {expandedCard && <ExpandedCard card={expandedCard} onClose={() => setExpandedCard(null)} />}
