@@ -154,6 +154,7 @@
   }
 }
 
+/* Existing keyframes */
 @keyframes pulse-glow {
   0%, 100% {
     box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 0 40px rgba(99, 102, 241, 0.1);
@@ -189,4 +190,44 @@
   60% { width: 54%; }
   80% { width: 70%; }
   100% { width: 78%; }
+}
+
+/* Orbital animations for CTA */
+@keyframes orbit-1 {
+  0% { transform: translate(-50%, -50%) rotate(0deg) translateX(200px) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(200px) rotate(-360deg); }
+}
+
+@keyframes orbit-2 {
+  0% { transform: translate(-50%, -50%) rotate(180deg) translateX(250px) rotate(-180deg); }
+  100% { transform: translate(-50%, -50%) rotate(540deg) translateX(250px) rotate(-540deg); }
+}
+
+/* Particle drift animations */
+@keyframes particle-drift-0 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(15px, -20px); }
+  50% { transform: translate(-10px, -35px); }
+  75% { transform: translate(20px, -15px); }
+}
+
+@keyframes particle-drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-20px, 15px); }
+  50% { transform: translate(25px, 10px); }
+  75% { transform: translate(-15px, -20px); }
+}
+
+@keyframes particle-drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(10px, 25px); }
+  50% { transform: translate(-20px, -10px); }
+  75% { transform: translate(15px, 20px); }
+}
+
+@keyframes particle-drift-3 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-15px, -25px); }
+  50% { transform: translate(20px, 15px); }
+  75% { transform: translate(-10px, 25px); }
 }
