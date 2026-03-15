@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence, useInView } from "framer-motion";
+import { X } from "lucide-react";
 
 const cards = [
   {
@@ -86,10 +87,22 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
       className="glass rounded-2xl p-6 sm:p-8 max-w-lg w-full relative z-10"
       onClick={(e) => e.stopPropagation()}
     >
-      <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors text-lg">✕</button>
+      <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors">
+        <X className="w-4 h-4" />
+      </button>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-4" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>
         {card.year} · {card.label}
       </span>
+      {/* Image placeholder */}
+      <div
+        className="w-full h-40 rounded-xl mb-4 flex items-center justify-center"
+        style={{
+          background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
+          border: "1px dashed hsla(var(--indigo), 0.2)",
+        }}
+      >
+        <span className="text-xs" style={{ color: "hsla(var(--indigo), 0.35)" }}>add image here</span>
+      </div>
       <h3 className="text-xl font-semibold text-card-title mb-3">{card.title}</h3>
       <p className="text-sm leading-relaxed text-card-desc mb-4">{card.desc}</p>
       {card.dualBars && <DualBars />}
@@ -104,42 +117,144 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
   </motion.div>
 );
 
-const CARD_WIDTH = 340;
-const GAP = 24;
-const SPEED = 0.4;
+const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: number; onClick: () => void }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const isAbove = index % 2 === 0;
+
+  return (
+    <div
+      ref={ref}
+      className="flex-shrink-0 flex flex-col items-center"
+      style={{ width: "280px" }}
+    >
+      {/* Card above or spacer */}
+      {isAbove ? (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="cursor-pointer group mb-3 w-full"
+          onClick={onClick}
+        >
+          <div className="relative">
+            <div
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-[30px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{ background: "hsla(var(--indigo), 0.15)" }}
+            />
+            <div
+              className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 relative"
+              style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
+            >
+              <span className="absolute top-1 right-3 text-5xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
+                {card.num}
+              </span>
+              <h3 className="text-[14px] font-semibold text-card-title mb-1.5">{card.title}</h3>
+              <p className="text-[11px] leading-relaxed text-card-desc line-clamp-3">{card.desc}</p>
+              {card.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {card.tags.map((tag) => (
+                    <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>{tag}</span>
+                  ))}
+                </div>
+              )}
+              <div className="mt-2 text-[9px] tracking-wider uppercase opacity-0 group-hover:opacity-60 transition-opacity" style={{ color: "hsl(var(--indigo))" }}>
+                Click to expand →
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <div style={{ height: "180px" }} />
+      )}
+
+      {/* Stem + dot */}
+      <motion.div
+        initial={{ opacity: 0, scaleY: 0 }}
+        animate={inView ? { opacity: 1, scaleY: 1 } : {}}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col items-center"
+        style={{ originY: isAbove ? 1 : 0 }}
+      >
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+        <div className="relative">
+          <div
+            className="w-4 h-4 rounded-full border-2"
+            style={{ borderColor: "hsl(var(--indigo))", background: "hsl(var(--background))" }}
+          />
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{ background: "hsla(var(--indigo), 0.3)", animation: "pulse-dot 2s ease-in-out infinite", transform: "scale(1.5)", filter: "blur(4px)" }}
+          />
+        </div>
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+      </motion.div>
+
+      {/* Year label */}
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="text-[10px] font-semibold tracking-wider uppercase my-1"
+        style={{ color: "hsl(var(--indigo))" }}
+      >
+        {card.year}
+      </motion.span>
+
+      {/* Card below or spacer */}
+      {!isAbove ? (
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="cursor-pointer group mt-3 w-full"
+          onClick={onClick}
+        >
+          <div className="relative">
+            <div
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-[30px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{ background: "hsla(var(--indigo), 0.15)" }}
+            />
+            <div
+              className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 relative"
+              style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
+            >
+              <span className="absolute top-1 right-3 text-5xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
+                {card.num}
+              </span>
+              <h3 className="text-[14px] font-semibold text-card-title mb-1.5">{card.title}</h3>
+              <p className="text-[11px] leading-relaxed text-card-desc line-clamp-3">{card.desc}</p>
+              {card.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {card.tags.map((tag) => (
+                    <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>{tag}</span>
+                  ))}
+                </div>
+              )}
+              <div className="mt-2 text-[9px] tracking-wider uppercase opacity-0 group-hover:opacity-60 transition-opacity" style={{ color: "hsl(var(--indigo))" }}>
+                Click to expand →
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <div style={{ height: "180px" }} />
+      )}
+    </div>
+  );
+};
 
 const TimelineCarousel = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const [paused, setPaused] = useState(false);
   const [expandedCard, setExpandedCard] = useState<typeof cards[0] | null>(null);
-  const rafRef = useRef<number>(0);
-  const scrollPos = useRef(0);
 
-  const totalWidth = cards.length * (CARD_WIDTH + GAP);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
 
-  const animate = useCallback(() => {
-    if (!paused && scrollRef.current) {
-      scrollPos.current += SPEED;
-      if (scrollPos.current >= totalWidth) {
-        scrollPos.current -= totalWidth;
-      }
-      scrollRef.current.style.transform = `translateX(-${scrollPos.current}px)`;
-    }
-    rafRef.current = requestAnimationFrame(animate);
-  }, [paused, totalWidth]);
-
-  useEffect(() => {
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [animate]);
-
-  // Duplicate cards for seamless loop
-  const displayCards = [...cards, ...cards];
-
-  // Progress dot position
-  const progressPercent = (scrollPos.current / totalWidth) * 100;
+  const lineWidth = useTransform(scrollYProgress, [0.1, 0.8], ["0%", "100%"]);
 
   return (
     <>
@@ -154,89 +269,39 @@ const TimelineCarousel = () => {
           transition={{ duration: 0.6 }}
           className="relative z-10"
         >
-          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-10 sm:mb-14">
+          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-16 sm:mb-20">
             A few moments that shaped how I think
           </p>
 
-          {/* Horizontal scrolling container */}
-          <div
-            className="overflow-hidden cursor-grab"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-          >
+          {/* Timeline container */}
+          <div className="relative max-w-6xl mx-auto px-4">
+            {/* Horizontal line */}
             <div
-              ref={scrollRef}
-              className="flex will-change-transform"
-              style={{ gap: `${GAP}px`, paddingLeft: "5%" }}
-            >
-              {displayCards.map((card, i) => (
-                <div
-                  key={`${card.num}-${i}`}
-                  className="flex-shrink-0 group cursor-pointer"
-                  style={{ width: CARD_WIDTH }}
-                  onClick={() => setExpandedCard(card)}
-                >
-                  <div className="relative">
-                    {/* Soft glow underneath */}
-                    <div
-                      className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[80%] h-[40px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ background: "hsla(var(--indigo), 0.15)" }}
-                    />
-                    <div
-                      className="glass rounded-2xl p-5 transition-all duration-300 group-hover:-translate-y-1 relative"
-                      style={{
-                        boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)",
-                      }}
-                    >
-                      {/* Ghost number */}
-                      <span className="absolute top-2 right-4 text-6xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
-                        {card.num}
-                      </span>
+              className="absolute left-0 right-0 h-px"
+              style={{
+                top: "50%",
+                background: "hsla(var(--indigo), 0.12)",
+              }}
+            />
+            <motion.div
+              className="absolute left-0 h-px"
+              style={{
+                top: "50%",
+                width: lineWidth,
+                background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))",
+              }}
+            />
 
-                      {/* Year pill */}
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-3" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "hsl(var(--indigo))", animation: "pulse-dot 2s ease-in-out infinite" }} />
-                        {card.year} · {card.label}
-                      </span>
-
-                      <h3 className="text-[15px] font-semibold text-card-title mb-2">{card.title}</h3>
-                      <p className="text-[12px] leading-relaxed text-card-desc line-clamp-3">{card.desc}</p>
-
-                      {card.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {card.tags.map((tag) => (
-                            <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>{tag}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Click hint */}
-                      <div className="mt-3 text-[10px] tracking-wider uppercase opacity-0 group-hover:opacity-60 transition-opacity duration-300" style={{ color: "hsl(var(--indigo))" }}>
-                        Click to expand →
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            {/* Cards row */}
+            <div className="flex justify-between items-center gap-2 sm:gap-4">
+              {cards.map((card, i) => (
+                <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
               ))}
             </div>
-          </div>
-
-          {/* Progress indicator */}
-          <div className="max-w-xs mx-auto mt-8 h-0.5 rounded-full relative" style={{ background: "hsl(var(--border))" }}>
-            <motion.div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full"
-              style={{
-                background: "linear-gradient(135deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))",
-                left: `${progressPercent}%`,
-                boxShadow: "0 0 10px hsla(var(--indigo), 0.4)",
-              }}
-              animate={{ left: `${progressPercent}%` }}
-            />
           </div>
         </motion.div>
       </section>
 
-      {/* Expanded card modal */}
       <AnimatePresence>
         {expandedCard && <ExpandedCard card={expandedCard} onClose={() => setExpandedCard(null)} />}
       </AnimatePresence>
