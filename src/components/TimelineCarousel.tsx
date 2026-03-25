@@ -63,17 +63,35 @@ const cards = [
   },
 ];
 
-/** Auto-cycling image carousel with crossfade */
-const AutoCarousel = ({ images, className }: { images: string[]; className?: string }) => {
+/** Static single image for inline cards */
+const StaticImage = ({ src, className }: { src: string; className?: string }) => (
+  <div className={`relative overflow-hidden rounded-xl ${className ?? ""}`}>
+    <img src={src} alt="" className="w-full h-full object-cover object-top" />
+  </div>
+);
+
+/** Clickable carousel with auto-slideshow for expanded modal */
+const ExpandedCarousel = ({ images, className }: { images: string[]; className?: string }) => {
   const [index, setIndex] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (images.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+  };
 
   useEffect(() => {
-    if (images.length <= 1) return;
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [images.length]);
+
+  const go = (dir: number) => {
+    setIndex((prev) => (prev + dir + images.length) % images.length);
+    startTimer();
+  };
 
   return (
     <div className={`relative overflow-hidden rounded-xl ${className ?? ""}`}>
@@ -85,24 +103,36 @@ const AutoCarousel = ({ images, className }: { images: string[]; className?: str
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
           className="w-full h-full object-cover absolute inset-0"
         />
       </AnimatePresence>
-      {/* Maintain aspect ratio */}
       <img src={images[0]} alt="" className="w-full h-full object-cover invisible" />
       {images.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          {images.map((_, i) => (
-            <div
-              key={i}
-              className="w-1.5 h-1.5 rounded-full transition-colors"
-              style={{
-                background: i === index ? "hsl(var(--indigo))" : "hsla(var(--indigo), 0.3)",
-              }}
-            />
-          ))}
-        </div>
+        <>
+          <button onClick={(e) => { e.stopPropagation(); go(-1); }} className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); go(1); }} className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); setIndex(i); startTimer(); }}
+                className="w-2 h-2 rounded-full transition-all"
+                style={{
+                  background: i === index ? "hsl(var(--indigo))" : "hsla(var(--indigo), 0.35)",
+                  transform: i === index ? "scale(1.3)" : "scale(1)",
+                }}
+              />
+            ))}
+          </div>
+          <span className="absolute top-2 right-2 text-[10px] font-medium text-white/80 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">
+            {index + 1} / {images.length}
+          </span>
+        </>
       )}
     </div>
   );
