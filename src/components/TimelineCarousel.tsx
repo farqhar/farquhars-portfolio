@@ -4,7 +4,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Image imports
 import img01Arrival from "@/assets/timeline/01-arrival.jpeg";
-import img02Waterfall from "@/assets/timeline/02-waterfall.jpeg";
+
 import img02Cave from "@/assets/timeline/02-cave.jpeg";
 import img02Sailing from "@/assets/timeline/02-sailing.jpeg";
 import img02Desert from "@/assets/timeline/02-desert.jpeg";
@@ -32,8 +32,8 @@ const cards = [
     title: "Three years. No fixed address.",
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
-    images: [img02Waterfall, img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center 40%",
+    images: [img02Cave, img02Sailing, img02Desert, img02Diving],
+    objectPosition: "center center",
   },
   {
     year: "2023",
@@ -191,7 +191,7 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-4" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>
         {card.year} · {card.label}
       </span>
-      <ExpandedCarousel images={card.images} className="w-full h-64 mb-4" objectPosition={card.objectPosition} />
+      <ExpandedCarousel images={card.images} className="w-full aspect-square mb-4" objectPosition={card.objectPosition} />
       <h3 className="text-xl font-semibold text-card-title mb-3">{card.title}</h3>
       <p className="text-sm leading-relaxed text-card-desc mb-4">{card.desc}</p>
       {card.dualBars && <DualBars />}
