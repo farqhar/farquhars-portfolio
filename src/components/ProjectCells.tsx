@@ -5,6 +5,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import boondiHero from "@/assets/boondi-logo-ani.gif";
 import boondiShapeDev from "@/assets/boondi-shape-dev.png";
 import boondiTypeSystem from "@/assets/boondi-type-system.png";
+import boondiBus from "@/assets/boondi-bus-v1.png";
 
 
 const projects = [
@@ -19,6 +20,7 @@ const projects = [
       { image: boondiHero, caption: "A living mark — movement, rhythm, and place." },
       { image: boondiShapeDev, caption: "Researching cultural landmarks — Aboriginal and Western — to extract the shapes behind the system." },
       { image: boondiTypeSystem, caption: "Applying those shapes to build a typeface and icon set ready for brand use." },
+      { image: boondiBus, caption: "The system in motion — brand identity applied to transit." },
     ],
   },
   {
