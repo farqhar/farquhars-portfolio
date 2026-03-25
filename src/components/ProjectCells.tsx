@@ -28,6 +28,7 @@ const projects = [
     teaser: "A character system originating from actual potato forms.",
     reveal: "Started with real potatoes. Ended with a world.",
     details: "Scanned, traced, and abstracted real potato forms into a character system. Built a brand world around them — packaging, animation, tone of voice.",
+    cardImage: null as string | null,
     steps: [
       { image: "Character lineup", caption: "The full character family — each derived from a unique potato scan." },
       { image: "Scan process", caption: "High-resolution scans of real potatoes used as the design foundation." },
