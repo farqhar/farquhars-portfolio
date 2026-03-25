@@ -111,13 +111,18 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           {/* Carousel image */}
           <div className="relative mb-4">
             <div
-              className="w-full rounded-xl flex items-center justify-center"
+              className="w-full rounded-xl flex items-center justify-center overflow-hidden"
               style={{
-                {typeof step.image === "string" && !step.image.startsWith("/") && !step.image.includes("/assets/") && step.image.length < 30 ? (
-                  <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
-                ) : (
-                  <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
-                )}
+                background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
+                border: typeof step.image === "string" && step.image.length < 30 ? "1px dashed hsla(var(--indigo), 0.2)" : "none",
+                minHeight: "220px",
+              }}
+            >
+              {typeof step.image === "string" && step.image.length < 30 ? (
+                <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
+              ) : (
+                <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
+              )}
             </div>
 
             {/* Nav arrows */}
