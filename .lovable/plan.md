@@ -1,31 +1,23 @@
 
 
-# Add Timeline Images and Adjust Years
+# Timeline Card Image & Interaction Fixes
 
-## Year Changes
-- Card 01: "2018" → "2018–2020"
-- Card 02: "2018–21" → "2020–2023"
-- Card 03: "2023" stays
-- Card 04: "2024–25" stays
-- Card 05: "2026" stays (label can say "2026 and beyond")
+## Changes
 
-## Image Mapping
-| Card | Images | Display |
-|------|--------|---------|
-| 01 (2018–2020) | Image 1 (airport) | Single image |
-| 02 (2020–2023) | Images 2-6 (waterfall, cave, sailing, desert, diving) | Auto-cycling carousel |
-| 03 (2023) | Image 7 (office/bridge) | Single image |
-| 04 (2024–25) | Images 8-9 (Dubai laptop, red carpet) | Auto-cycling carousel |
-| 05 (2026+) | Image 10 (presenting) | Single image |
+### 1. Inline cards: Static first image, focused on faces
+- Remove `AutoCarousel` from inline `TimelineCard` — show only the first image with `object-cover` and `object-position: top` to prioritize faces/focal points
+- No cycling animation until the card is expanded
 
-## Implementation
-- Copy all 10 images to `src/assets/timeline/`
-- Add an `images` array field to each card in the data
-- For cards with multiple images, render a small auto-cycling carousel inside the card (crossfade every 3s using `setInterval` + `AnimatePresence`)
-- For single images, render the image directly with `object-cover` and rounded corners
-- Replace the current dashed placeholder boxes with the actual images
-- Images shown in both the inline card and the expanded modal
+### 2. Expanded modal: Clickable carousel + auto-slideshow
+- In `ExpandedCard`, add left/right arrow buttons and dot indicators (like the project modal)
+- Auto-cycle every 3.5s if user doesn't click — reset timer on manual navigation
+- Clicking arrows or dots advances manually
 
-## Files
-- `src/components/TimelineCarousel.tsx` — update card data with new years and image imports, add mini carousel component for multi-image cards
+### 3. Make cards look clickable
+- Add a visible "Tap to explore →" label always shown (not just on hover)
+- Add a subtle border that brightens on hover: `border: 1px solid hsla(var(--indigo), 0.1)` → `0.25` on hover
+- Change cursor to pointer (already set) and add a slight scale on hover (`group-hover:scale-[1.02]`)
+
+## File
+- `src/components/TimelineCarousel.tsx` — all changes in this single file
 
