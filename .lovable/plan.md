@@ -1,38 +1,77 @@
-# Fix Timeline: Vertical Scroll on Mobile/Tablet + Ensure Full Scroll Coverage
 
-## Summary
+# Refine timeline spacing and make the full timeline reachable on mobile/tablet
 
-Use the scroll-driven horizontal translation approach (same as desktop) for mobile and tablet too — keeping vertical page scroll that drives horizontal card movement. The key fix is ensuring the scroll container is tall enough that you reach the 2026+ card before the section ends.
+## What’s actually causing the issues
 
-## Changes — `src/components/TimelineCarousel.tsx`
+1. **Subtitle overlap on desktop and mobile**
+   - The “above” card area is hardcoded to `220px`, but the actual cards are taller than that, especially on narrower screens.
+   - Because those cards are bottom-aligned inside a too-short wrapper, they overflow upward and visually collide with the subtitle.
 
-### 1. Remove the mobile/desktop split
+2. **Mobile/tablet can’t reach 2026+**
+   - The horizontal movement is currently driven by a fixed percentage transform (`"2%"` → `"-78%"`) and a fixed section height (`400vh`).
+   - That works only for some viewport sizes. On mobile/tablet, the track is effectively longer relative to the screen, so the section ends before the final card fully comes into view.
 
-Delete the `isMobile` hook usage and the entire mobile branch (horizontal native scroll). Use the same scroll-driven `sticky` + `motion` approach for all screen sizes.
+## Plan
 
-### 2. Increase scroll height and extend translation range
+### 1. Give the top cards enough reserved vertical space
+In `src/components/TimelineCarousel.tsx` I’ll replace the single fixed `220px` top/bottom card zones with larger responsive heights so the cards no longer intrude into the subtitle area.
 
-- Change `height: "300vh"` to `height: "400vh"` — gives more vertical scroll room so the timeline doesn't end before 2026+
-- Change `x` transform from `["5%", "-65%"]` to `["2%", "-78%"]` — translates further to fully reveal the last card
+Planned approach:
+- Use bigger reserved heights on small screens
+- Keep the alternating layout
+- Update the horizontal line position so it still passes through the dot centers
 
-### 3. Increase subtitle spacing
+This fixes both:
+- the subtitle overlapping the first/last visible card
+- the line/dot alignment staying mathematically correct
 
-- Change `mb-4 sm:mb-6` to `mb-8 sm:mb-12` on the desktop, tablet and mobile subtitle (now the only subtitle)
+### 2. Increase spacing under the subtitle
+I’ll increase the subtitle’s bottom margin again, but this time together with the larger card-zone heights so the spacing actually holds visually.
 
-### 4. Responsive card sizing
+Result:
+- more breathing room under “A few moments that shaped how I think”
+- no text sitting on top of preview images on desktop, tablet, or mobile
 
-- Add responsive width to `TimelineCard`: `w-[240px] sm:w-[280px]` so cards fit better on smaller screens
-- Reduce gap on mobile: keep `gap-4 sm:gap-8`
+### 3. Replace the fixed percentage scroll translation with measured translation
+Instead of hardcoding `x` to `"-78%"`, I’ll make the timeline travel based on the **actual rendered width** of the card track versus the visible viewport width.
 
-### 5. Card 04 focal point
+Implementation approach:
+- add refs for the visible timeline viewport and the moving track
+- measure how many pixels the track must travel to fully reveal the last card
+- map vertical scroll progress to that measured pixel distance
 
-- Change `objectPosition` from `"center 35%"` to `"center 20%"` to show the head in the red carpet image
+This makes the scroll behavior consistent across desktop, tablet, and mobile.
 
-### 6. Keep Card 05 as-is
+### 4. Increase the scroll section length responsively
+Even with measured translation, smaller screens still need more vertical scroll distance to comfortably travel the full timeline.
 
-- `objectPosition: "center 40%"` stays unchanged
+I’ll make the wrapper height responsive so:
+- desktop keeps a shorter section
+- tablet gets more scroll room
+- mobile gets the most scroll room
 
-### 7. Clean up
+Goal:
+- you can scroll all the way through to **2026+**
+- only after that does the next section begin
 
-- Remove `useIsMobile` hook, `scrollContainerRef`, `mobileProgress`, `handleMobileScroll`
-- Remove the mobile branch JSX entirely
+### 5. Keep the 2026+ image framing unchanged
+Per your instruction, I will **not** change the `2026+` preview image focal point.
+
+## Files to update
+
+### `src/components/TimelineCarousel.tsx`
+Main fixes:
+- enlarge responsive top/bottom card zones
+- adjust line position to match new zone math
+- increase subtitle bottom spacing
+- switch from fixed percentage `x` translation to measured pixel translation
+- make section height responsive to viewport size
+
+## Expected outcome
+
+After this pass:
+- the subtitle will no longer overlap the timeline preview cards
+- mobile will scroll through the full timeline to **2026+**
+- tablet will also reach **2026+**
+- desktop spacing will feel cleaner and less cramped
+- the timeline line will remain aligned with the circle centers after the layout math is updated
