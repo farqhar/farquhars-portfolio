@@ -64,7 +64,7 @@ const cards = [
     desc: "Joined AIQ. Analogue to Algorithm — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
     tags: ["AI", "Systems", "MCom"],
     images: [img05Presenting],
-    objectPosition: "center 30%",
+    objectPosition: "center 40%",
   },
 ];
 
