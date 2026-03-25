@@ -208,6 +208,8 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
 
 const DOT_SIZE = 16;
 
+const CARD_ZONE_HEIGHT = "min(280px, 38vh)";
+
 const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: number; onClick: () => void }) => {
   const isAbove = index % 2 === 0;
 
@@ -247,7 +249,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center w-[240px] sm:w-[280px]">
-      {isAbove ? <div className="h-[220px] flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div style={{ height: CARD_ZONE_HEIGHT }} className="flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: CARD_ZONE_HEIGHT }} />}
 
       <div className="flex flex-col items-center">
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
@@ -262,31 +264,53 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
         {card.year}
       </span>
 
-      {!isAbove ? <div className="pt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {!isAbove ? <div className="pt-3" style={{ height: CARD_ZONE_HEIGHT }}>{cardContent}</div> : <div style={{ height: CARD_ZONE_HEIGHT }} />}
     </div>
   );
 };
 
 const TimelineCarousel = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [expandedCard, setExpandedCard] = useState<typeof cards[0] | null>(null);
+  const [translateX, setTranslateX] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
     offset: ["start start", "end end"],
   });
 
-  const x = useTransform(scrollYProgress, [0, 1], ["2%", "-78%"]);
+  // Measure how far the track needs to slide so the last card is fully visible
+  useEffect(() => {
+    const measure = () => {
+      if (!trackRef.current) return;
+      const trackW = trackRef.current.scrollWidth;
+      const viewportW = window.innerWidth;
+      // We want the last card fully in view with some padding
+      const needed = trackW - viewportW + 40;
+      setTranslateX(Math.max(0, needed));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const x = useTransform(scrollYProgress, [0, 1], [0, -translateX]);
   const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  // Line position: CARD_ZONE_HEIGHT + stem (32px) + half dot (8px)
+  // We use a CSS calc matching CARD_ZONE_HEIGHT
+  const lineTop = `calc(${CARD_ZONE_HEIGHT} + 40px)`;
 
   return (
     <>
-      <div ref={wrapperRef} style={{ height: "400vh" }} className="relative">
+      {/* Responsive height: taller on smaller screens so scroll covers full timeline */}
+      <div ref={wrapperRef} className="relative h-[600vh] sm:h-[500vh] md:h-[400vh]">
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
           <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
 
-          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-8 sm:mb-12 relative z-10">
+          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-12 sm:mb-16 relative z-10">
             A few moments that shaped how I think
           </p>
 
@@ -294,14 +318,14 @@ const TimelineCarousel = () => {
             <div className="relative" style={{ height: "auto" }}>
               <div
                 className="absolute left-0 right-0 h-px pointer-events-none"
-                style={{ top: "calc(220px + 32px + 8px)", background: "hsla(var(--indigo), 0.12)" }}
+                style={{ top: lineTop, background: "hsla(var(--indigo), 0.12)" }}
               />
               <motion.div
                 className="absolute left-0 h-px pointer-events-none"
-                style={{ top: "calc(220px + 32px + 8px)", width: lineWidth, background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))" }}
+                style={{ top: lineTop, width: lineWidth, background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))" }}
               />
 
-              <motion.div className="flex gap-4 sm:gap-8 pl-[10vw]" style={{ x }}>
+              <motion.div ref={trackRef} className="flex gap-4 sm:gap-8 pl-[10vw]" style={{ x }}>
                 {cards.map((card, i) => (
                   <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
                 ))}
