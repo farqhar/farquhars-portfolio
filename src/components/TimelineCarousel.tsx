@@ -33,7 +33,7 @@ const cards = [
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
     images: [img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center center",
+    objectPosition: "center 55%",
   },
   {
     year: "2023",
