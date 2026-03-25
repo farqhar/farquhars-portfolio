@@ -212,9 +212,11 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
           className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[70%] h-[30px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           style={{ background: "hsla(var(--indigo), 0.15)" }}
         />
-        <div
-          className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 relative"
-          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
+          <div
+          className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02] relative"
+          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)", border: "1px solid hsla(var(--indigo), 0.1)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.25)")}
+          onMouseLeave={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.1)")}
         >
           <span className="absolute top-1 right-3 text-5xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
             {card.num}
