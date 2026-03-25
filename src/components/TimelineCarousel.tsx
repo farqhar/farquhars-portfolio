@@ -306,7 +306,7 @@ const TimelineCarousel = () => {
       {isMobile ? (
         /* ── MOBILE: horizontal scroll ── */
         <div className="relative py-12">
-          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-8 relative z-10">
+          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4 relative z-10">
             A few moments that shaped how I think
           </p>
           <div className="relative">
