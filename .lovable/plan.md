@@ -1,26 +1,55 @@
 
 
-# Fix Timeline Line Alignment and Focal Points
+# Fix Timeline Line Alignment, Focal Points, and Card Connectors
 
-## Problem 1: Timeline line cuts through cards
-The horizontal progress line is hardcoded at `top: calc(220px + 32px + 8px)` (260px). This assumes above-cards are exactly 220px tall, but they're actually taller (image + text + tags). So the line slices through the card content instead of passing through the dot centers.
+## Problem Analysis
 
-**Fix**: Use a layout where above-cards get a fixed-height wrapper matching the below-card spacer (220px), and position the line to align with the dot centers. The card content will need to be bottom-aligned within that fixed wrapper so it sits just above the connector line.
+The horizontal timeline line is misaligned because `mb-3` on above-card wrappers adds 12px that the line position formula doesn't account for. Above-card dot center is at 272px but the line is at 260px.
 
-Specifically:
-- Above cards: wrap in a container with `h-[220px]` and use `flex flex-col justify-end` so the card anchors to the bottom, near the dot
-- The horizontal line position stays at `calc(220px + 32px + 8px)` which now correctly hits the dot center for both above and below cards
+Additionally, the cards lack a clear visual connection to their timeline dots — the user wants a visible connector line from each circle to its card, plus an outline border around the card content.
 
-## Problem 2: Focal points for cards 02 and 04
-- Card 02 (2020-2023): The cave image's subject (orange shirt) is slightly below center. Change `objectPosition` from `"center center"` to `"center 55%"` to pull the crop down
-- Card 04 (2024-25): Dubai skyline image needs a lower focal point in the inline view. Change from `"center 30%"` to `"center 45%"`
+## Layout Fix
 
-These may need further fine-tuning once visible, but this gets them closer.
+Restructure `TimelineCard` so both above and below cards use identical spacing before the dot:
 
-## Changes — single file: `src/components/TimelineCarousel.tsx`
+```text
+┌─────────────┐
+│  Top zone    │  ← fixed 220px, padding-bottom instead of margin
+│  (card if    │
+│   above)     │
+├─────────────┤
+│  stem 32px   │  ← connector line (more visible)
+│  ● dot 16px  │  ← center at exactly 220 + 32 + 8 = 260px
+│  stem 32px   │
+├─────────────┤
+│  year label  │
+├─────────────┤
+│  Bottom zone │  ← padding-top instead of margin
+│  (card if    │
+│   below)     │
+└─────────────┘
+```
 
-1. **Line 36**: Card 02 `objectPosition` → `"center 55%"`
-2. **Line 57**: Card 04 `objectPosition` → `"center 45%"`
-3. **Line 250**: Above-card wrapper — change from `<div className="mb-3">` to `<div className="h-[220px] flex flex-col justify-end mb-3">`
-4. **Line 265**: Below-card wrapper — keep `<div className="mt-3">` as-is (the 220px spacer above already aligns it)
+Line position: `top: 260px` — no margin offsets to miscalculate.
+
+## Visual Connector + Card Border
+
+- Make the vertical stems (w-px) slightly thicker or more opaque so they read as a clear connector from dot to card
+- Add a persistent subtle indigo border around the entire card glass container (already has one at 0.1 opacity — bump to 0.15 and make the connector stems match)
+- The stems + dot + card border create a clear visual link
+
+## Focal Point Adjustments
+
+- Card 02 (cave): `"center 55%"` still too low from the screenshot — try `"center 40%"` to get the orange-shirt subject
+- Card 04 (Dubai): `"center 45%"` crops to buildings — try `"center 35%"` to get more of the skyline top
+
+## All Changes — Single File
+
+`src/components/TimelineCarousel.tsx`:
+
+1. **TimelineCard layout**: Replace `mb-3`/`mt-3` with `pb-3`/`pt-3` inside the fixed-height wrappers so dot position math is consistent
+2. **Connector stems**: Increase opacity from 0.25 to 0.4 for clearer visual connection
+3. **Card border**: Keep existing border, ensure it's always visible (not just on hover)
+4. **Focal points**: Card 02 → `"center 40%"`, Card 04 → `"center 35%"`
+5. **Line position**: Confirm `calc(220px + 32px + 8px)` = 260px works with the new padding-based layout
 
