@@ -231,8 +231,8 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
               ))}
             </div>
           )}
-          <div className="mt-2 text-[9px] tracking-wider uppercase opacity-0 group-hover:opacity-60 transition-opacity" style={{ color: "hsl(var(--indigo))" }}>
-            Click to expand →
+          <div className="mt-2 text-[9px] tracking-wider uppercase opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: "hsl(var(--indigo))" }}>
+            Tap to explore →
           </div>
         </div>
       </div>
