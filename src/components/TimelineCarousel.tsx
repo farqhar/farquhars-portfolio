@@ -23,6 +23,7 @@ const cards = [
     desc: "Arrived in Australia at 18 — two weeks before COVID closed the world. No plan. No map. Navigated it anyway. Learned that an unfamiliar environment is just a system you haven't mapped yet.",
     tags: ["Adaptability", "Resilience"],
     images: [img01Arrival],
+    objectPosition: "center 25%",
   },
   {
     year: "2020–2023",
@@ -32,6 +33,7 @@ const cards = [
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
     images: [img02Waterfall, img02Cave, img02Sailing, img02Desert, img02Diving],
+    objectPosition: "center 40%",
   },
   {
     year: "2023",
@@ -42,6 +44,7 @@ const cards = [
     tags: [],
     dualBars: true,
     images: [img03Office],
+    objectPosition: "center 60%",
   },
   {
     year: "2024–25",
@@ -51,6 +54,7 @@ const cards = [
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
     images: [img04Dubai, img04RedCarpet],
+    objectPosition: "center 30%",
   },
   {
     year: "2026+",
@@ -60,18 +64,19 @@ const cards = [
     desc: "Joined AIQ. Analogue to Algorithm — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
     tags: ["AI", "Systems", "MCom"],
     images: [img05Presenting],
+    objectPosition: "center 30%",
   },
 ];
 
 /** Static single image for inline cards */
-const StaticImage = ({ src, className }: { src: string; className?: string }) => (
+const StaticImage = ({ src, className, objectPosition = "center" }: { src: string; className?: string; objectPosition?: string }) => (
   <div className={`relative overflow-hidden rounded-xl ${className ?? ""}`}>
-    <img src={src} alt="" className="w-full h-full object-cover object-top" />
+    <img src={src} alt="" className="w-full h-full object-cover" style={{ objectPosition }} />
   </div>
 );
 
 /** Clickable carousel with auto-slideshow for expanded modal */
-const ExpandedCarousel = ({ images, className }: { images: string[]; className?: string }) => {
+const ExpandedCarousel = ({ images, className, objectPosition = "center" }: { images: string[]; className?: string; objectPosition?: string }) => {
   const [index, setIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -105,9 +110,10 @@ const ExpandedCarousel = ({ images, className }: { images: string[]; className?:
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full h-full object-cover absolute inset-0"
+          style={{ objectPosition }}
         />
       </AnimatePresence>
-      <img src={images[0]} alt="" className="w-full h-full object-cover invisible" />
+      <img src={images[0]} alt="" className="w-full h-full object-cover invisible" style={{ objectPosition }} />
       {images.length > 1 && (
         <>
           <button onClick={(e) => { e.stopPropagation(); go(-1); }} className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors">
@@ -185,7 +191,7 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-4" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>
         {card.year} · {card.label}
       </span>
-      <ExpandedCarousel images={card.images} className="w-full h-48 mb-4" />
+      <ExpandedCarousel images={card.images} className="w-full h-64 mb-4" objectPosition={card.objectPosition} />
       <h3 className="text-xl font-semibold text-card-title mb-3">{card.title}</h3>
       <p className="text-sm leading-relaxed text-card-desc mb-4">{card.desc}</p>
       {card.dualBars && <DualBars />}
@@ -221,7 +227,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
           <span className="absolute top-1 right-3 text-5xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
             {card.num}
           </span>
-          <StaticImage src={card.images[0]} className="w-full h-28 mb-2" />
+          <StaticImage src={card.images[0]} className="w-full h-28 mb-2" objectPosition={card.objectPosition} />
           <h3 className="text-[14px] font-semibold text-card-title mb-1.5">{card.title}</h3>
           <p className="text-[11px] leading-relaxed text-card-desc line-clamp-3">{card.desc}</p>
           {card.tags.length > 0 && (
