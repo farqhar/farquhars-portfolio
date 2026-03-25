@@ -2,18 +2,24 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
+import boondiHero from "@/assets/boondi-logo-ani.gif";
+import boondiShapeDev from "@/assets/boondi-shape-dev.png";
+import boondiTypeSystem from "@/assets/boondi-type-system.png";
+import boondiBus from "@/assets/boondi-bus-v1.png";
+
 const projects = [
   {
     category: "Type Systems",
-    title: "Bondi",
+    title: "Boondi",
     teaser: "A typographic system built around place and character.",
     reveal: "What makes a typeface feel like somewhere?",
     details: "Explored the intersection of geography, culture, and letterform. Every glyph was shaped by Bondi's rhythm — from the curl of a wave to the arch of a pavilion.",
+    cardImage: boondiHero,
     steps: [
-      { image: "Hero image", caption: "The final typeface specimen — every glyph shaped by Bondi's geography." },
-      { image: "Process sketch", caption: "Early explorations mapping wave forms to letterform curves." },
-      { image: "Glyph detail", caption: "Refining individual glyphs with architectural references from the pavilion." },
-      { image: "Final specimen", caption: "The complete specimen sheet in context — place made typographic." },
+      { image: boondiHero, caption: "The animated logo — rhythm and place distilled into motion." },
+      { image: boondiShapeDev, caption: "Early explorations mapping wave forms to letterform curves." },
+      { image: boondiTypeSystem, caption: "The complete type system specimen — place made typographic." },
+      { image: boondiBus, caption: "Bus wrap application — the typeface in the wild." },
     ],
   },
   {
@@ -22,6 +28,7 @@ const projects = [
     teaser: "A character system originating from actual potato forms.",
     reveal: "Started with real potatoes. Ended with a world.",
     details: "Scanned, traced, and abstracted real potato forms into a character system. Built a brand world around them — packaging, animation, tone of voice.",
+    cardImage: null as string | null,
     steps: [
       { image: "Character lineup", caption: "The full character family — each derived from a unique potato scan." },
       { image: "Scan process", caption: "High-resolution scans of real potatoes used as the design foundation." },
@@ -35,6 +42,7 @@ const projects = [
     teaser: "280 film photographs. A brightness pipeline. A self-portrait.",
     reveal: "What does data reveal that the eye misses?",
     details: "Shot 280 frames on 35mm film, then built a data pipeline to extract brightness, color, and composition metrics. The result: a self-portrait made entirely from patterns.",
+    cardImage: null as string | null,
     steps: [
       { image: "Film contact sheet", caption: "280 frames of 35mm film — the raw material for the data pipeline." },
       { image: "Data extraction", caption: "Extracting brightness, color, and composition metrics from each frame." },
@@ -105,14 +113,18 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           {/* Carousel image */}
           <div className="relative mb-4">
             <div
-              className="w-full rounded-xl flex items-center justify-center"
+              className="w-full rounded-xl flex items-center justify-center overflow-hidden"
               style={{
                 background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
-                border: "1px dashed hsla(var(--indigo), 0.2)",
+                border: typeof step.image === "string" && step.image.length < 30 ? "1px dashed hsla(var(--indigo), 0.2)" : "none",
                 minHeight: "220px",
               }}
             >
-              <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
+              {typeof step.image === "string" && step.image.length < 30 ? (
+                <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
+              ) : (
+                <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
+              )}
             </div>
 
             {/* Nav arrows */}
@@ -190,11 +202,15 @@ const ProjectCard = ({ project, index, onSelect }: { project: typeof projects[0]
           style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
         >
           <div
-            className="relative h-[180px] flex items-center justify-center"
+            className="relative h-[180px] flex items-center justify-center overflow-hidden"
             style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.07), hsla(var(--purple), 0.12))" }}
           >
             <CornerBrackets />
-            <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.4)" }}>add image here</span>
+            {project.cardImage ? (
+              <img src={project.cardImage} alt={project.title} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.4)" }}>add image here</span>
+            )}
           </div>
           <div className="p-5">
             <span
