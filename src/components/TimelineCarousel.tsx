@@ -53,7 +53,7 @@ const cards = [
     title: "Design as leverage.",
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
-    images: [img04Dubai, img04RedCarpet],
+    images: [img04RedCarpet, img04Dubai],
     objectPosition: "center 35%",
   },
   {
