@@ -11,15 +11,14 @@ const projects = [
   {
     category: "Type Systems",
     title: "Boondi",
-    teaser: "A typographic system built around place and character.",
-    reveal: "What makes a typeface feel like somewhere?",
-    details: "Explored the intersection of geography, culture, and letterform. Every glyph was shaped by Bondi's rhythm — from the curl of a wave to the arch of a pavilion.",
+    teaser: "A typeface rooted in place, shaped by culture.",
+    reveal: "What happens when geography becomes a glyph?",
+    details: "Cultural research, shape systems, and a typeface born from the land it represents.",
     cardImage: boondiHero,
     steps: [
-      { image: boondiHero, caption: "The animated logo — rhythm and place distilled into motion." },
-      { image: boondiShapeDev, caption: "Early explorations mapping wave forms to letterform curves." },
-      { image: boondiTypeSystem, caption: "The complete type system specimen — place made typographic." },
-      { image: boondiBus, caption: "Bus wrap application — the typeface in the wild." },
+      { image: boondiHero, caption: "A living mark — movement, rhythm, and place." },
+      { image: boondiShapeDev, caption: "Researching cultural landmarks — Aboriginal and Western — to extract the shapes behind the system." },
+      { image: boondiTypeSystem, caption: "Applying those shapes to build a typeface and icon set ready for brand use." },
     ],
   },
   {
