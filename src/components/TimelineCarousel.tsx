@@ -343,7 +343,7 @@ const TimelineCarousel = () => {
             <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
 
-            <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-10 sm:mb-14 relative z-10">
+            <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4 sm:mb-6 relative z-10">
               A few moments that shaped how I think
             </p>
 
