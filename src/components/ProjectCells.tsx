@@ -2,18 +2,24 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
+import boondiHero from "@/assets/boondi-logo-ani.gif";
+import boondiShapeDev from "@/assets/boondi-shape-dev.png";
+import boondiTypeSystem from "@/assets/boondi-type-system.png";
+import boondiBus from "@/assets/boondi-bus-v1.png";
+
 const projects = [
   {
     category: "Type Systems",
-    title: "Bondi",
+    title: "Boondi",
     teaser: "A typographic system built around place and character.",
     reveal: "What makes a typeface feel like somewhere?",
     details: "Explored the intersection of geography, culture, and letterform. Every glyph was shaped by Bondi's rhythm — from the curl of a wave to the arch of a pavilion.",
+    cardImage: boondiHero,
     steps: [
-      { image: "Hero image", caption: "The final typeface specimen — every glyph shaped by Bondi's geography." },
-      { image: "Process sketch", caption: "Early explorations mapping wave forms to letterform curves." },
-      { image: "Glyph detail", caption: "Refining individual glyphs with architectural references from the pavilion." },
-      { image: "Final specimen", caption: "The complete specimen sheet in context — place made typographic." },
+      { image: boondiHero, caption: "The animated logo — rhythm and place distilled into motion." },
+      { image: boondiShapeDev, caption: "Early explorations mapping wave forms to letterform curves." },
+      { image: boondiTypeSystem, caption: "The complete type system specimen — place made typographic." },
+      { image: boondiBus, caption: "Bus wrap application — the typeface in the wild." },
     ],
   },
   {
