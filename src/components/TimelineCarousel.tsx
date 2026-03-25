@@ -247,22 +247,22 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center" style={{ width: "280px" }}>
-      {isAbove ? <div className="h-[220px] flex flex-col justify-end mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div className="h-[220px] flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
 
       <div className="flex flex-col items-center">
-        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
         <div className="relative" style={{ width: DOT_SIZE, height: DOT_SIZE }}>
           <div className="w-4 h-4 rounded-full border-2" style={{ borderColor: "hsl(var(--indigo))", background: "hsl(var(--background))" }} />
           <div className="absolute inset-0 rounded-full" style={{ background: "hsla(var(--indigo), 0.3)", animation: "pulse-dot 2s ease-in-out infinite", transform: "scale(1.5)", filter: "blur(4px)" }} />
         </div>
-        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
       </div>
 
       <span className="text-[10px] font-semibold tracking-wider uppercase my-1" style={{ color: "hsl(var(--indigo))" }}>
         {card.year}
       </span>
 
-      {!isAbove ? <div className="mt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {!isAbove ? <div className="pt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
     </div>
   );
 };
