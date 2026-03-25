@@ -110,6 +110,7 @@ const ExpandedCarousel = ({ images, className, objectPosition = "center" }: { im
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full h-full object-cover absolute inset-0"
+          style={{ objectPosition }}
         />
       </AnimatePresence>
       <img src={images[0]} alt="" className="w-full h-full object-cover invisible" />
