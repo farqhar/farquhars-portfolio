@@ -219,7 +219,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
           <span className="absolute top-1 right-3 text-5xl font-bold select-none gradient-text-indigo" style={{ opacity: 0.06 }}>
             {card.num}
           </span>
-          <AutoCarousel images={card.images} className="w-full h-28 mb-2" />
+          <StaticImage src={card.images[0]} className="w-full h-28 mb-2" />
           <h3 className="text-[14px] font-semibold text-card-title mb-1.5">{card.title}</h3>
           <p className="text-[11px] leading-relaxed text-card-desc line-clamp-3">{card.desc}</p>
           {card.tags.length > 0 && (
