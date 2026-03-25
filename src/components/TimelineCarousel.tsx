@@ -33,7 +33,7 @@ const cards = [
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
     images: [img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center 55%",
+    objectPosition: "center 40%",
   },
   {
     year: "2023",
@@ -54,7 +54,7 @@ const cards = [
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
     images: [img04Dubai, img04RedCarpet],
-    objectPosition: "center 45%",
+    objectPosition: "center 35%",
   },
   {
     year: "2026+",
@@ -220,7 +220,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
         />
           <div
           className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02] relative"
-          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)", border: "1px solid hsla(var(--indigo), 0.1)" }}
+          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)", border: "1px solid hsla(var(--indigo), 0.15)" }}
           onMouseEnter={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.25)")}
           onMouseLeave={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.1)")}
         >
@@ -247,22 +247,22 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center" style={{ width: "280px" }}>
-      {isAbove ? <div className="h-[220px] flex flex-col justify-end mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div className="h-[220px] flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
 
       <div className="flex flex-col items-center">
-        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
         <div className="relative" style={{ width: DOT_SIZE, height: DOT_SIZE }}>
           <div className="w-4 h-4 rounded-full border-2" style={{ borderColor: "hsl(var(--indigo))", background: "hsl(var(--background))" }} />
           <div className="absolute inset-0 rounded-full" style={{ background: "hsla(var(--indigo), 0.3)", animation: "pulse-dot 2s ease-in-out infinite", transform: "scale(1.5)", filter: "blur(4px)" }} />
         </div>
-        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
+        <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
       </div>
 
       <span className="text-[10px] font-semibold tracking-wider uppercase my-1" style={{ color: "hsl(var(--indigo))" }}>
         {card.year}
       </span>
 
-      {!isAbove ? <div className="mt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {!isAbove ? <div className="pt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
     </div>
   );
 };
