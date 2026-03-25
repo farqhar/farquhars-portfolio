@@ -195,11 +195,15 @@ const ProjectCard = ({ project, index, onSelect }: { project: typeof projects[0]
           style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
         >
           <div
-            className="relative h-[180px] flex items-center justify-center"
+            className="relative h-[180px] flex items-center justify-center overflow-hidden"
             style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.07), hsla(var(--purple), 0.12))" }}
           >
             <CornerBrackets />
-            <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.4)" }}>add image here</span>
+            {project.cardImage ? (
+              <img src={project.cardImage} alt={project.title} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.4)" }}>add image here</span>
+            )}
           </div>
           <div className="p-5">
             <span
