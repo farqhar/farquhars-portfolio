@@ -69,9 +69,9 @@ const cards = [
 ];
 
 /** Static single image for inline cards */
-const StaticImage = ({ src, className }: { src: string; className?: string }) => (
+const StaticImage = ({ src, className, objectPosition = "center" }: { src: string; className?: string; objectPosition?: string }) => (
   <div className={`relative overflow-hidden rounded-xl ${className ?? ""}`}>
-    <img src={src} alt="" className="w-full h-full object-cover object-top" />
+    <img src={src} alt="" className="w-full h-full object-cover" style={{ objectPosition }} />
   </div>
 );
 
