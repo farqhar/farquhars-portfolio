@@ -5,21 +5,20 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import boondiHero from "@/assets/boondi-logo-ani.gif";
 import boondiShapeDev from "@/assets/boondi-shape-dev.png";
 import boondiTypeSystem from "@/assets/boondi-type-system.png";
-import boondiBus from "@/assets/boondi-bus-v1.png";
+
 
 const projects = [
   {
     category: "Type Systems",
     title: "Boondi",
-    teaser: "A typographic system built around place and character.",
-    reveal: "What makes a typeface feel like somewhere?",
-    details: "Explored the intersection of geography, culture, and letterform. Every glyph was shaped by Bondi's rhythm — from the curl of a wave to the arch of a pavilion.",
+    teaser: "A typeface rooted in place, shaped by culture.",
+    reveal: "What happens when geography becomes a glyph?",
+    details: "Cultural research, shape systems, and a typeface born from the land it represents.",
     cardImage: boondiHero,
     steps: [
-      { image: boondiHero, caption: "The animated logo — rhythm and place distilled into motion." },
-      { image: boondiShapeDev, caption: "Early explorations mapping wave forms to letterform curves." },
-      { image: boondiTypeSystem, caption: "The complete type system specimen — place made typographic." },
-      { image: boondiBus, caption: "Bus wrap application — the typeface in the wild." },
+      { image: boondiHero, caption: "A living mark — movement, rhythm, and place." },
+      { image: boondiShapeDev, caption: "Researching cultural landmarks — Aboriginal and Western — to extract the shapes behind the system." },
+      { image: boondiTypeSystem, caption: "Applying those shapes to build a typeface and icon set ready for brand use." },
     ],
   },
   {
@@ -113,18 +112,21 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           {/* Carousel image */}
           <div className="relative mb-4">
             <div
-              className="w-full rounded-xl flex items-center justify-center overflow-hidden"
+              className="w-full rounded-xl overflow-hidden relative"
               style={{
                 background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
-                border: typeof step.image === "string" && step.image.length < 30 ? "1px dashed hsla(var(--indigo), 0.2)" : "none",
                 minHeight: "220px",
               }}
             >
-              {typeof step.image === "string" && step.image.length < 30 ? (
-                <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
-              ) : (
-                <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
-              )}
+              {project.steps.map((s, i) => (
+                typeof s.image === "string" && s.image.length < 30 ? (
+                  <div key={i} className="absolute inset-0 flex items-center justify-center" style={{ display: i === currentStep ? "flex" : "none" }}>
+                    <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{s.image}</span>
+                  </div>
+                ) : (
+                  <img key={i} src={s.image} alt={s.caption} className="w-full object-contain" style={{ display: i === currentStep ? "block" : "none" }} />
+                )
+              ))}
             </div>
 
             {/* Nav arrows */}
