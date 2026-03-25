@@ -5,7 +5,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import boondiHero from "@/assets/boondi-logo-ani.gif";
 import boondiShapeDev from "@/assets/boondi-shape-dev.png";
 import boondiTypeSystem from "@/assets/boondi-type-system.png";
-import boondiBus from "@/assets/boondi-bus-v1.png";
+
 
 const projects = [
   {
