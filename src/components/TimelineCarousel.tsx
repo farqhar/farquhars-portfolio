@@ -247,7 +247,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center" style={{ width: "280px" }}>
-      {isAbove ? <div className="mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div className="h-[220px] flex flex-col justify-end mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
 
       <div className="flex flex-col items-center">
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
