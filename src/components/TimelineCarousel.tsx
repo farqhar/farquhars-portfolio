@@ -33,7 +33,7 @@ const cards = [
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
     images: [img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center center",
+    objectPosition: "center 55%",
   },
   {
     year: "2023",
@@ -54,7 +54,7 @@ const cards = [
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
     images: [img04Dubai, img04RedCarpet],
-    objectPosition: "center 30%",
+    objectPosition: "center 45%",
   },
   {
     year: "2026+",
@@ -247,7 +247,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center" style={{ width: "280px" }}>
-      {isAbove ? <div className="mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div className="h-[220px] flex flex-col justify-end mb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
 
       <div className="flex flex-col items-center">
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.25)" }} />
