@@ -23,6 +23,7 @@ const cards = [
     desc: "Arrived in Australia at 18 — two weeks before COVID closed the world. No plan. No map. Navigated it anyway. Learned that an unfamiliar environment is just a system you haven't mapped yet.",
     tags: ["Adaptability", "Resilience"],
     images: [img01Arrival],
+    objectPosition: "center 25%",
   },
   {
     year: "2020–2023",
@@ -32,6 +33,7 @@ const cards = [
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
     images: [img02Waterfall, img02Cave, img02Sailing, img02Desert, img02Diving],
+    objectPosition: "center 40%",
   },
   {
     year: "2023",
@@ -42,6 +44,7 @@ const cards = [
     tags: [],
     dualBars: true,
     images: [img03Office],
+    objectPosition: "center 60%",
   },
   {
     year: "2024–25",
@@ -51,6 +54,7 @@ const cards = [
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
     images: [img04Dubai, img04RedCarpet],
+    objectPosition: "center 30%",
   },
   {
     year: "2026+",
@@ -60,6 +64,7 @@ const cards = [
     desc: "Joined AIQ. Analogue to Algorithm — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
     tags: ["AI", "Systems", "MCom"],
     images: [img05Presenting],
+    objectPosition: "center 30%",
   },
 ];
 
