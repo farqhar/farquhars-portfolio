@@ -231,3 +231,13 @@
   50% { transform: translate(20px, 15px); }
   75% { transform: translate(-10px, 25px); }
 }
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
