@@ -76,7 +76,7 @@ const StaticImage = ({ src, className, objectPosition = "center" }: { src: strin
 );
 
 /** Clickable carousel with auto-slideshow for expanded modal */
-const ExpandedCarousel = ({ images, className }: { images: string[]; className?: string }) => {
+const ExpandedCarousel = ({ images, className, objectPosition = "center" }: { images: string[]; className?: string; objectPosition?: string }) => {
   const [index, setIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
