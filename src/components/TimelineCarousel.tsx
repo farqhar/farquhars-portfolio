@@ -220,7 +220,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
         />
           <div
           className="glass rounded-2xl p-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02] relative"
-          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)", border: "1px solid hsla(var(--indigo), 0.1)" }}
+          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)", border: "1px solid hsla(var(--indigo), 0.15)" }}
           onMouseEnter={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.25)")}
           onMouseLeave={(e) => (e.currentTarget.style.borderColor = "hsla(var(--indigo), 0.1)")}
         >
