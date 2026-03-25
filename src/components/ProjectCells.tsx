@@ -42,6 +42,7 @@ const projects = [
     teaser: "280 film photographs. A brightness pipeline. A self-portrait.",
     reveal: "What does data reveal that the eye misses?",
     details: "Shot 280 frames on 35mm film, then built a data pipeline to extract brightness, color, and composition metrics. The result: a self-portrait made entirely from patterns.",
+    cardImage: null as string | null,
     steps: [
       { image: "Film contact sheet", caption: "280 frames of 35mm film — the raw material for the data pipeline." },
       { image: "Data extraction", caption: "Extracting brightness, color, and composition metrics from each frame." },
