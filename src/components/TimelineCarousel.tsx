@@ -4,7 +4,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Image imports
 import img01Arrival from "@/assets/timeline/01-arrival.jpeg";
-import img02Waterfall from "@/assets/timeline/02-waterfall.jpeg";
+
 import img02Cave from "@/assets/timeline/02-cave.jpeg";
 import img02Sailing from "@/assets/timeline/02-sailing.jpeg";
 import img02Desert from "@/assets/timeline/02-desert.jpeg";
