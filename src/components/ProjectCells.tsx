@@ -112,18 +112,21 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           {/* Carousel image */}
           <div className="relative mb-4">
             <div
-              className="w-full rounded-xl flex items-center justify-center overflow-hidden"
+              className="w-full rounded-xl overflow-hidden relative"
               style={{
                 background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
-                border: typeof step.image === "string" && step.image.length < 30 ? "1px dashed hsla(var(--indigo), 0.2)" : "none",
                 minHeight: "220px",
               }}
             >
-              {typeof step.image === "string" && step.image.length < 30 ? (
-                <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
-              ) : (
-                <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
-              )}
+              {project.steps.map((s, i) => (
+                typeof s.image === "string" && s.image.length < 30 ? (
+                  <div key={i} className="absolute inset-0 flex items-center justify-center" style={{ display: i === currentStep ? "flex" : "none" }}>
+                    <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{s.image}</span>
+                  </div>
+                ) : (
+                  <img key={i} src={s.image} alt={s.caption} className="w-full object-contain" style={{ display: i === currentStep ? "block" : "none" }} />
+                )
+              ))}
             </div>
 
             {/* Nav arrows */}
