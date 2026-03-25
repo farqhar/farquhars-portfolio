@@ -191,7 +191,7 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full mb-4" style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}>
         {card.year} · {card.label}
       </span>
-      <ExpandedCarousel images={card.images} className="w-full h-48 mb-4" />
+      <ExpandedCarousel images={card.images} className="w-full h-64 mb-4" objectPosition={card.objectPosition} />
       <h3 className="text-xl font-semibold text-card-title mb-3">{card.title}</h3>
       <p className="text-sm leading-relaxed text-card-desc mb-4">{card.desc}</p>
       {card.dualBars && <DualBars />}
