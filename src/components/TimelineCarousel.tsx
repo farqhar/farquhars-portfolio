@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -32,8 +32,8 @@ const cards = [
     title: "Three years. No fixed address.",
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
-    images: [img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center 40%",
+    images: [img02Sailing, img02Cave, img02Desert, img02Diving],
+    objectPosition: "center center",
   },
   {
     year: "2023",
@@ -53,7 +53,7 @@ const cards = [
     title: "Design as leverage.",
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
-    images: [img04Dubai, img04RedCarpet],
+    images: [img04RedCarpet, img04Dubai],
     objectPosition: "center 35%",
   },
   {
@@ -64,7 +64,7 @@ const cards = [
     desc: "Joined AIQ. Analogue to Algorithm — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
     tags: ["AI", "Systems", "MCom"],
     images: [img05Presenting],
-    objectPosition: "center 30%",
+    objectPosition: "center 40%",
   },
 ];
 
@@ -267,9 +267,22 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
   );
 };
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+};
+
 const TimelineCarousel = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [expandedCard, setExpandedCard] = useState<typeof cards[0] | null>(null);
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
@@ -279,37 +292,82 @@ const TimelineCarousel = () => {
   const x = useTransform(scrollYProgress, [0, 1], ["5%", "-65%"]);
   const lineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
+  // Mobile: track horizontal scroll for the progress line
+  const [mobileProgress, setMobileProgress] = useState(0);
+  const handleMobileScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const progress = el.scrollLeft / (el.scrollWidth - el.clientWidth);
+    setMobileProgress(Math.min(1, Math.max(0, progress)));
+  }, []);
+
   return (
     <>
-      <div ref={wrapperRef} style={{ height: "300vh" }} className="relative">
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-          <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
-
-          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-10 sm:mb-14 relative z-10">
+      {isMobile ? (
+        /* ── MOBILE: horizontal scroll ── */
+        <div className="relative py-12">
+          <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-8 relative z-10">
             A few moments that shaped how I think
           </p>
-
-          <div className="relative w-full">
-            <div className="relative" style={{ height: "auto" }}>
-              <div
-                className="absolute left-0 right-0 h-px pointer-events-none"
-                style={{ top: "calc(220px + 32px + 8px)", background: "hsla(var(--indigo), 0.12)" }}
-              />
-              <motion.div
-                className="absolute left-0 h-px pointer-events-none"
-                style={{ top: "calc(220px + 32px + 8px)", width: lineWidth, background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))" }}
-              />
-
-              <motion.div className="flex gap-4 sm:gap-8 pl-[10vw]" style={{ x }}>
-                {cards.map((card, i) => (
-                  <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
-                ))}
-              </motion.div>
+          <div className="relative">
+            {/* Background line */}
+            <div
+              className="absolute left-0 right-0 h-px pointer-events-none"
+              style={{ top: "calc(220px + 32px + 8px)", background: "hsla(var(--indigo), 0.12)" }}
+            />
+            {/* Progress line */}
+            <div
+              className="absolute left-0 h-px pointer-events-none transition-all duration-100"
+              style={{
+                top: "calc(220px + 32px + 8px)",
+                width: `${mobileProgress * 100}%`,
+                background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))",
+              }}
+            />
+            <div
+              ref={scrollContainerRef}
+              onScroll={handleMobileScroll}
+              className="flex gap-4 pl-[5vw] pr-[10vw] overflow-x-auto scrollbar-hide"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
+              {cards.map((card, i) => (
+                <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* ── DESKTOP: scroll-driven horizontal translation ── */
+        <div ref={wrapperRef} style={{ height: "300vh" }} className="relative">
+          <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+            <div className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--blue), 0.06) 0%, transparent 70%)" }} />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }} />
+
+            <p className="text-center text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-10 sm:mb-14 relative z-10">
+              A few moments that shaped how I think
+            </p>
+
+            <div className="relative w-full">
+              <div className="relative" style={{ height: "auto" }}>
+                <div
+                  className="absolute left-0 right-0 h-px pointer-events-none"
+                  style={{ top: "calc(220px + 32px + 8px)", background: "hsla(var(--indigo), 0.12)" }}
+                />
+                <motion.div
+                  className="absolute left-0 h-px pointer-events-none"
+                  style={{ top: "calc(220px + 32px + 8px)", width: lineWidth, background: "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)), hsl(var(--purple)))" }}
+                />
+
+                <motion.div className="flex gap-4 sm:gap-8 pl-[10vw]" style={{ x }}>
+                  {cards.map((card, i) => (
+                    <TimelineCard key={card.num} card={card} index={i} onClick={() => setExpandedCard(card)} />
+                  ))}
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {expandedCard && <ExpandedCard card={expandedCard} onClose={() => setExpandedCard(null)} />}
