@@ -32,8 +32,8 @@ const cards = [
     title: "Three years. No fixed address.",
     desc: "Rainforests, deserts, islands, coastlines. Lived out of a backpack and a van. Every new environment demanded a new way of thinking. Pattern recognition as survival.",
     tags: ["Pattern recognition", "Independence"],
-    images: [img02Waterfall, img02Cave, img02Sailing, img02Desert, img02Diving],
-    objectPosition: "center 40%",
+    images: [img02Cave, img02Sailing, img02Desert, img02Diving],
+    objectPosition: "center center",
   },
   {
     year: "2023",
