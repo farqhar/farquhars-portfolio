@@ -1,23 +1,27 @@
 
 
-# Timeline Card Image & Interaction Fixes
+# Fix Timeline Image Focal Points
 
-## Changes
+## Problem
+`object-position: top` is applied uniformly to all images, but each photo has a different focal point. The airport photo crops to the ceiling, the red carpet photo crops to hands/torso, etc. A single CSS rule can't fix all images.
 
-### 1. Inline cards: Static first image, focused on faces
-- Remove `AutoCarousel` from inline `TimelineCard` — show only the first image with `object-cover` and `object-position: top` to prioritize faces/focal points
-- No cycling animation until the card is expanded
+## Solution
+Add a per-card `objectPosition` property to control where `object-cover` anchors. Each image gets a custom focal point (e.g., `center 30%` for faces near the top, `center` for centered subjects).
 
-### 2. Expanded modal: Clickable carousel + auto-slideshow
-- In `ExpandedCard`, add left/right arrow buttons and dot indicators (like the project modal)
-- Auto-cycle every 3.5s if user doesn't click — reset timer on manual navigation
-- Clicking arrows or dots advances manually
+### Card focal points
+| Card | Inline `objectPosition` | Notes |
+|------|------------------------|-------|
+| 01 Arrival | `center 25%` | Faces in upper third |
+| 02 Exploration | `center 40%` | Nature scenes, fairly centered |
+| 03 Office | `center 60%` | Office/bridge scene |
+| 04 Dubai/RedCarpet | `center 30%` per image | Faces near top |
+| 05 Presenting | `center 30%` | Person presenting |
 
-### 3. Make cards look clickable
-- Add a visible "Tap to explore →" label always shown (not just on hover)
-- Add a subtle border that brightens on hover: `border: 1px solid hsla(var(--indigo), 0.1)` → `0.25` on hover
-- Change cursor to pointer (already set) and add a slight scale on hover (`group-hover:scale-[1.02]`)
+### Changes in `TimelineCarousel.tsx`
+1. Add `objectPosition: string` field to each card data object (default `"center"`)
+2. `StaticImage` component: use the card's `objectPosition` instead of hardcoded `object-top`
+3. `ExpandedCarousel`: use the same `objectPosition`, and increase image height from `h-48` to `h-64` so more of the photo is visible in the modal
+4. Pass `objectPosition` through to both `StaticImage` and `ExpandedCarousel` via props
 
-## File
-- `src/components/TimelineCarousel.tsx` — all changes in this single file
+Single file change: `src/components/TimelineCarousel.tsx`
 
