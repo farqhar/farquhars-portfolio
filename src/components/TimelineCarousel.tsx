@@ -208,6 +208,8 @@ const ExpandedCard = ({ card, onClose }: { card: typeof cards[0]; onClose: () =>
 
 const DOT_SIZE = 16;
 
+const CARD_ZONE_HEIGHT = "min(280px, 38vh)";
+
 const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: number; onClick: () => void }) => {
   const isAbove = index % 2 === 0;
 
@@ -247,7 +249,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center w-[240px] sm:w-[280px]">
-      {isAbove ? <div className="h-[220px] flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {isAbove ? <div style={{ height: CARD_ZONE_HEIGHT }} className="flex flex-col justify-end pb-3">{cardContent}</div> : <div style={{ height: CARD_ZONE_HEIGHT }} />}
 
       <div className="flex flex-col items-center">
         <div className="w-px h-8" style={{ background: "hsla(var(--indigo), 0.4)" }} />
@@ -262,7 +264,7 @@ const TimelineCard = ({ card, index, onClick }: { card: typeof cards[0]; index: 
         {card.year}
       </span>
 
-      {!isAbove ? <div className="pt-3">{cardContent}</div> : <div style={{ height: "220px" }} />}
+      {!isAbove ? <div className="pt-3" style={{ height: CARD_ZONE_HEIGHT }}>{cardContent}</div> : <div style={{ height: CARD_ZONE_HEIGHT }} />}
     </div>
   );
 };
