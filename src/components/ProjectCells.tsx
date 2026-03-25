@@ -113,12 +113,11 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
             <div
               className="w-full rounded-xl flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))",
-                border: "1px dashed hsla(var(--indigo), 0.2)",
-                minHeight: "220px",
-              }}
-            >
-              <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
+                {typeof step.image === "string" && !step.image.startsWith("/") && !step.image.includes("/assets/") && step.image.length < 30 ? (
+                  <span className="text-sm" style={{ color: "hsla(var(--indigo), 0.35)" }}>{step.image}</span>
+                ) : (
+                  <img src={step.image} alt={step.caption} className="w-full h-full object-contain" />
+                )}
             </div>
 
             {/* Nav arrows */}
