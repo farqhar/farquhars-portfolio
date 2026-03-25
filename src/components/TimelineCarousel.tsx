@@ -54,7 +54,7 @@ const cards = [
     desc: "Two global engineering brands. Solo. An agency, two people, one client. Stopped treating design as craft — started treating it as a tool for impact.",
     tags: ["Leadership", "Commercial", "Agency"],
     images: [img04Dubai, img04RedCarpet],
-    objectPosition: "center 45%",
+    objectPosition: "center 35%",
   },
   {
     year: "2026+",
