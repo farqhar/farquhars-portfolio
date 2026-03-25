@@ -1,27 +1,16 @@
 
 
-# Fix Timeline Image Focal Points
+# Timeline Image Fixes
 
-## Problem
-`object-position: top` is applied uniformly to all images, but each photo has a different focal point. The airport photo crops to the ceiling, the red carpet photo crops to hands/torso, etc. A single CSS rule can't fix all images.
+## Changes in `src/components/TimelineCarousel.tsx`
 
-## Solution
-Add a per-card `objectPosition` property to control where `object-cover` anchors. Each image gets a custom focal point (e.g., `center 30%` for faces near the top, `center` for centered subjects).
+1. **Remove waterfall image** — Drop `img02Waterfall` import and from card 02's `images` array (becomes: cave, sailing, desert, diving)
 
-### Card focal points
-| Card | Inline `objectPosition` | Notes |
-|------|------------------------|-------|
-| 01 Arrival | `center 25%` | Faces in upper third |
-| 02 Exploration | `center 40%` | Nature scenes, fairly centered |
-| 03 Office | `center 60%` | Office/bridge scene |
-| 04 Dubai/RedCarpet | `center 30%` per image | Faces near top |
-| 05 Presenting | `center 30%` | Person presenting |
+2. **Fix card 02 focal point** — Change `objectPosition` from `"center 40%"` to `"center center"` so the person in orange shirt is visible
 
-### Changes in `TimelineCarousel.tsx`
-1. Add `objectPosition: string` field to each card data object (default `"center"`)
-2. `StaticImage` component: use the card's `objectPosition` instead of hardcoded `object-top`
-3. `ExpandedCarousel`: use the same `objectPosition`, and increase image height from `h-48` to `h-64` so more of the photo is visible in the modal
-4. Pass `objectPosition` through to both `StaticImage` and `ExpandedCarousel` via props
+3. **Expanded modal image: square** — Change `ExpandedCarousel` class from `h-64` to `aspect-square` so clicked-in images display as 1:1
 
-Single file change: `src/components/TimelineCarousel.tsx`
+4. **Inline cards stay as-is** — Keep the current `h-28` rectangle for unexpanded timeline cards
+
+Single file: `src/components/TimelineCarousel.tsx`
 
