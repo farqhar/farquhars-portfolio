@@ -113,7 +113,7 @@ const ExpandedCarousel = ({ images, className, objectPosition = "center" }: { im
           style={{ objectPosition }}
         />
       </AnimatePresence>
-      <img src={images[0]} alt="" className="w-full h-full object-cover invisible" />
+      <img src={images[0]} alt="" className="w-full h-full object-cover invisible" style={{ objectPosition }} />
       {images.length > 1 && (
         <>
           <button onClick={(e) => { e.stopPropagation(); go(-1); }} className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center bg-black/30 hover:bg-black/50 text-white backdrop-blur-sm transition-colors">
