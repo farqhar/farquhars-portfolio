@@ -29,15 +29,11 @@ const projects = [
   {
     category: "Illustration",
     title: "Chippy",
-    teaser: "A character system originating from actual potato forms.",
-    reveal: "Started with real potatoes. Ended with a world.",
-    details: "Scanned, traced, and abstracted real potato forms into a character system. Built a brand world around them — packaging, animation, tone of voice.",
-    cardImage: null as string | null,
+    cardImage: chippyMural,
     steps: [
-      { image: "Character lineup", caption: "The full character family — each derived from a unique potato scan." },
-      { image: "Scan process", caption: "High-resolution scans of real potatoes used as the design foundation." },
-      { image: "Packaging front", caption: "Brand packaging showcasing the character system in a retail context." },
-      { image: "Brand world overview", caption: "The complete brand world — tone, animation, and visual identity." },
+      { image: chippyProcess, caption: "Real potatoes, ink-stamped — each shape became a character foundation." },
+      { image: chippyStamp, caption: "Potato meets page — capturing the organic form that drives the character system." },
+      { image: chippyMural, caption: "From form to brand — creating a range of assets that extend the typographic system born from potato prints." },
     ],
   },
   {
