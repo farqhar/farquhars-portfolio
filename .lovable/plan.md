@@ -1,38 +1,22 @@
 
 
-# Fix Chippy carousel: re-copy broken images, add menu mockup, reorder
+# Add Analogue to Algorithm images (2-step carousel)
 
-## Problems to fix
-1. **Images 2/3 not displaying** — `chippy-process.jpg` and `chippy-stamp.jpg` were likely written as non-binary files, so Vite imports resolve to short strings that hit the `s.image.length < 30` text-placeholder check in the modal.
-2. **Wrong order** — needs to be: mural → process → menu mockup.
-3. **Missing image 3** — now provided: the restaurant menu mockup.
+## Assets
+1. **Image 1 (card + carousel step 1)**: Film contact sheet — `parsed-documents://20260331-110445-197278/Major_Project_-_Assessment_2.pdf/images/page_1.jpg` → `src/assets/analogue-contact.jpg`
+2. **Image 2 (carousel step 2)**: Data pipeline diagram — `parsed-documents://20260331-110454-489097/Major_Project_-_Assessment_2-data.pdf/images/page_1.jpg` → `src/assets/analogue-pipeline.jpg`
 
-## Changes
+## Code changes — `src/components/ProjectCells.tsx`
 
-### 1. Copy menu mockup to assets
-- Copy `user-uploads://Restaurant_Menu_Mockup-chippy.png` → `src/assets/chippy-menu.png`
-
-### 2. Re-copy process image properly
-- Re-copy the parsed PDF page image (`chippy-process.jpg`) as a proper binary file to ensure it renders.
-
-### 3. Remove unused `chippy-stamp.jpg`
-- Delete `src/assets/chippy-stamp.jpg` — no longer needed.
-
-### 4. Update `src/components/ProjectCells.tsx`
-- Replace `chippyStamp` import with `chippyMenu` import for the new menu mockup
-- Reorder and update the 3 steps:
-
-```
-steps: [
-  { image: chippyMural, caption: "The character world — illustration, colour, and personality derived from organic potato forms." },
-  { image: chippyProcess, caption: "Real potatoes, ink-stamped — each shape became a character foundation." },
-  { image: chippyMenu, caption: "From form to brand — creating a range of assets that extend the typographic system born from potato prints." },
-]
-```
+- Add imports for both new assets
+- Update the "Analogue to Algorithm" project:
+  - Set `cardImage` to `analogueContact`
+  - Reduce from 4 placeholder steps to 2 real steps:
+    1. Contact sheet — caption: "280 frames of 35mm film — the raw material for the data pipeline."
+    2. Pipeline diagram — caption: "A custom Python pipeline that analyses each film photograph across six dimensions — translating composition, brightness, colour, and spatial weight into structured data."
 
 ## Files touched
-- `src/assets/chippy-menu.png` (new)
-- `src/assets/chippy-process.jpg` (re-copied as proper binary)
-- `src/assets/chippy-stamp.jpg` (deleted)
-- `src/components/ProjectCells.tsx` (import + steps update)
+- `src/assets/analogue-contact.jpg` (new)
+- `src/assets/analogue-pipeline.jpg` (new)
+- `src/components/ProjectCells.tsx` (imports + project data update)
 
