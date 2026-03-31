@@ -32,6 +32,7 @@ const projects = [
   {
     category: "Illustration",
     title: "Chippy",
+    teaser: "Characters born from real potato stamps, grown into a brand.",
     cardImage: chippyMural,
     steps: [
       { image: chippyMural, caption: "The character world — illustration, colour, and personality derived from organic potato forms." },
