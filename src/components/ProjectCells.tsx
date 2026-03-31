@@ -7,9 +7,9 @@ import boondiShapeDev from "@/assets/boondi-shape-dev.png";
 import boondiTypeSystem from "@/assets/boondi-type-system.png";
 import boondiBus from "@/assets/boondi-bus-v1.png";
 
-import chippyProcess from "@/assets/chippy-process.jpg";
-import chippyStamp from "@/assets/chippy-stamp.jpg";
 import chippyMural from "@/assets/chippy-mural.svg";
+import chippyProcess from "@/assets/chippy-process.jpg";
+import chippyMenu from "@/assets/chippy-menu.png";
 
 const projects = [
   {
