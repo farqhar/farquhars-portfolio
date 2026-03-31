@@ -7,9 +7,9 @@ import boondiShapeDev from "@/assets/boondi-shape-dev.png";
 import boondiTypeSystem from "@/assets/boondi-type-system.png";
 import boondiBus from "@/assets/boondi-bus-v1.png";
 
-import chippyProcess from "@/assets/chippy-process.jpg";
-import chippyStamp from "@/assets/chippy-stamp.jpg";
 import chippyMural from "@/assets/chippy-mural.svg";
+import chippyProcess from "@/assets/chippy-process.jpg";
+import chippyMenu from "@/assets/chippy-menu.png";
 
 const projects = [
   {
@@ -31,9 +31,9 @@ const projects = [
     title: "Chippy",
     cardImage: chippyMural,
     steps: [
+      { image: chippyMural, caption: "The character world — illustration, colour, and personality derived from organic potato forms." },
       { image: chippyProcess, caption: "Real potatoes, ink-stamped — each shape became a character foundation." },
-      { image: chippyStamp, caption: "Potato meets page — capturing the organic form that drives the character system." },
-      { image: chippyMural, caption: "From form to brand — creating a range of assets that extend the typographic system born from potato prints." },
+      { image: chippyMenu, caption: "From form to brand — creating a range of assets that extend the typographic system born from potato prints." },
     ],
   },
   {
