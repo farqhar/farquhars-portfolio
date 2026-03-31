@@ -11,6 +11,9 @@ import chippyMural from "@/assets/chippy-mural.svg";
 import chippyProcess from "@/assets/chippy-process.jpg";
 import chippyMenu from "@/assets/chippy-menu.png";
 
+import analogueContact from "@/assets/analogue-contact.jpg";
+import analoguePipeline from "@/assets/analogue-pipeline.jpg";
+
 const projects = [
   {
     category: "Type Systems",
@@ -42,12 +45,10 @@ const projects = [
     teaser: "280 film photographs. A brightness pipeline. A self-portrait.",
     reveal: "What does data reveal that the eye misses?",
     details: "Shot 280 frames on 35mm film, then built a data pipeline to extract brightness, color, and composition metrics. The result: a self-portrait made entirely from patterns.",
-    cardImage: null as string | null,
+    cardImage: analogueContact,
     steps: [
-      { image: "Film contact sheet", caption: "280 frames of 35mm film — the raw material for the data pipeline." },
-      { image: "Data extraction", caption: "Extracting brightness, color, and composition metrics from each frame." },
-      { image: "Color analysis", caption: "Mapping colour patterns across the full set to find hidden structure." },
-      { image: "Final self-portrait", caption: "The result: a self-portrait made entirely from photographic patterns." },
+      { image: analogueContact, caption: "280 frames of 35mm film — the raw material for the data pipeline." },
+      { image: analoguePipeline, caption: "A custom Python pipeline that analyses each film photograph across six dimensions — translating composition, brightness, colour, and spatial weight into structured data." },
     ],
   },
 ];
