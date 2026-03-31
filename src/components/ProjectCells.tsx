@@ -11,6 +11,9 @@ import chippyMural from "@/assets/chippy-mural.svg";
 import chippyProcess from "@/assets/chippy-process.jpg";
 import chippyMenu from "@/assets/chippy-menu.png";
 
+import analogueContact from "@/assets/analogue-contact.jpg";
+import analoguePipeline from "@/assets/analogue-pipeline.jpg";
+
 const projects = [
   {
     category: "Type Systems",
