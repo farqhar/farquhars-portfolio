@@ -1,27 +1,38 @@
-# Add Chippy project images (3-step carousel)
-
-## What changes
-
-Update the Chippy project in `ProjectCells.tsx` to use real images instead of placeholder text, and reduce from 4 steps to 3.
-
-## Assets to copy
-
-1. `parsed-documents://…/page_1.jpg` → `src/assets/chippy-process.jpg` (full potato stamps overview)
-2. `parsed-documents://…/img_p0_3.jpg` → `src/assets/chippy-stamp.jpg` (individual potato + print close-up)
-3. `user-uploads://chippy_mural-4.svg` → `src/assets/chippy-mural.svg` (final character illustration)  
 
 
-**Changes to copy in slide 3**  
-**-** instead of description being about packaging can you open it up to creating range of brand assets that continue the brand typographic system 
+# Fix Chippy carousel: re-copy broken images, add menu mockup, reorder
 
-## Code changes — `src/components/ProjectCells.tsx`
+## Problems to fix
+1. **Images 2/3 not displaying** — `chippy-process.jpg` and `chippy-stamp.jpg` were likely written as non-binary files, so Vite imports resolve to short strings that hit the `s.image.length < 30` text-placeholder check in the modal.
+2. **Wrong order** — needs to be: mural → process → menu mockup.
+3. **Missing image 3** — now provided: the restaurant menu mockup.
 
-- Add three new imports for the Chippy assets
-- Update the Chippy project object:
-  - Set `cardImage` to `chippyMural` (the SVG character illustration as the card thumbnail)
-  - Replace 4 text-only steps with 3 image steps:
-    1. Process overview image — caption: "Real potatoes, ink-stamped — each shape became a character foundation."
-    2. Stamp close-up — caption: "Potato meets page — capturing the organic form that drives the character system."
-    3. Character mural — caption: "The full character world — illustration, colour, and personality derived from form."
+## Changes
 
-## No other files touched
+### 1. Copy menu mockup to assets
+- Copy `user-uploads://Restaurant_Menu_Mockup-chippy.png` → `src/assets/chippy-menu.png`
+
+### 2. Re-copy process image properly
+- Re-copy the parsed PDF page image (`chippy-process.jpg`) as a proper binary file to ensure it renders.
+
+### 3. Remove unused `chippy-stamp.jpg`
+- Delete `src/assets/chippy-stamp.jpg` — no longer needed.
+
+### 4. Update `src/components/ProjectCells.tsx`
+- Replace `chippyStamp` import with `chippyMenu` import for the new menu mockup
+- Reorder and update the 3 steps:
+
+```
+steps: [
+  { image: chippyMural, caption: "The character world — illustration, colour, and personality derived from organic potato forms." },
+  { image: chippyProcess, caption: "Real potatoes, ink-stamped — each shape became a character foundation." },
+  { image: chippyMenu, caption: "From form to brand — creating a range of assets that extend the typographic system born from potato prints." },
+]
+```
+
+## Files touched
+- `src/assets/chippy-menu.png` (new)
+- `src/assets/chippy-process.jpg` (re-copied as proper binary)
+- `src/assets/chippy-stamp.jpg` (deleted)
+- `src/components/ProjectCells.tsx` (import + steps update)
+
