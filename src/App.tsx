@@ -12,6 +12,7 @@ import About from "./pages/About.tsx";
 import Admin from "./pages/Admin.tsx";
 import SiteNav from "./components/site/SiteNav";
 import SiteFooter from "./components/site/SiteFooter";
+import AdminLink from "./components/AdminLink";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
         <SiteNav />
         <AnimatedRoutes />
         <SiteFooter />
+        <AdminLink />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

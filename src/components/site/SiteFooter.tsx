@@ -42,12 +42,6 @@ const SiteFooter = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-6 flex items-center justify-between text-[10px] text-muted-foreground/70">
         <span>© {new Date().getFullYear()} Farquhar MacDougall</span>
-        <Link
-          to="/admin"
-          className="tracking-[0.18em] uppercase hover:text-foreground/60 transition-colors"
-        >
-          Admin
-        </Link>
       </div>
     </footer>
   );
