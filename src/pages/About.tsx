@@ -202,6 +202,10 @@ const NowCard = () => (
 /* -------------------- Page -------------------- */
 
 const About = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, []);
+
   return (
     <PageTransition>
       <main className="pt-28 sm:pt-32 pb-24 relative overflow-hidden">
@@ -214,19 +218,43 @@ const About = () => {
 
           <NowCard />
 
-          <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
-              I started in <span className="text-card-title">graphic design.</span><br />
-              Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="text-lg leading-[1.7] text-card-desc max-w-2xl mb-20">
-              The throughline is the same — act as a bridge between technical and non-technical departments,
-              and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
-              most useful when the answer sits between a Figma file and a workflow.
-            </p>
-          </Reveal>
+          {/* Hero with headshot */}
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-start mb-20">
+            <div>
+              <Reveal delay={0.1}>
+                <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
+                  I started in <span className="text-card-title">graphic design.</span><br />
+                  Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">
+                  The throughline is the same — act as a bridge between technical and non-technical departments,
+                  and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
+                  most useful when the answer sits between a Figma file and a workflow.
+                </p>
+              </Reveal>
+            </div>
+            <Reveal delay={0.15}>
+              <div className="relative shrink-0">
+                <div
+                  className="absolute inset-0 rounded-full blur-2xl"
+                  style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.35), transparent 70%)" }}
+                />
+                <img
+                  src={headshot}
+                  alt="Farquhar MacDougall"
+                  width={140}
+                  height={140}
+                  className="relative w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-full object-cover"
+                  style={{
+                    boxShadow:
+                      "0 0 0 4px rgba(255,255,255,0.9), 0 0 0 5px hsla(var(--indigo), 0.35), 0 20px 40px hsla(var(--indigo), 0.18)",
+                  }}
+                />
+              </div>
+            </Reveal>
+          </div>
 
           {/* Then / Now */}
           <Reveal>
@@ -238,16 +266,60 @@ const About = () => {
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
           </Reveal>
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-20">
-            {howIWork.map((line, i) => (
+          <div className="space-y-14 mb-20">
+            {([howIWork.discover, howIWork.iterate]).map((block, bi) => (
+              <div key={block.heading}>
+                <Reveal>
+                  <h2 className="text-3xl sm:text-4xl font-semibold gradient-text-purple leading-tight mb-3">
+                    {block.heading}
+                  </h2>
+                </Reveal>
+                <Reveal delay={0.08}>
+                  <p className="text-base leading-[1.7] text-card-desc max-w-2xl mb-6">
+                    {block.intro}
+                  </p>
+                </Reveal>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {block.points.map((line, i) => (
+                    <Reveal key={line} delay={0.1 + i * 0.06}>
+                      <div className="glass rounded-2xl p-5 h-full">
+                        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+                          0{bi * 3 + i + 1}
+                        </p>
+                        <p className="text-sm leading-[1.55] text-card-title">{line}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonials */}
+          <Reveal>
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">What people say</p>
+          </Reveal>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20">
+            {testimonials.map((t, i) => (
               <Reveal key={i} delay={i * 0.08}>
-                <motion.div layout className="glass rounded-2xl p-6 h-full">
-                  <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">0{i + 1}</p>
-                  <p className="text-base leading-[1.6] text-card-title">{line}</p>
-                </motion.div>
+                <div className="glass rounded-2xl p-6 h-full relative overflow-hidden">
+                  <span
+                    aria-hidden
+                    className="absolute -top-4 -left-1 text-[110px] font-serif leading-none pointer-events-none select-none"
+                    style={{ color: "hsla(var(--indigo), 0.10)" }}
+                  >
+                    “
+                  </span>
+                  <p className="relative text-sm leading-[1.65] text-card-title mb-5">
+                    {t.quote}
+                  </p>
+                  <p className="relative text-[11px] tracking-wider uppercase text-muted-foreground">
+                    {t.name} <span className="opacity-60">· {t.role}</span>
+                  </p>
+                </div>
               </Reveal>
             ))}
-          </motion.div>
+          </div>
 
           {/* Skills */}
           <Reveal>
