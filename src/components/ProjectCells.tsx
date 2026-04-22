@@ -2,6 +2,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 import boondiHero from "@/assets/boondi-logo-ani.gif";
 import boondiShapeDev from "@/assets/boondi-shape-dev.png";
@@ -244,6 +245,20 @@ const ProjectCells = () => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const { get } = useSiteContent("teaser");
+
+  const cmsProjects = projects.map((p) => {
+    const key = p.slug === "boondi" ? "boondi_cover"
+      : p.slug === "chippy" ? "chippy_cover"
+      : "analogue_cover";
+    const overrideCover = get("cells", key, "");
+    if (!overrideCover) return p;
+    return {
+      ...p,
+      cardImage: overrideCover,
+      steps: p.steps.map((s, i) => (i === 0 ? { ...s, image: overrideCover } : s)),
+    };
+  });
 
   return (
     <>
@@ -262,7 +277,7 @@ const ProjectCells = () => {
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {projects.map((project, i) => (
+            {cmsProjects.map((project, i) => (
               <ProjectCard key={project.title} project={project} index={i} onSelect={() => setSelectedProject(project)} />
             ))}
           </div>
