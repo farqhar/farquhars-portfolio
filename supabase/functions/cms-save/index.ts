@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const allowedTables = new Set(["site_settings", "site_content"]);
+    const allowedTables = new Set(["site_settings", "site_content", "theme"]);
     if (!table || !allowedTables.has(table)) {
       return new Response(JSON.stringify({ ok: false, error: "Invalid table" }), {
         status: 400,
@@ -87,6 +87,30 @@ Deno.serve(async (req) => {
         const { error } = await admin
           .from("site_content")
           .insert({ page, section: sec, key, value_json: value ?? {} });
+        if (error) throw error;
+      }
+    }
+
+    if (table === "theme") {
+      // value is a partial { colors_json?, fonts_json?, headings_json? }
+      const patch = (value ?? {}) as Record<string, unknown>;
+      const allowedCols = new Set(["colors_json", "fonts_json", "headings_json"]);
+      const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      for (const k of Object.keys(patch)) {
+        if (allowedCols.has(k)) update[k] = patch[k];
+      }
+      // Singleton row
+      const { data: existing, error: selErr } = await admin
+        .from("theme")
+        .select("id")
+        .limit(1)
+        .maybeSingle();
+      if (selErr) throw selErr;
+      if (existing?.id) {
+        const { error } = await admin.from("theme").update(update).eq("id", existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await admin.from("theme").insert(update);
         if (error) throw error;
       }
     }

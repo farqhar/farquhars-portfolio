@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { cmsSession } from "@/lib/cmsSession";
+import { cmsDirty, type DirtyEntry } from "@/lib/cmsDirty";
 
 /** Save a single site_content field (page/section/key → value). */
 export async function saveContent(
@@ -27,6 +28,49 @@ export async function saveSetting(key: string, value: unknown) {
   if (error || !data?.ok) {
     throw new Error(data?.error || error?.message || "Save failed");
   }
+  window.dispatchEvent(new Event("fm_cms_updated"));
+}
+
+/** Save a theme column (colors_json | fonts_json | headings_json). */
+export async function saveTheme(
+  patch: { colors_json?: unknown; fonts_json?: unknown; headings_json?: unknown },
+) {
+  const password = cmsSession.get();
+  const { data, error } = await supabase.functions.invoke("cms-save", {
+    body: { password, table: "theme", value: patch },
+  });
+  if (error || !data?.ok) {
+    throw new Error(data?.error || error?.message || "Save failed");
+  }
+  window.dispatchEvent(new Event("fm_cms_updated"));
+}
+
+/** Persist every dirty field tracked by cmsDirty in a batch. */
+export async function saveAllDirty(): Promise<void> {
+  const entries = cmsDirty.all();
+  if (!entries.length) return;
+
+  // Group theme entries into a single call.
+  const themePatch: Record<string, unknown> = {};
+  const others: DirtyEntry[] = [];
+  for (const e of entries) {
+    if (e.kind === "theme") themePatch[e.key] = e.value;
+    else others.push(e);
+  }
+
+  const ops: Promise<unknown>[] = [];
+  for (const e of others) {
+    if (e.kind === "content") {
+      ops.push(saveContent(e.page, e.section, e.key, e.value));
+    } else if (e.kind === "setting") {
+      ops.push(saveSetting(e.key, e.value));
+    }
+  }
+  if (Object.keys(themePatch).length) {
+    ops.push(saveTheme(themePatch));
+  }
+  await Promise.all(ops);
+  cmsDirty.clear();
   window.dispatchEvent(new Event("fm_cms_updated"));
 }
 
