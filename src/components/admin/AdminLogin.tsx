@@ -1,21 +1,29 @@
 import { useState, FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminLogin = ({ onSuccess }: { onSuccess: () => void }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const expected = import.meta.env.VITE_ADMIN_PASSWORD;
-    if (!expected) {
-      setError("Admin password is not configured. Set VITE_ADMIN_PASSWORD.");
-      return;
-    }
-    if (password === expected) {
+    setError(null);
+    setLoading(true);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("verify-admin", {
+        body: { password },
+      });
+      if (invokeError || !data?.ok) {
+        setError("Wrong password.");
+        setLoading(false);
+        return;
+      }
       sessionStorage.setItem("fm_admin_session", "true");
       onSuccess();
-    } else {
-      setError("Wrong password.");
+    } catch {
+      setError("Could not verify password. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -31,13 +39,15 @@ const AdminLogin = ({ onSuccess }: { onSuccess: () => void }) => {
           placeholder="Password"
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-gray-900"
           autoFocus
+          disabled={loading}
         />
         {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-800"
+          disabled={loading || !password}
+          className="w-full bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-800 disabled:opacity-50"
         >
-          Sign in
+          {loading ? "Checking…" : "Sign in"}
         </button>
       </form>
     </div>
