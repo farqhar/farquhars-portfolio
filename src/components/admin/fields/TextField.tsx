@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { saveContent } from "@/lib/cmsApi";
+import { cmsDirty, makeContentId, useDirtyValue } from "@/lib/cmsDirty";
 
 type Props = {
   label: string;
@@ -12,31 +12,22 @@ type Props = {
 };
 
 const TextField = ({ label, page, section, fieldKey, fallback, multiline, rows = 3 }: Props) => {
-  const [val, setVal] = useState(fallback);
-  const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [dirty, setDirty] = useState(false);
+  const id = makeContentId(page, section, fieldKey);
+  // initial val: pending dirty value if any, otherwise fallback
+  const dirtyVal = useDirtyValue<string>(id, fallback);
+  const [val, setVal] = useState<string>(dirtyVal ?? fallback);
+  const dirty = val !== fallback;
 
   useEffect(() => {
-    setVal(fallback);
+    // When the source-of-truth fallback changes (e.g. switched page) and
+    // there's no pending edit, snap the input to it.
+    if (!cmsDirty.get(id)) setVal(fallback);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fallback, page, section, fieldKey]);
-
-  const handleSave = async () => {
-    setSaving(true);
-    setErr(null);
-    try {
-      await saveContent(page, section, fieldKey, val);
-      setDirty(false);
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const onChange = (v: string) => {
     setVal(v);
-    setDirty(v !== fallback);
+    cmsDirty.set({ kind: "content", page, section, key: fieldKey, value: v, original: fallback });
   };
 
   return (
@@ -44,13 +35,7 @@ const TextField = ({ label, page, section, fieldKey, fallback, multiline, rows =
       <div className="flex items-center justify-between mb-1">
         <label className="text-[11px] font-medium text-gray-700 uppercase tracking-wider">{label}</label>
         {dirty && (
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="text-[10px] font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-2 py-0.5 rounded disabled:opacity-50"
-          >
-            {saving ? "…" : "Save"}
-          </button>
+          <span className="text-[9px] font-semibold text-amber-600 uppercase tracking-wider">Unsaved</span>
         )}
       </div>
       {multiline ? (
@@ -67,7 +52,6 @@ const TextField = ({ label, page, section, fieldKey, fallback, multiline, rows =
           className="w-full text-sm border border-gray-300 rounded-md px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       )}
-      {err && <p className="text-[10px] text-red-600 mt-1">{err}</p>}
     </div>
   );
 };

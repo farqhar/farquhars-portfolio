@@ -1,4 +1,5 @@
 import { useState, ChangeEvent } from "react";
+import { toast } from "sonner";
 import { uploadMedia, saveContent, saveSetting } from "@/lib/cmsApi";
 
 type Props = {
@@ -50,8 +51,11 @@ const MediaField = ({
       }
       setPreview(url);
       onSaved?.(url);
+      toast.success("Saved ✓", { description: file.name });
     } catch (ex) {
-      setErr((ex as Error).message);
+      const msg = (ex as Error).message;
+      setErr(msg);
+      toast.error("Upload failed", { description: msg });
     } finally {
       setUploading(false);
       e.target.value = "";
