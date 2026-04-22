@@ -1,123 +1,98 @@
+# Polish pass v2 — animated layouts, real hero, scannable case studies
 
+Same scope as the previous plan, with two changes you asked for:
 
-# Extend teaser into full portfolio site
+- **Layout itself becomes the animation** (not just elements fading in)
+- **Real hero banner** on `/work` that sells the value, not just labels the page
 
-Build out `/work`, `/work/:slug`, `/about`, and `/admin` while leaving the homepage (`/`) untouched. Reuse existing visual language: glass cards, indigo gradients, framer-motion entrance animations, sticky nav style, particle/orb backgrounds.
+---
 
-## Routes added to `App.tsx`
+## 1. Global footer with admin link
 
-- `/` — existing `Index` (unchanged)
-- `/work` — portfolio grid
-- `/work/:slug` — case study
-- `/about` — about page
-- `/admin` — password-gated admin
-- `*` — `NotFound`
+New `src/components/site/SiteFooter.tsx`, mounted in `App.tsx` (hidden on `/` and `/admin`).
 
-Wrap routes with an `AnimatePresence` page-transition layer (crossfade + 12px y-shift) so navigation feels continuous.
+- Name + one-line tagline
+- Work · About · LinkedIn · Email
+- Small muted "Admin" link bottom-right → `/admin`
+- Glass + indigo, matches site language.
 
-## Shared building blocks (new)
+## 2. `/work` — proper value-led hero banner
 
-- `src/data/projectsSeed.ts` — 8 seed projects with slug, title, role, cover, hero, problem, process, outcome metric + narrative, quotes, honest-moment, order
-- `src/hooks/useProjects.ts` — reads/writes from `localStorage` key `fm_projects_v1`, falls back to seed; exposes `projects`, `getBySlug`, `save`, `add`, `reorder`
-- `src/components/site/SiteNav.tsx` — minimal nav (name/logo · Work · About) shown on every route except `/`. Mobile hamburger using existing Sheet component
-- `src/components/site/PageTransition.tsx` — wraps each non-home route in fade/slide motion
-- `src/components/site/Reveal.tsx` — `useInView` fade-up wrapper with stagger prop (matches existing `ProjectCard` pattern)
-
-## Page details
-
-### `/work`
-- Hero strip: small kicker "Here's what I actually built", then a single personal intro line in italic muted tone ("Eight projects. Each one cost something to make.")
-- Grid: 8 cards, 1/2/3 cols responsive
-- Each card leads with **outcome metric** in large gradient-text-indigo type, then project title, then role descriptor underneath
-- Reuses glass card + corner brackets + hover lift from `ProjectCells`
-- Staggered fade-up on scroll (delay = `index * 0.08`)
-
-### `/work/:slug`
-Layout sections, each wrapped in `Reveal`:
-1. Full-width hero image with subtle parallax (`useScroll` + `useTransform` y -40 → 40)
-2. Title + role descriptor
-3. 3-column glass summary bar: **Role · Timeline · Outcome**
-4. **The Problem** — short paragraph, generous leading
-5. **The Process** — vertical step list with image placeholders + captions
-6. **An honest moment** — italic blockquote, slightly looser, indigo left-border
-7. **The Outcome** — huge gradient-text metric, narrative below
-8. **Recognition** — pull-quote blockquotes
-9. **Next project →** button (computes next slug from order, wraps to first)
-
-Page-to-page navigation uses directional slide transition.
-
-### `/about`
-- Lead positioning statement (large gradient text): "I bridge design thinking and AI operations."
-- Personal statement paragraph (placeholder)
-- **How I work** — 4 honest, specific statements in a 2x2 glass grid
-- Skills section — chips grouped by category
-- Career timeline — reuses visual language of existing `TimelineCarousel` cards but in a vertical stacked list (no scroll-jacking)
-- Contact — email + LinkedIn buttons matching `CTASection` style
-
-### `/admin`
-- Plain white background, system fonts, tailwind defaults — no glass, no gradients
-- Login screen: single password input, compares against `import.meta.env.VITE_ADMIN_PASSWORD`. On success, store `fm_admin_session=true` in `sessionStorage`
-- Dashboard: list of 8 projects with drag handles (use `@hello-pangea/dnd` if available, else simple up/down buttons to avoid new deps), "Add project" button, click row to edit
-- Edit form: text inputs for title, role descriptor, cover URL, hero URL, problem, process, outcome text, outcome metric, quotes (one per line). Save writes to `localStorage` via `useProjects`
-- Logout button clears session
-
-## Existing file edits
-
-- `src/App.tsx` — add routes + `AnimatePresence`
-- `src/pages/Index.tsx` — unchanged
-- `src/components/StickyNav.tsx` — change `href="#"` → `<Link to="/work">`
-- `src/components/FloatingCTA.tsx` — same swap to `/work`
-- `src/components/CTASection.tsx` — "See full portfolio" → `/work`
-- `src/components/ProjectCells.tsx` — modal "View full project →" links to `/work/{slug}` for matching seed entries (boondi, chippy, analogue-to-algorithm)
-
-## Seed data
-
-8 projects, each with placeholder copy + grey image placeholders (data URI 1px grey or `/placeholder.svg`):
-1. cjc-digital-construction-landing-page
-2. ai-workflow-survey-system
-3. cjc-air-and-ports-motion-video
-4. brand-touchpoint-audit-ownership-framework
-5. animated-email-signature-suite-case-happy-holidays
-6. aiq-control-centre-internal-comms-automation
-7. wollip-email-signature-saas
-8. cv-generation-tool-engineering-tender-automation
-
-Each gets a placeholder outcome metric (e.g. "4,743% engagement"), a "Creative Direction · Stakeholder Management"-style role descriptor, lorem-style problem/process/outcome paragraphs, 1–2 placeholder quotes, and an "honest moment" italic note — all editable via `/admin`.
-
-## Admin password setup
-
-After approval I'll request you add a `VITE_ADMIN_PASSWORD` runtime secret (also exposed at build time via Vite's `import.meta.env`). Until set, login will fail closed.
-
-## Animation principles applied
-
-- Every section uses `Reveal` (intersection-observer fade-up, 24px, 0.5s)
-- Lists/grids use stagger via `index * 0.08–0.15` delay
-- Page transitions: 0.35s crossfade + 12px y for non-home routes
-- Hero parallax via `useScroll` on case study pages
-- Hover: existing `-translate-y-1` + glow shadow pattern reused
-- No new cursor — none exists today
-
-## Files created
+New full-width hero block above the grid (no image — typographic + motion):
 
 ```text
-src/App.tsx                                  (edit)
-src/data/projectsSeed.ts                     (new)
-src/hooks/useProjects.ts                     (new)
-src/components/site/SiteNav.tsx              (new)
-src/components/site/PageTransition.tsx       (new)
-src/components/site/Reveal.tsx               (new)
-src/pages/Work.tsx                           (new)
-src/pages/CaseStudy.tsx                      (new)
-src/pages/About.tsx                          (new)
-src/pages/Admin.tsx                          (new)
-src/components/admin/AdminLogin.tsx          (new)
-src/components/admin/ProjectList.tsx         (new)
-src/components/admin/ProjectEditor.tsx       (new)
-src/components/StickyNav.tsx                 (edit — link)
-src/components/FloatingCTA.tsx               (edit — link)
-src/components/CTASection.tsx                (edit — link)
-src/components/ProjectCells.tsx              (edit — modal CTA → slug)
+┌─────────────────────────────────────────────────┐
+│ KICKER: I bridge design and AI operations       │
+│                                                 │
+│ HEADLINE (huge, gradient, 2 lines):             │
+│   I turn messy workflows                        │
+│   into shipped systems.                         │
+│                                                 │
+│ SUB: Eight projects. Real outcomes. Here's      │
+│      what I actually built.                     │
+│                                                 │
+│ ┌──────────┬──────────┬──────────┬──────────┐  │
+│ │ 4,743%   │ 147 hrs  │  100+    │ 3d→20m   │  │
+│ │ engage   │ reclaimed│touchpoints│ tender   │  │
+│ └──────────┴──────────┴──────────┴──────────┘  │
+└─────────────────────────────────────────────────┘
 ```
 
-No changes to homepage components' visuals, animations, or copy beyond the single CTA `href` swap.
+Headline animates word-by-word (mask reveal). Stat tiles slide up in sequence and the divider lines draw themselves left-to-right.
 
+## 3. `/work` grid — animated **layout**, not just elements
+
+Instead of decorating each card, the grid itself is alive:
+
+- **Bento layout** — cards have varied sizes (1×1, 2×1, 1×2 spans) using CSS grid + framer-motion `layout`. Featured projects take larger tiles; the rhythm feels editorial, not uniform.
+- **Layout morph on filter/sort** — small "All / Design / AI Ops / Brand" filter chips re-flow the grid using `<motion.div layout>`; cards physically slide to new positions with spring easing.
+- **Grid ↔ List view toggle** — switching views animates cards from tile → row using shared layout IDs (cards visibly transform, don't crossfade).
+- **Hover reshape** — hovered card expands to span 2 columns; neighbours politely reflow around it with `layout` spring. Releases on mouse-out.
+- **Cover-image zoom** + animated count-up on the metric (via new `useCountUp.ts`) stay as small polish on top.
+
+No 3D tilt — the motion lives in the grid structure itself.
+
+## 4. `/work/:slug` — scannable case study
+
+- **Hero shrinks** to 40vh/55vh.
+- **Sticky TL;DR bar** under hero: one-line problem · one-line outcome · the metric — always visible.
+- **Tabbed deep-dive**: Problem · Process · Honest moment · Outcome · Recognition. Tabs use shared layout indicator (the active underline slides between tabs, content panels swap with directional slide — layout-driven, not fade).
+- **"Read as long form"** toggle expands all panels inline using `layout` animation (page literally grows).
+- **Scroll-to-top on Next**: `useEffect` on `slug` change → `window.scrollTo({ top: 0, behavior: 'instant' })`.
+
+## 5. `/about` — accurate + layout-dynamic
+
+Copy fixes:
+
+- Headline: "I started in graphic design. Now I build AI optimised workflows."
+- Sub: "The throughline is the same — act as a bridge to technical and non-technical departments."
+- "Creative director" removed everywhere.
+- Skills regrouped: Design foundation · AI Operations.
+- **Timeline removed** entirely (per your edit).
+
+Layout-driven dynamics:
+
+- **Animated "Now" status card** at top — pulsing dot + "Currently: Building [Company placeholder]". Card itself gently breathes (subtle scale loop).
+- **Then / Now split** — two columns labelled "Graphic Designer" and "AI Operations PM". On scroll into view, the columns slide in from opposite sides and a connecting line draws between them spelling the throughline (clarity · systems · craft).
+- **Mouse-reactive gradient orb** behind the hero — orb position follows cursor with spring lag.
+- **"How I work"** kept, copy updated to PM-at-AI-company voice. Cards use `layout` so they reflow elegantly on resize.
+
+I'll leave `[Company]` as a clearly marked placeholder you can swap in later.
+
+## 6. Build secrets — fallback path
+
+Since you can't find Build Secrets in Workspace Settings, I'll switch admin auth to **Lovable Cloud runtime secret** during build (works on any plan; needs Cloud enabled — I'll prompt for that step). The login UI stays identical.
+
+## Files touched
+
+```text
+src/components/site/SiteFooter.tsx   (new)
+src/App.tsx                          (mount footer)
+src/pages/Work.tsx                   (hero + bento grid + layout animations + view toggle)
+src/hooks/useCountUp.ts              (new)
+src/pages/CaseStudy.tsx              (smaller hero + sticky TL;DR + tabs + scroll-to-top)
+src/pages/About.tsx                  (rewrite + Then/Now + Now card + orb)
+src/components/admin/AdminLogin.tsx  (switch to Lovable Cloud secret check)
+```
+
+Homepage (`/`) untouched. All motion stays in the existing glass / indigo / framer-motion language — but the emphasis shifts from element-level fades to **layout-level choreography**.
