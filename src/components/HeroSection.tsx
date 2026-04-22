@@ -1,8 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const HeroSection = () => {
   const [phase, setPhase] = useState(0);
+  const { get } = useSiteContent("teaser");
+  const phase0 = get("hero", "phase0", "My name is Farquhar.");
+  const phase1a = get("hero", "phase1_a", "It's pronounced like Parker,");
+  const phase1b = get("hero", "phase1_b", "with an F.");
+  const eyebrow = get("hero", "eyebrow", "FARQUHAR MACDOUGALL");
+  const headline = get("hero", "headline", "Some people make things look good.");
+  const subhead = get("hero", "subhead", "I make things make sense.");
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 2400);
@@ -61,7 +69,7 @@ const HeroSection = () => {
                 className="text-3xl sm:text-5xl md:text-6xl font-semibold"
                 style={{ color: "hsl(var(--hero-foreground))" }}
               >
-                My name is Farquhar.
+                {phase0}
               </h1>
             </motion.div>
           )}
@@ -79,13 +87,13 @@ const HeroSection = () => {
                 className="text-lg sm:text-2xl md:text-3xl font-medium italic"
                 style={{ color: "hsl(var(--hero-muted))" }}
               >
-                It's pronounced like Parker,
+                {phase1a}
               </p>
               <p
                 className="text-lg sm:text-2xl md:text-3xl font-medium italic mt-1"
                 style={{ color: "hsl(var(--hero-muted))" }}
               >
-                with an F.
+                {phase1b}
               </p>
             </motion.div>
           )}
@@ -106,7 +114,7 @@ const HeroSection = () => {
                 className="text-[10px] sm:text-xs tracking-[0.2em] uppercase mb-8 sm:mb-12"
                 style={{ color: "hsl(var(--hero-muted))" }}
               >
-                {"FARQUHAR MACDOUGALL".split("").map((letter, i) => (
+                {eyebrow.split("").map((letter, i) => (
                   <motion.span
                     key={i}
                     initial={{ opacity: 0, y: 8 }}
@@ -126,7 +134,7 @@ const HeroSection = () => {
                 className="text-3xl sm:text-5xl md:text-6xl font-semibold leading-tight"
                 style={{ color: "hsl(var(--hero-foreground))" }}
               >
-                Some people make things look good.
+                {headline}
               </motion.h1>
 
               {/* Animated line */}
@@ -144,7 +152,7 @@ const HeroSection = () => {
                 transition={{ duration: 0.8, delay: 1.4 }}
                 className="text-2xl sm:text-4xl md:text-5xl font-semibold gradient-text-indigo pb-2 overflow-visible"
               >
-                I make things make sense.
+                {subhead}
               </motion.p>
             </motion.div>
           )}

@@ -360,8 +360,8 @@ const About = () => {
           <Reveal>
             <div className="glass rounded-2xl p-8 sm:p-10 text-center">
               <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">Get in touch</p>
-              <h2 className="text-2xl sm:text-3xl font-semibold text-card-title mb-2">Let's talk.</h2>
-              <p className="text-sm text-muted-foreground mb-6">farqmac@me.com · Sydney, Australia</p>
+              <h2 className="text-2xl sm:text-3xl font-semibold text-card-title mb-2">{contactHeading}</h2>
+              <p className="text-sm text-muted-foreground mb-6">{contactSub}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
                   href="mailto:farqmac@me.com"

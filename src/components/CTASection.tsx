@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Particles = () => (
   <>
@@ -40,6 +41,12 @@ const CurtainLine = ({ children, delay }: { children: React.ReactNode; delay: nu
 const CTASection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+  const { get } = useSiteContent("teaser");
+  const line1 = get("cta", "line1", "If something here made you think —");
+  const line2 = get("cta", "line2", "let's talk.");
+  const email = get("cta", "email", "farqmac@me.com");
+  const primaryLabel = get("cta", "primaryLabel", "See full portfolio →");
+  const footer = get("cta", "footer", "Sydney, Australia · Available for opportunities");
 
   return (
     <section
@@ -76,7 +83,7 @@ const CTASection = () => {
             className="text-2xl sm:text-[28px] font-semibold leading-[1.3]"
             style={{ color: "hsl(var(--hero-foreground))" }}
           >
-            If something here made you think —
+            {line1}
           </h2>
         </CurtainLine>
         <CurtainLine delay={0.15}>
@@ -84,7 +91,7 @@ const CTASection = () => {
             className="text-2xl sm:text-[28px] font-semibold leading-[1.3] mb-6"
             style={{ color: "hsl(var(--hero-foreground))" }}
           >
-            let's talk.
+            {line2}
           </h2>
         </CurtainLine>
 
@@ -95,7 +102,7 @@ const CTASection = () => {
           className="text-sm mb-8"
           style={{ color: "hsl(var(--muted-foreground))" }}
         >
-          farqmac@me.com
+          {email}
         </motion.p>
 
         <motion.div
@@ -109,7 +116,7 @@ const CTASection = () => {
             className="gradient-indigo text-primary-foreground text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity w-full sm:w-auto text-center"
             style={{ animation: "pulse-glow 3s ease-in-out infinite" }}
           >
-            See full portfolio →
+            {primaryLabel}
           </Link>
           <a
             href="https://www.linkedin.com/in/farquharm/"
@@ -129,7 +136,7 @@ const CTASection = () => {
           className="text-[11px] mt-8"
           style={{ color: "hsl(var(--muted-foreground))" }}
         >
-          Sydney, Australia · Available for opportunities
+          {footer}
         </motion.p>
       </div>
     </section>
