@@ -1,4 +1,4 @@
-type PageKey = "teaser" | "about" | "work" | "projects" | "global";
+type PageKey = "teaser" | "about" | "work" | "projects" | "global" | "theme";
 
 const items: { key: PageKey; label: string; route: string }[] = [
   { key: "teaser", label: "Teaser", route: "/" },
@@ -6,6 +6,7 @@ const items: { key: PageKey; label: string; route: string }[] = [
   { key: "work", label: "Work (portfolio)", route: "/work" },
   { key: "projects", label: "Projects", route: "/work" },
   { key: "global", label: "Global / Identity", route: "/about" },
+  { key: "theme", label: "Theme (colors & fonts)", route: "/" },
 ];
 
 type Props = {

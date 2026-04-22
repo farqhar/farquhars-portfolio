@@ -8,6 +8,9 @@ import AboutSection from "@/components/admin/sections/AboutSection";
 import WorkSection from "@/components/admin/sections/WorkSection";
 import ProjectsSection from "@/components/admin/sections/ProjectsSection";
 import GlobalSection from "@/components/admin/sections/GlobalSection";
+import ThemeSection from "@/components/admin/sections/ThemeSection";
+import SaveBar from "@/components/admin/SaveBar";
+import { cmsDirty } from "@/lib/cmsDirty";
 import { cmsSession } from "@/lib/cmsSession";
 
 type Props = { onLogout: () => void };
@@ -23,7 +26,18 @@ const CMSShell = ({ onLogout }: Props) => {
       case "work": return <WorkSection />;
       case "projects": return <ProjectsSection />;
       case "global": return <GlobalSection />;
+      case "theme": return <ThemeSection />;
     }
+  };
+
+  const handlePageChange = (k: PageKey, r: string) => {
+    if (cmsDirty.count() > 0) {
+      const ok = window.confirm("You have unsaved changes. Discard them and switch?");
+      if (!ok) return;
+      cmsDirty.clear();
+    }
+    setActive(k);
+    setRoute(r);
   };
 
   return (
@@ -55,15 +69,15 @@ const CMSShell = ({ onLogout }: Props) => {
         <div className="px-3 py-3 border-b border-gray-200">
           <PagePicker
             active={active}
-            onChange={(k, r) => {
-              setActive(k);
-              setRoute(r);
-            }}
+            onChange={handlePageChange}
           />
         </div>
 
         {/* Section editor */}
         <div className="flex-1 overflow-y-auto px-4 py-4">{renderSection()}</div>
+
+        {/* Save bar */}
+        <SaveBar />
 
         {/* Footer */}
         <div className="px-4 py-2 border-t border-gray-200 text-[10px] text-gray-400">

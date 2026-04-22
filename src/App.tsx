@@ -13,6 +13,7 @@ import Admin from "./pages/Admin.tsx";
 import SiteNav from "./components/site/SiteNav";
 import SiteFooter from "./components/site/SiteFooter";
 import AdminLink from "./components/AdminLink";
+import { useTheme } from "./lib/theme";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ThemeMount />
         <SiteNav />
         <AnimatedRoutes />
         <SiteFooter />
@@ -47,5 +49,10 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+const ThemeMount = () => {
+  useTheme();
+  return null;
+};
 
 export default App;
