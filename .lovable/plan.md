@@ -1,123 +1,125 @@
 
-# Quick wins + Split-view CMS shell (with full media editing everywhere)
+# Save buttons + Testimonials editor + Theme (Phase 2)
 
-Doing all four items, with the explicit guarantee that **every image and video on every page** is replaceable via the CMS — not just the headshot.
+Three things in one pass.
 
-## 1. Headshot uploader wired into /admin
-- Mount `HeadshotUploader` inside the new CMS shell under **Global → Identity**.
-- `About.tsx` reads `headshot_url` from `site_settings` (fallback to placeholder).
+## 1. Explicit Save buttons everywhere
 
-## 2. "See full portfolio" → top of /work
-- Add `useEffect(() => window.scrollTo(0,0), [])` to `Work.tsx`, `CaseStudy.tsx` (About already has it). Covers CTA, nav, direct URL.
+Today every `TextField` / `MediaField` saves **on blur** silently — that's why it doesn't feel like anything happened. Fix:
 
-## 3. "← Back to site" pill on /admin
-- Fixed top-left glass pill on the CMS shell linking to `/`.
+- Add a `useDirtyFields` store (Zustand-lite, in-memory) that tracks pending edits per `(page, section, key)`.
+- `TextField` switches from save-on-blur to **buffered**: typing updates local + dirty store, doesn't hit the network.
+- `MediaField` keeps immediate upload (files are big, can't buffer), but flashes a "Saved ✓" toast so it's visible.
+- New **sticky save bar** at the bottom of the CMS panel:
+  ```text
+  ┌─────────────────────────────────┐
+  │ 3 unsaved changes  [Discard] [Save] │
+  └─────────────────────────────────┘
+  ```
+  - Disabled when no dirty fields.
+  - Save → batches all dirty writes through `cms-save`, clears store, fires `fm_cms_updated` so the iframe reloads.
+  - Discard → reverts inputs to last saved value.
+- Also warns on page-picker switch and browser close if dirty.
 
-## 4. Split-view CMS shell at /admin
+## 2. Testimonials editor (About page)
 
+Currently the testimonials grid in `About.tsx` is hard-coded. Wire it up:
+
+- New `ListField` component — add / remove / reorder array items, each item rendered with a custom child template.
+- New `TestimonialsEditor` in `AboutSection.tsx` using `ListField` where each row has:
+  - Quote (textarea)
+  - Name (text)
+  - Role (text)
+  - Avatar (`MediaField`, image, optional)
+- Stored as a single `site_content` row: `page='about'`, `section='testimonials'`, `key='items'`, `value_json={ value: [{quote,name,role,avatar}, ...] }`.
+- `About.tsx` reads via `useSiteContent('about').get('testimonials','items', DEFAULT_TESTIMONIALS)` — current hard-coded array becomes the fallback so nothing changes visually until you edit.
+
+## 3. CMS Phase 2 — Theme controls
+
+A new **Theme** entry in the page picker (alongside Global). Edits the existing `theme` table (single row).
+
+### What's editable
+
+**Colors** (color-picker UI with hex input + swatch):
+- Background, Foreground, Primary, Accent, Muted, Border.
+- Stored as `colors_json: { background:"#…", foreground:"#…", … }`.
+
+**Typography**:
+- Heading font (curated dropdown: Inter, Instrument Serif, Playfair, Space Grotesk, Geist, plus current default).
+- Body font (same list).
+- Stored as `fonts_json: { heading:"Inter", body:"Inter" }`.
+
+**Heading scale** (sliders + numeric):
+- H1 size, H2 size, H3 size, tracking, weight.
+- Stored as `headings_json: { h1:{size:64,weight:700,tracking:-0.02}, h2:{…}, h3:{…} }`.
+
+### How it's applied site-wide
+
+- New `src/lib/theme.ts` exports `useTheme()` — reads the single `theme` row, injects CSS variables on `<html>`:
+  ```css
+  --bg: #…; --fg: #…; --primary: #…; --accent: #…;
+  --font-heading: "Inter", system-ui;
+  --font-body: "Inter", system-ui;
+  --h1-size: 64px; --h1-weight: 700; …
+  ```
+- Mounted once in `App.tsx` so changes propagate everywhere instantly (and into the admin iframe on save).
+- `tailwind.config.ts` extended with `fontFamily.heading` / `fontFamily.body` mapped to the CSS vars; existing color tokens (`--primary`, etc.) already in `index.css` are overridden by the theme row when present.
+- Curated Google Fonts loaded on demand via a `<link>` injection in `useTheme()` so only chosen fonts download.
+
+### Backend
+
+- Extend `cms-save` to handle a third table: `theme`. Body shape `{ password, table:"theme", value: { colors_json?, fonts_json?, headings_json? } }`. Updates the single existing row (or inserts if empty).
+- Migration: ensure exactly one `theme` row exists (insert default if empty) and add `theme_singleton` constraint.
+
+### UI
+
+`src/components/admin/sections/ThemeSection.tsx`:
 ```text
-┌─ 380px ─────────┬──────────────────────────┐
-│ ← Back to site  │                          │
-│ PAGES           │  <iframe> live preview   │
-│  • Teaser       │  of selected page,       │
-│  • About        │  reloads on save         │
-│  • Work         │                          │
-│  • Projects ▸   │                          │
-│  • Global       │                          │
-│ ─────────────── │                          │
-│ Section fields  │                          │
-│ [Save]          │                          │
-└─────────────────┴──────────────────────────┘
+COLORS
+  [■] Background  #0a0a1a
+  [■] Foreground  #ffffff
+  [■] Primary     #6366f1
+  …
+TYPOGRAPHY
+  Heading font  [Inter ▾]
+  Body font     [Inter ▾]
+HEADINGS
+  H1  size [64] weight [700] tracking [-0.02]
+  H2  …
+  H3  …
+[ Reset to defaults ]
 ```
 
-### Editable surface — every page, every asset
-
-A reusable `<MediaField>` (image OR video) is used everywhere an image/video appears today. Each field uploads to the `site-media` bucket under a path like `site-media/<page>/<key>/<file>` and stores the public URL in `site_content`.
-
-**Teaser (`/`)**
-- Hero: eyebrow, headline, subhead, CTA label + URL.
-- Hero background media (image/video swap).
-- Timeline carousel: each slide's heading, body, **image/video**.
-- Project cells: each card's title, blurb, **cover image**, modal carousel **images/videos** (add / remove / reorder).
-- CTA section: heading, body, button label + URL.
-
-**About (`/about`)**
-- Hero: eyebrow, headline, subhead, **headshot**.
-- Then/Now: each cell's heading + body.
-- "How I work": both purple section headings + bullet list (editable list).
-- Testimonials: add / edit / remove quote, name, role, **avatar image**.
-- Contact card: heading, body, button label + URL.
-
-**Work (`/work`)**
-- Hero: eyebrow, headline, subhead.
-- Four highlight tiles: number + caveat (editable list).
-- Filter chip labels.
-
-**Projects (`/work/:slug`)** — full per-project editor (extends today's editor)
-- All existing text fields.
-- **Cover image**, **hero image** — upload via `<MediaField>` instead of URL paste.
-- Gallery: add / remove / reorder **images and videos** with alt text.
-- Quotes list.
-
-**Global (applies site-wide)**
-- Identity: name, tagline, headshot, LinkedIn URL, footer copy.
-- Theme placeholder (colours/fonts panel — phase 5, stub UI now).
-
-### How media upload works
-- New `<MediaField kind="image|video|any" />` component:
-  - Drag-drop / click-to-upload, preview, replace, clear.
-  - Uploads via supabase-js to `site-media` bucket using admin session token.
-  - Returns public URL → saved into the relevant `site_content` row.
-  - Also writes a row into the `media` table for reuse later (media library, phase 6).
-- Storage RLS: extend `site-media` policies to allow INSERT/UPDATE/DELETE only when the request includes the admin session token (validated via the `cms-save` edge function's pre-signed upload, OR via a dedicated `cms-upload` edge function that streams the file with the service role). I'll use the edge-function approach so no client ever holds elevated keys.
-
-### How content is read on the public site
-- New `useSiteContent(page)` hook → React Query, single fetch per page, returns `get(section, key, fallback)`.
-- Every component that currently has hard-coded copy or image paths (`HeroSection`, `TimelineCarousel`, `ProjectCells`, `CTASection`, `About`, `Work` highlights, `CaseStudy` body) is refactored to read via this hook with the **current value as fallback** — so nothing visually changes until you edit something.
-
-### Backend changes
-- Extend `cms-save` edge function to accept `site_content` writes (page/section/key/value_json) in addition to `site_settings`.
-- New `cms-upload` edge function: validates admin password, accepts multipart upload, writes to `site-media` bucket with service role, returns public URL + inserts `media` row.
-- Storage policy on `site-media`: public SELECT only; INSERT/UPDATE/DELETE denied to anon (only the service role used by `cms-upload` can write).
+All inputs flow through the same dirty-store + sticky save bar.
 
 ## Files touched
 
 ```text
-# Quick wins
-src/pages/Work.tsx                                  (scroll-to-top)
-src/pages/CaseStudy.tsx                             (scroll-to-top)
-src/pages/About.tsx                                 (read headshot from settings)
+# Save buttons
+src/lib/cmsDirty.ts                              (new — dirty-fields store)
+src/components/admin/SaveBar.tsx                 (new — sticky save bar)
+src/components/admin/CMSShell.tsx                (mount SaveBar, dirty-guard on page change)
+src/components/admin/fields/TextField.tsx        (buffered save via dirty store)
+src/components/admin/fields/MediaField.tsx       (toast on save)
 
-# CMS shell
-src/pages/Admin.tsx                                 (rebuilt as CMSShell mount)
-src/components/admin/CMSShell.tsx                   (new — split layout + back pill)
-src/components/admin/PreviewFrame.tsx               (new — iframe + reload bridge)
-src/components/admin/PagePicker.tsx                 (new)
+# Testimonials
+src/components/admin/fields/ListField.tsx        (new — generic add/remove/reorder)
+src/components/admin/sections/AboutSection.tsx   (add TestimonialsEditor)
+src/pages/About.tsx                              (read testimonials from site_content)
 
-# Section editors
-src/components/admin/sections/GlobalSection.tsx     (new — identity + headshot)
-src/components/admin/sections/TeaserSection.tsx     (new — hero, timeline, cells, CTA)
-src/components/admin/sections/AboutSection.tsx      (new — hero, then/now, how-i-work, testimonials)
-src/components/admin/sections/WorkSection.tsx       (new — hero, highlights, filters)
-src/components/admin/sections/ProjectsSection.tsx   (new — wraps existing project list/editor + media)
-
-# Reusable fields
-src/components/admin/fields/TextField.tsx           (new)
-src/components/admin/fields/TextAreaField.tsx       (new)
-src/components/admin/fields/ListField.tsx           (new — add/remove/reorder)
-src/components/admin/fields/MediaField.tsx          (new — image/video upload)
-
-# Public-site wiring
-src/hooks/useSiteContent.ts                         (new)
-src/components/HeroSection.tsx                      (read from site_content)
-src/components/TimelineCarousel.tsx                 (read from site_content)
-src/components/ProjectCells.tsx                     (read from site_content)
-src/components/CTASection.tsx                       (read from site_content)
-
-# Backend
-supabase/functions/cms-save/index.ts                (extend: site_content writes)
-supabase/functions/cms-upload/index.ts              (new — service-role media upload)
-supabase migration                                  (storage policies on site-media)
+# Theme phase 2
+src/components/admin/sections/ThemeSection.tsx   (new)
+src/components/admin/PagePicker.tsx              (add Theme entry)
+src/components/admin/CMSShell.tsx                (route to ThemeSection)
+src/components/admin/fields/ColorField.tsx       (new — picker + hex)
+src/components/admin/fields/FontField.tsx        (new — curated dropdown)
+src/components/admin/fields/NumberField.tsx      (new — slider + input)
+src/lib/theme.ts                                 (new — useTheme + CSS var injection + Google Fonts loader)
+src/App.tsx                                      (mount useTheme)
+src/lib/cmsApi.ts                                (add saveTheme + batched saveAll)
+supabase/functions/cms-save/index.ts             (handle table:"theme")
+supabase migration                               (ensure single theme row + defaults)
+tailwind.config.ts                               (font-heading / font-body tokens)
 ```
 
-After this lands: every image, video, headline, and bullet on every page is editable from `/admin` with a live preview, and uploads go through a secure server-side path.
+After this lands: nothing saves silently anymore — you click Save, you see "Saved ✓"; testimonials are fully editable; and the whole site's colours, fonts, and heading scale are controlled from `/admin → Theme` with live preview.
