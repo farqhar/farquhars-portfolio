@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 
+// Link still used for in-site nav (Work, About) below.
+
 const SiteFooter = () => {
   const location = useLocation();
   if (location.pathname === "/" || location.pathname.startsWith("/admin")) return null;
