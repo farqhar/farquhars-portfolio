@@ -1,5 +1,6 @@
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const StickyNav = () => {
   const [visible, setVisible] = useState(false);
@@ -22,12 +23,12 @@ const StickyNav = () => {
         >
           Farquhar MacDougall
         </span>
-        <a
-          href="#"
+        <Link
+          to="/work"
           className="gradient-indigo text-primary-foreground text-xs font-medium px-4 py-2 rounded-full hover:opacity-90 transition-opacity"
         >
           See full portfolio →
-        </a>
+        </Link>
       </div>
     </motion.nav>
   );

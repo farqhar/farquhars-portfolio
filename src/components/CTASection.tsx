@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Particles = () => (
   <>
@@ -103,13 +104,13 @@ const CTASection = () => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3"
         >
-          <a
-            href="#"
+          <Link
+            to="/work"
             className="gradient-indigo text-primary-foreground text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity w-full sm:w-auto text-center"
             style={{ animation: "pulse-glow 3s ease-in-out infinite" }}
           >
             See full portfolio →
-          </a>
+          </Link>
           <a
             href="https://www.linkedin.com/in/farquharm/"
             target="_blank"

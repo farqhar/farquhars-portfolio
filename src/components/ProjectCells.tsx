@@ -1,6 +1,7 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import boondiHero from "@/assets/boondi-logo-ani.gif";
 import boondiShapeDev from "@/assets/boondi-shape-dev.png";
@@ -18,6 +19,7 @@ const projects = [
   {
     category: "Type Systems",
     title: "Boondi",
+    slug: "boondi",
     teaser: "A typeface rooted in place, shaped by culture.",
     reveal: "What happens when geography becomes a glyph?",
     details: "Cultural research, shape systems, and a typeface born from the land it represents.",
@@ -32,6 +34,7 @@ const projects = [
   {
     category: "Illustration",
     title: "Chippy",
+    slug: "chippy",
     teaser: "Characters born from real potato stamps, grown into a brand.",
     cardImage: chippyMural,
     steps: [
@@ -43,6 +46,7 @@ const projects = [
   {
     category: "Data · Photography",
     title: "Analogue to Algorithm",
+    slug: "analogue-to-algorithm",
     teaser: "280 film photographs. A brightness pipeline. A self-portrait.",
     reveal: "What does data reveal that the eye misses?",
     details: "Shot 280 frames on 35mm film, then built a data pipeline to extract brightness, color, and composition metrics. The result: a self-portrait made entirely from patterns.",
@@ -172,12 +176,12 @@ const ProjectModal = ({ project, onClose }: { project: typeof projects[0]; onClo
           </div>
 
           {/* CTA */}
-          <a
-            href="#"
+          <Link
+            to={`/work/${project.slug}`}
             className="inline-block gradient-indigo text-primary-foreground text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
           >
             View full project →
-          </a>
+          </Link>
         </div>
       </motion.div>
     </motion.div>
