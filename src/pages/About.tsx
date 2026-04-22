@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
 import headshot from "@/assets/headshot-placeholder.jpg";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const howIWork = {
   discover: {
@@ -206,6 +208,20 @@ const About = () => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, []);
 
+  const { value: hs } = useSiteSetting<{ url: string }>("headshot_url");
+  const { get } = useSiteContent("about");
+  const headshotSrc = hs?.url || headshot;
+  const status = get("hero", "status", "Currently · Building AI operations at [Company]");
+  const headline1 = get("hero", "headline1", "I started in graphic design.");
+  const headline2 = get("hero", "headline2", "Now I build AI optimised workflows.");
+  const intro = get(
+    "hero",
+    "intro",
+    "The throughline is the same — act as a bridge between technical and non-technical departments, and make complicated things make sense. I'm Farquhar — I work where craft meets operations, most useful when the answer sits between a Figma file and a workflow.",
+  );
+  const contactHeading = get("contact", "heading", "Let's talk.");
+  const contactSub = get("contact", "sub", "farqmac@me.com · Sydney, Australia");
+
   return (
     <PageTransition>
       <main className="pt-28 sm:pt-32 pb-24 relative overflow-hidden">
@@ -242,7 +258,7 @@ const About = () => {
                   style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.35), transparent 70%)" }}
                 />
                 <img
-                  src={headshot}
+                  src={headshotSrc}
                   alt="Farquhar MacDougall"
                   width={140}
                   height={140}
