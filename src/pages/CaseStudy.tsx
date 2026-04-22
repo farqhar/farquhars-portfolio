@@ -1,4 +1,5 @@
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
@@ -87,6 +88,16 @@ const CaseStudy = () => {
   return (
     <PageTransition>
       <main className="pb-24 relative overflow-hidden">
+        {/* Back to all work — glass pill, top-left under nav */}
+        <Link
+          to="/work"
+          className="fixed top-20 left-4 sm:left-6 z-30 inline-flex items-center gap-2 glass rounded-full pl-3 pr-4 py-2 text-[11px] tracking-[0.16em] uppercase hover:bg-white/80 transition-colors"
+          style={{ color: "hsl(var(--indigo))" }}
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          All work
+        </Link>
+
         {/* Hero — shorter */}
         <div
           ref={heroRef}
@@ -117,15 +128,15 @@ const CaseStudy = () => {
           {/* Sticky TL;DR */}
           <motion.div
             layout
-            className="sticky top-16 z-20 glass rounded-2xl p-4 sm:p-5 mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
+            className="sticky top-32 sm:top-20 z-10 glass rounded-2xl p-4 sm:p-5 mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
           >
             <div>
               <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Problem</p>
-              <p className="text-sm text-card-title leading-snug line-clamp-2">{project.problem}</p>
+              <p className="text-sm text-card-title leading-snug">{project.problem}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Outcome</p>
-              <p className="text-sm text-card-title leading-snug line-clamp-2">{project.outcome}</p>
+              <p className="text-sm text-card-title leading-snug">{project.outcome}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Metric</p>
