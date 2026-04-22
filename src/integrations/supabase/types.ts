@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      media: {
+        Row: {
+          alt: string | null
+          created_at: string
+          height: number | null
+          id: string
+          kind: string
+          storage_path: string | null
+          url: string
+          width: number | null
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          kind: string
+          storage_path?: string | null
+          url: string
+          width?: number | null
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          kind?: string
+          storage_path?: string | null
+          url?: string
+          width?: number | null
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          page: string
+          section: string
+          updated_at: string
+          value_json: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          page: string
+          section?: string
+          updated_at?: string
+          value_json?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          page?: string
+          section?: string
+          updated_at?: string
+          value_json?: Json
+        }
+        Relationships: []
+      }
+      theme: {
+        Row: {
+          colors_json: Json
+          fonts_json: Json
+          headings_json: Json
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          colors_json?: Json
+          fonts_json?: Json
+          headings_json?: Json
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          colors_json?: Json
+          fonts_json?: Json
+          headings_json?: Json
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

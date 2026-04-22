@@ -5,15 +5,14 @@ import { LayoutGrid, Rows3 } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
 import PageTransition from "@/components/site/PageTransition";
 import { Project } from "@/data/projectsSeed";
-import { useCountUp, parseLeadingNumber } from "@/hooks/useCountUp";
 
 /* -------------------- Hero highlights -------------------- */
 
 const highlights = [
-  { value: "4,743%", label: "engagement lift" },
-  { value: "147 hrs/wk", label: "reclaimed" },
-  { value: "100+", label: "brand touchpoints owned" },
-  { value: "3d → 20m", label: "tender turnaround" },
+  { value: "4,743%", label: "engagement lift", caveat: "on one landing page I rebuilt" },
+  { value: "147 hrs/wk", label: "process waste", caveat: "identified in a workflow audit" },
+  { value: "100+", label: "brand touchpoints", caveat: "catalogued & systemised" },
+  { value: "3d → 20m", label: "tender drafting", caveat: "tool in build, supporting role" },
 ];
 
 const HeroHeadline = () => {
@@ -71,8 +70,11 @@ const HighlightsStrip = () => (
         <p className="text-2xl sm:text-3xl lg:text-4xl font-semibold gradient-text-indigo leading-tight mb-2">
           {h.value}
         </p>
-        <p className="text-[11px] sm:text-xs tracking-wider uppercase text-muted-foreground">
+        <p className="text-[11px] sm:text-xs tracking-wider uppercase text-muted-foreground mb-1">
           {h.label}
+        </p>
+        <p className="text-[10px] italic text-muted-foreground/70 leading-snug">
+          {h.caveat}
         </p>
       </motion.div>
     ))}
@@ -111,18 +113,10 @@ const WorkCard = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const numeric = parseLeadingNumber(project.outcomeMetric);
-  const animated = useCountUp(numeric ?? 0, inView && numeric !== null);
-  const suffix = numeric !== null
-    ? project.outcomeMetric.replace(/^[-\d,\.]+/, "")
-    : "";
-  const displayMetric = numeric !== null
-    ? `${animated.toLocaleString()}${suffix}`
-    : project.outcomeMetric;
-
   const isHovered = hovered === project.slug;
   const isOther = hovered !== null && !isHovered;
   const isList = view === "list";
+  const numberLabel = String(index + 1).padStart(2, "0");
 
   return (
     <motion.div
@@ -132,17 +126,27 @@ const WorkCard = ({
       onMouseLeave={() => setHovered(null)}
       transition={{ layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }}
       className={`${cardSpan(index, project.slug, view)} group`}
-      style={{ opacity: isOther ? 0.55 : 1 }}
+      style={{ opacity: isOther ? 0.55 : 1, transition: "opacity 0.4s ease" }}
+      animate={{ opacity: inView ? (isOther ? 0.55 : 1) : 0, y: inView ? 0 : 20 }}
     >
       <Link to={`/work/${project.slug}`} className="block h-full">
         <motion.div
           layout
           className={`glass rounded-2xl overflow-hidden relative ${
-            isList ? "flex flex-row items-stretch" : "flex flex-col"
+            isList ? "flex flex-row items-stretch h-full" : "flex flex-col h-full"
           }`}
           style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
           whileHover={{ y: -4 }}
         >
+          {/* Big background project number */}
+          {!isList && (
+            <div
+              aria-hidden
+              className="absolute -top-4 -right-2 text-[140px] font-semibold leading-none pointer-events-none select-none gradient-text-indigo opacity-[0.08] z-0"
+            >
+              {numberLabel}
+            </div>
+          )}
           {/* Cursor spotlight */}
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -154,7 +158,7 @@ const WorkCard = ({
           <motion.div
             layout
             className={`relative overflow-hidden ${
-              isList ? "w-40 sm:w-56 shrink-0" : "h-[180px]"
+              isList ? "w-40 sm:w-56 shrink-0" : "h-[200px]"
             }`}
             style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.07), hsla(var(--purple), 0.12))" }}
           >
@@ -166,17 +170,38 @@ const WorkCard = ({
               animate={{ scale: isHovered ? 1.06 : 1 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             />
-            <div className="absolute top-3 left-3 text-[10px] tracking-[0.18em] uppercase text-white/80 mix-blend-difference">
-              {String(index + 1).padStart(2, "0")} / 08
+            <div className="absolute top-3 left-3 text-[10px] tracking-[0.18em] uppercase text-white/85 mix-blend-difference">
+              {numberLabel} / 08
             </div>
+            {/* Slide-up metric reveal on hover (grid only) */}
+            {!isList && (
+              <motion.div
+                initial={false}
+                animate={{ y: isHovered ? 0 : "100%" }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-x-0 bottom-0 px-4 py-3 backdrop-blur-md"
+                style={{ background: "rgba(255,255,255,0.78)" }}
+              >
+                <p className="text-base sm:text-lg font-semibold gradient-text-indigo leading-tight">
+                  {project.outcomeMetric}
+                </p>
+                <p className="text-[10px] tracking-wider uppercase text-muted-foreground mt-0.5">
+                  {project.role}
+                </p>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Body */}
-          <motion.div layout className={`p-5 ${isList ? "flex-1" : ""}`}>
-            <p className="text-2xl sm:text-3xl font-semibold gradient-text-indigo leading-tight mb-2">
-              {displayMetric}
-            </p>
-            <h3 className="text-[15px] font-semibold text-card-title mb-1">{project.title}</h3>
+          <motion.div layout className={`p-5 relative z-10 ${isList ? "flex-1" : ""}`}>
+            {isList && (
+              <p className="text-xl sm:text-2xl font-semibold gradient-text-indigo leading-tight mb-2">
+                {project.outcomeMetric}
+              </p>
+            )}
+            <h3 className="text-[16px] sm:text-[17px] font-semibold text-card-title leading-snug mb-1">
+              {project.title}
+            </h3>
             <p className="text-[12px] text-card-desc">{project.role}</p>
             <div className="mt-3 text-[10px] tracking-wider uppercase text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity">
               Open case study →

@@ -2,12 +2,45 @@ import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
+import headshot from "@/assets/headshot-placeholder.jpg";
 
-const howIWork = [
-  "I write the brief before I open the tool. If I can't say it, I can't ship it.",
-  "I'd rather kill a workflow than ship a confused one.",
-  "I treat stakeholder management as the actual work, not the friction around it.",
-  "I use AI to remove the boring parts so editorial judgment gets sharper, not lazier.",
+const howIWork = {
+  discover: {
+    heading: "Discover & Design",
+    intro: "Understand the problem before reaching for the tool. Map the workflow before designing the screen.",
+    points: [
+      "Write the brief before opening Figma. If I can't say it, I can't ship it.",
+      "Treat stakeholder management as the actual work, not friction around it.",
+      "Map the system end-to-end before drawing a single component.",
+    ],
+  },
+  iterate: {
+    heading: "Rapid Iteration",
+    intro: "Ship the smallest useful version, learn fast, and cut what isn't working.",
+    points: [
+      "Kill confused workflows instead of polishing them.",
+      "Use AI to remove the boring parts so editorial judgement gets sharper.",
+      "Prototype in days, not quarters — feedback is the only honest design tool.",
+    ],
+  },
+};
+
+const testimonials = [
+  {
+    quote: "Brought clarity to a process we'd been stuck on for months. The tooling he designed is now part of how we operate.",
+    name: "[Stakeholder]",
+    role: "Operations lead",
+  },
+  {
+    quote: "Treats design and ops as the same problem. Rare combination — and exactly what we needed.",
+    name: "[Director]",
+    role: "Strategy & Brand",
+  },
+  {
+    quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.",
+    name: "[Engineering manager]",
+    role: "Product team",
+  },
 ];
 
 const skills = {
@@ -67,7 +100,10 @@ const ThenNow = () => {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <div ref={ref} className="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4 items-stretch mb-20">
+    <div
+      ref={ref}
+      className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 md:gap-6 items-stretch mb-20"
+    >
       {/* Then */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
@@ -91,11 +127,11 @@ const ThenNow = () => {
         </div>
       </motion.div>
 
-      {/* Connecting line — desktop only */}
-      <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
-        <motion.svg width="180" height="60" viewBox="0 0 180 60" fill="none">
+      {/* Connecting column — desktop only, lives in its own grid track */}
+      <div className="hidden md:flex flex-col items-center justify-center w-[160px] pointer-events-none">
+        <motion.svg width="160" height="60" viewBox="0 0 160 60" fill="none">
           <motion.path
-            d="M 8 30 C 60 30, 120 30, 172 30"
+            d="M 6 30 C 50 30, 110 30, 154 30"
             stroke="hsl(var(--indigo))"
             strokeWidth="1.5"
             strokeDasharray="4 4"
@@ -109,7 +145,7 @@ const ThenNow = () => {
           initial={{ opacity: 0, y: -6 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 1.4, duration: 0.5 }}
-          className="text-center text-[9px] tracking-[0.22em] uppercase text-muted-foreground -mt-3"
+          className="text-center text-[9px] tracking-[0.22em] uppercase text-muted-foreground mt-2"
         >
           clarity · systems · craft
         </motion.p>
@@ -166,6 +202,10 @@ const NowCard = () => (
 /* -------------------- Page -------------------- */
 
 const About = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, []);
+
   return (
     <PageTransition>
       <main className="pt-28 sm:pt-32 pb-24 relative overflow-hidden">
@@ -178,19 +218,43 @@ const About = () => {
 
           <NowCard />
 
-          <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
-              I started in <span className="text-card-title">graphic design.</span><br />
-              Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="text-lg leading-[1.7] text-card-desc max-w-2xl mb-20">
-              The throughline is the same — act as a bridge between technical and non-technical departments,
-              and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
-              most useful when the answer sits between a Figma file and a workflow.
-            </p>
-          </Reveal>
+          {/* Hero with headshot */}
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-start mb-20">
+            <div>
+              <Reveal delay={0.1}>
+                <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
+                  I started in <span className="text-card-title">graphic design.</span><br />
+                  Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
+                </h1>
+              </Reveal>
+              <Reveal delay={0.2}>
+                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">
+                  The throughline is the same — act as a bridge between technical and non-technical departments,
+                  and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
+                  most useful when the answer sits between a Figma file and a workflow.
+                </p>
+              </Reveal>
+            </div>
+            <Reveal delay={0.15}>
+              <div className="relative shrink-0">
+                <div
+                  className="absolute inset-0 rounded-full blur-2xl"
+                  style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.35), transparent 70%)" }}
+                />
+                <img
+                  src={headshot}
+                  alt="Farquhar MacDougall"
+                  width={140}
+                  height={140}
+                  className="relative w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-full object-cover"
+                  style={{
+                    boxShadow:
+                      "0 0 0 4px rgba(255,255,255,0.9), 0 0 0 5px hsla(var(--indigo), 0.35), 0 20px 40px hsla(var(--indigo), 0.18)",
+                  }}
+                />
+              </div>
+            </Reveal>
+          </div>
 
           {/* Then / Now */}
           <Reveal>
@@ -202,16 +266,60 @@ const About = () => {
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
           </Reveal>
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-20">
-            {howIWork.map((line, i) => (
+          <div className="space-y-14 mb-20">
+            {([howIWork.discover, howIWork.iterate]).map((block, bi) => (
+              <div key={block.heading}>
+                <Reveal>
+                  <h2 className="text-3xl sm:text-4xl font-semibold gradient-text-purple leading-tight mb-3">
+                    {block.heading}
+                  </h2>
+                </Reveal>
+                <Reveal delay={0.08}>
+                  <p className="text-base leading-[1.7] text-card-desc max-w-2xl mb-6">
+                    {block.intro}
+                  </p>
+                </Reveal>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {block.points.map((line, i) => (
+                    <Reveal key={line} delay={0.1 + i * 0.06}>
+                      <div className="glass rounded-2xl p-5 h-full">
+                        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+                          0{bi * 3 + i + 1}
+                        </p>
+                        <p className="text-sm leading-[1.55] text-card-title">{line}</p>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Testimonials */}
+          <Reveal>
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">What people say</p>
+          </Reveal>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20">
+            {testimonials.map((t, i) => (
               <Reveal key={i} delay={i * 0.08}>
-                <motion.div layout className="glass rounded-2xl p-6 h-full">
-                  <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">0{i + 1}</p>
-                  <p className="text-base leading-[1.6] text-card-title">{line}</p>
-                </motion.div>
+                <div className="glass rounded-2xl p-6 h-full relative overflow-hidden">
+                  <span
+                    aria-hidden
+                    className="absolute -top-4 -left-1 text-[110px] font-serif leading-none pointer-events-none select-none"
+                    style={{ color: "hsla(var(--indigo), 0.10)" }}
+                  >
+                    “
+                  </span>
+                  <p className="relative text-sm leading-[1.65] text-card-title mb-5">
+                    {t.quote}
+                  </p>
+                  <p className="relative text-[11px] tracking-wider uppercase text-muted-foreground">
+                    {t.name} <span className="opacity-60">· {t.role}</span>
+                  </p>
+                </div>
               </Reveal>
             ))}
-          </motion.div>
+          </div>
 
           {/* Skills */}
           <Reveal>

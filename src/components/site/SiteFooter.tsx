@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 
+// Link still used for in-site nav (Work, About) below.
+
 const SiteFooter = () => {
   const location = useLocation();
   if (location.pathname === "/" || location.pathname.startsWith("/admin")) return null;
@@ -42,12 +44,6 @@ const SiteFooter = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-6 flex items-center justify-between text-[10px] text-muted-foreground/70">
         <span>© {new Date().getFullYear()} Farquhar MacDougall</span>
-        <Link
-          to="/admin"
-          className="tracking-[0.18em] uppercase hover:text-foreground/60 transition-colors"
-        >
-          Admin
-        </Link>
       </div>
     </footer>
   );
