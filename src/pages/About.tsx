@@ -27,22 +27,12 @@ const howIWork = {
   },
 };
 
-const testimonials = [
-  {
-    quote: "Brought clarity to a process we'd been stuck on for months. The tooling he designed is now part of how we operate.",
-    name: "[Stakeholder]",
-    role: "Operations lead",
-  },
-  {
-    quote: "Treats design and ops as the same problem. Rare combination — and exactly what we needed.",
-    name: "[Director]",
-    role: "Strategy & Brand",
-  },
-  {
-    quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.",
-    name: "[Engineering manager]",
-    role: "Product team",
-  },
+type Testimonial = { quote: string; name: string; role: string; avatar?: string };
+
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  { quote: "Brought clarity to a process we'd been stuck on for months. The tooling he designed is now part of how we operate.", name: "[Stakeholder]", role: "Operations lead" },
+  { quote: "Treats design and ops as the same problem. Rare combination — and exactly what we needed.", name: "[Director]", role: "Strategy & Brand" },
+  { quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.", name: "[Engineering manager]", role: "Product team" },
 ];
 
 const skills = {
@@ -219,6 +209,7 @@ const About = () => {
   );
   const contactHeading = get("contact", "heading", "Let's talk.");
   const contactSub = get("contact", "sub", "farqmac@me.com · Sydney, Australia");
+  const testimonials = get<Testimonial[]>("testimonials", "items", DEFAULT_TESTIMONIALS);
 
   return (
     <PageTransition>
@@ -323,9 +314,14 @@ const About = () => {
                   <p className="relative text-sm leading-[1.65] text-card-title mb-5">
                     {t.quote}
                   </p>
-                  <p className="relative text-[11px] tracking-wider uppercase text-muted-foreground">
-                    {t.name} <span className="opacity-60">· {t.role}</span>
-                  </p>
+                  <div className="relative flex items-center gap-2.5">
+                    {t.avatar && (
+                      <img src={t.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
+                    )}
+                    <p className="text-[11px] tracking-wider uppercase text-muted-foreground">
+                      {t.name} <span className="opacity-60">· {t.role}</span>
+                    </p>
+                  </div>
                 </div>
               </Reveal>
             ))}

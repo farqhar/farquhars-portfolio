@@ -1,7 +1,16 @@
 import TextField from "@/components/admin/fields/TextField";
 import MediaField from "@/components/admin/fields/MediaField";
+import ListField from "@/components/admin/fields/ListField";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+
+type Testimonial = { quote: string; name: string; role: string; avatar?: string };
+
+const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  { quote: "Brought clarity to a process we'd been stuck on for months. The tooling he designed is now part of how we operate.", name: "[Stakeholder]", role: "Operations lead" },
+  { quote: "Treats design and ops as the same problem. Rare combination — and exactly what we needed.", name: "[Director]", role: "Strategy & Brand" },
+  { quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.", name: "[Engineering manager]", role: "Product team" },
+];
 
 const AboutSection = () => {
   const { get } = useSiteContent("about");
@@ -45,6 +54,48 @@ const AboutSection = () => {
       <Section title="Contact card">
         <TextField label="Heading" page="about" section="contact" fieldKey="heading" fallback={get("contact", "heading", "Let's talk.")} />
         <TextField label="Sub line" page="about" section="contact" fieldKey="sub" fallback={get("contact", "sub", "farqmac@me.com · Sydney, Australia")} />
+      </Section>
+
+      <Section title="Testimonials">
+        <ListField<Testimonial>
+          label="Quotes"
+          page="about"
+          section="testimonials"
+          fieldKey="items"
+          fallback={get<Testimonial[]>("testimonials", "items", DEFAULT_TESTIMONIALS)}
+          newItem={() => ({ quote: "", name: "", role: "", avatar: "" })}
+          renderItem={(item, update) => (
+            <div className="space-y-2">
+              <textarea
+                value={item.quote}
+                onChange={(e) => update({ ...item, quote: e.target.value })}
+                placeholder="Quote"
+                rows={3}
+                className="w-full text-sm border border-gray-300 rounded-md px-2 py-1.5"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  value={item.name}
+                  onChange={(e) => update({ ...item, name: e.target.value })}
+                  placeholder="Name"
+                  className="text-sm border border-gray-300 rounded-md px-2 py-1.5"
+                />
+                <input
+                  value={item.role}
+                  onChange={(e) => update({ ...item, role: e.target.value })}
+                  placeholder="Role"
+                  className="text-sm border border-gray-300 rounded-md px-2 py-1.5"
+                />
+              </div>
+              <input
+                value={item.avatar || ""}
+                onChange={(e) => update({ ...item, avatar: e.target.value })}
+                placeholder="Avatar URL (optional)"
+                className="w-full text-xs border border-gray-300 rounded-md px-2 py-1.5"
+              />
+            </div>
+          )}
+        />
       </Section>
     </div>
   );
