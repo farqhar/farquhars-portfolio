@@ -182,7 +182,7 @@ const ThenNow = () => {
 
 /* -------------------- Now status card -------------------- */
 
-const NowCard = () => (
+const NowCard = ({ status }: { status: string }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -195,9 +195,7 @@ const NowCard = () => (
       className="w-2 h-2 rounded-full"
       style={{ background: "hsl(var(--indigo))", boxShadow: "0 0 10px hsl(var(--indigo))" }}
     />
-    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
-      Currently · Building AI operations at <span className="text-card-title">[Company]</span>
-    </p>
+    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">{status}</p>
   </motion.div>
 );
 
@@ -232,23 +230,19 @@ const About = () => {
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4">About</p>
           </Reveal>
 
-          <NowCard />
+          <NowCard status={status} />
 
           {/* Hero with headshot */}
           <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-start mb-20">
             <div>
               <Reveal delay={0.1}>
                 <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
-                  I started in <span className="text-card-title">graphic design.</span><br />
-                  Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
+                  <span className="text-card-title">{headline1}</span><br />
+                  <span className="gradient-text-indigo">{headline2}</span>
                 </h1>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">
-                  The throughline is the same — act as a bridge between technical and non-technical departments,
-                  and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
-                  most useful when the answer sits between a Figma file and a workflow.
-                </p>
+                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">{intro}</p>
               </Reveal>
             </div>
             <Reveal delay={0.15}>
