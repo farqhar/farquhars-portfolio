@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutGrid, Rows3 } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
 import PageTransition from "@/components/site/PageTransition";
 import { Project } from "@/data/projectsSeed";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 /* -------------------- Hero highlights -------------------- */
 
@@ -233,6 +234,19 @@ const Work = () => {
   const [filter, setFilter] = useState<Filter>("All");
   const [view, setView] = useState<ViewMode>("grid");
   const [hovered, setHovered] = useState<string | null>(null);
+  const { get } = useSiteContent("work");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, []);
+
+  const heroEyebrow = get("hero", "eyebrow", "I bridge design and AI operations");
+  const heroSubhead = get("hero", "subhead", "Eight projects. Real outcomes. Here's what I actually built — and what each one cost to make.");
+  const cmsHighlights = highlights.map((h, i) => ({
+    value: get("highlights", `v${i + 1}`, h.value),
+    label: get("highlights", `l${i + 1}`, h.label),
+    caveat: get("highlights", `c${i + 1}`, h.caveat),
+  }));
 
   const filtered = useMemo(
     () => projects.filter((p) => filter === "All" || filterFor(p).includes(filter)),
@@ -263,7 +277,7 @@ const Work = () => {
               transition={{ duration: 0.5 }}
               className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5"
             >
-              I bridge design and AI operations
+              {heroEyebrow}
             </motion.p>
             <HeroHeadline />
             <motion.p
@@ -272,9 +286,30 @@ const Work = () => {
               transition={{ duration: 0.6, delay: 0.7 }}
               className="text-base sm:text-lg italic text-muted-foreground max-w-2xl mt-6"
             >
-              Eight projects. Real outcomes. Here's what I actually built — and what each one cost to make.
+              {heroSubhead}
             </motion.p>
-            <HighlightsStrip />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-12 sm:mt-16">
+              {cmsHighlights.map((h, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.9 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="glass rounded-2xl p-5 sm:p-6 relative overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.7, delay: 1.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ transformOrigin: "left", background: "hsla(var(--indigo), 0.4)" }}
+                    className="absolute top-0 left-0 right-0 h-px"
+                  />
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-semibold gradient-text-indigo leading-tight mb-2">{h.value}</p>
+                  <p className="text-[11px] sm:text-xs tracking-wider uppercase text-muted-foreground mb-1">{h.label}</p>
+                  <p className="text-[10px] italic text-muted-foreground/70 leading-snug">{h.caveat}</p>
+                </motion.div>
+              ))}
+            </div>
           </section>
 
           {/* CONTROLS */}

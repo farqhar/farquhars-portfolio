@@ -53,6 +53,44 @@ Deno.serve(async (req) => {
       if (error) throw error;
     }
 
+    if (table === "site_content") {
+      const { page, section } = body as { page?: string; section?: string };
+      if (typeof page !== "string" || !page) {
+        return new Response(JSON.stringify({ ok: false, error: "page required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof key !== "string" || !key) {
+        return new Response(JSON.stringify({ ok: false, error: "key required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const sec = section || "default";
+      // Manual upsert keyed on (page, section, key) since there is no unique constraint.
+      const { data: existing, error: selErr } = await admin
+        .from("site_content")
+        .select("id")
+        .eq("page", page)
+        .eq("section", sec)
+        .eq("key", key)
+        .maybeSingle();
+      if (selErr) throw selErr;
+      if (existing?.id) {
+        const { error } = await admin
+          .from("site_content")
+          .update({ value_json: value ?? {}, updated_at: new Date().toISOString() })
+          .eq("id", existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await admin
+          .from("site_content")
+          .insert({ page, section: sec, key, value_json: value ?? {} });
+        if (error) throw error;
+      }
+    }
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

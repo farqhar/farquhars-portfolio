@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
 import headshot from "@/assets/headshot-placeholder.jpg";
+import { useSiteSetting } from "@/hooks/useSiteSettings";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const howIWork = {
   discover: {
@@ -180,7 +182,7 @@ const ThenNow = () => {
 
 /* -------------------- Now status card -------------------- */
 
-const NowCard = () => (
+const NowCard = ({ status }: { status: string }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -193,9 +195,7 @@ const NowCard = () => (
       className="w-2 h-2 rounded-full"
       style={{ background: "hsl(var(--indigo))", boxShadow: "0 0 10px hsl(var(--indigo))" }}
     />
-    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
-      Currently · Building AI operations at <span className="text-card-title">[Company]</span>
-    </p>
+    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">{status}</p>
   </motion.div>
 );
 
@@ -205,6 +205,20 @@ const About = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, []);
+
+  const { value: hs } = useSiteSetting<{ url: string }>("headshot_url");
+  const { get } = useSiteContent("about");
+  const headshotSrc = hs?.url || headshot;
+  const status = get("hero", "status", "Currently · Building AI operations at [Company]");
+  const headline1 = get("hero", "headline1", "I started in graphic design.");
+  const headline2 = get("hero", "headline2", "Now I build AI optimised workflows.");
+  const intro = get(
+    "hero",
+    "intro",
+    "The throughline is the same — act as a bridge between technical and non-technical departments, and make complicated things make sense. I'm Farquhar — I work where craft meets operations, most useful when the answer sits between a Figma file and a workflow.",
+  );
+  const contactHeading = get("contact", "heading", "Let's talk.");
+  const contactSub = get("contact", "sub", "farqmac@me.com · Sydney, Australia");
 
   return (
     <PageTransition>
@@ -216,23 +230,19 @@ const About = () => {
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4">About</p>
           </Reveal>
 
-          <NowCard />
+          <NowCard status={status} />
 
           {/* Hero with headshot */}
           <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-start mb-20">
             <div>
               <Reveal delay={0.1}>
                 <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
-                  I started in <span className="text-card-title">graphic design.</span><br />
-                  Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
+                  <span className="text-card-title">{headline1}</span><br />
+                  <span className="gradient-text-indigo">{headline2}</span>
                 </h1>
               </Reveal>
               <Reveal delay={0.2}>
-                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">
-                  The throughline is the same — act as a bridge between technical and non-technical departments,
-                  and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
-                  most useful when the answer sits between a Figma file and a workflow.
-                </p>
+                <p className="text-lg leading-[1.7] text-card-desc max-w-2xl">{intro}</p>
               </Reveal>
             </div>
             <Reveal delay={0.15}>
@@ -242,7 +252,7 @@ const About = () => {
                   style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.35), transparent 70%)" }}
                 />
                 <img
-                  src={headshot}
+                  src={headshotSrc}
                   alt="Farquhar MacDougall"
                   width={140}
                   height={140}
@@ -350,8 +360,8 @@ const About = () => {
           <Reveal>
             <div className="glass rounded-2xl p-8 sm:p-10 text-center">
               <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">Get in touch</p>
-              <h2 className="text-2xl sm:text-3xl font-semibold text-card-title mb-2">Let's talk.</h2>
-              <p className="text-sm text-muted-foreground mb-6">farqmac@me.com · Sydney, Australia</p>
+              <h2 className="text-2xl sm:text-3xl font-semibold text-card-title mb-2">{contactHeading}</h2>
+              <p className="text-sm text-muted-foreground mb-6">{contactSub}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
                   href="mailto:farqmac@me.com"

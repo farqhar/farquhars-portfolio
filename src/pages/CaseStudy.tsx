@@ -33,6 +33,11 @@ const CaseStudy = () => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [slug]);
 
+  // Also scroll on mount (covers initial nav from CTA / direct URL)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, []);
+
   const project = projects.find((p) => p.slug === slug);
   if (!project) return <Navigate to="/work" replace />;
 
