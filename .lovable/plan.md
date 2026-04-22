@@ -1,98 +1,132 @@
-# Polish pass v2 — animated layouts, real hero, scannable case studies
 
-Same scope as the previous plan, with two changes you asked for:
+# Polish v3 + Visual CMS
 
-- **Layout itself becomes the animation** (not just elements fading in)
-- **Real hero banner** on `/work` that sells the value, not just labels the page
+Two parts: (A) finalise the v3 polish with your tweaks, (B) build a true split-view visual CMS that controls the whole site.
 
 ---
 
-## 1. Global footer with admin link
+## A. Polish v3 — adjusted
 
-New `src/components/site/SiteFooter.tsx`, mounted in `App.tsx` (hidden on `/` and `/admin`).
+### A1. Admin link placement (consistent across site)
+- The teaser already has the **"See full portfolio →"** floating CTA bottom-right, so a bottom-right admin link would collide.
+- **New approach**: put the Admin link **bottom-left, fixed, tiny + muted** on every page (teaser, work, about, case study). Same component, same position site-wide. No clash with the floating CTA.
+- Implementation: rename `HomeAdminLink.tsx` → `AdminLink.tsx`, mount globally in `App.tsx` (hidden only on `/admin`). Remove the duplicate Admin link from `SiteFooter`.
 
-- Name + one-line tagline
-- Work · About · LinkedIn · Email
-- Small muted "Admin" link bottom-right → `/admin`
-- Glass + indigo, matches site language.
+### A2. All other v3 items proceed as approved
+- Case study back button (`← All work`, top-left glass pill) + TL;DR bar no truncation.
+- Honest highlight numbers with italic caveats.
+- Bento grid hand-tuned `gridTemplateAreas`, big background numbers 01–08, hover-reveal metric panel, **count-up removed**.
+- About page: scroll-to-top, 3-column Then/Connector/Now (fixes line overlap), circular headshot placeholder, purple `DISCOVER & DESIGN` / `RAPID ITERATION` hierarchy, testimonials section.
 
-## 2. `/work` — proper value-led hero banner
+---
 
-New full-width hero block above the grid (no image — typographic + motion):
+## B. Visual CMS — split-view, whole-site content control
+
+A new admin experience at `/admin` that looks like this:
 
 ```text
-┌─────────────────────────────────────────────────┐
-│ KICKER: I bridge design and AI operations       │
-│                                                 │
-│ HEADLINE (huge, gradient, 2 lines):             │
-│   I turn messy workflows                        │
-│   into shipped systems.                         │
-│                                                 │
-│ SUB: Eight projects. Real outcomes. Here's      │
-│      what I actually built.                     │
-│                                                 │
-│ ┌──────────┬──────────┬──────────┬──────────┐  │
-│ │ 4,743%   │ 147 hrs  │  100+    │ 3d→20m   │  │
-│ │ engage   │ reclaimed│touchpoints│ tender   │  │
-│ └──────────┴──────────┴──────────┴──────────┘  │
-└─────────────────────────────────────────────────┘
+┌───────────────┬──────────────────────────────────────┐
+│  CMS PANEL    │                                      │
+│  (left, 380px)│        LIVE SITE PREVIEW             │
+│               │        (iframe, right)               │
+│  Page picker  │                                      │
+│  ┌─────────┐  │   - Renders /, /work, /work/:slug,   │
+│  │ Teaser  │  │     /about exactly as published      │
+│  │ Work    │  │   - Updates instantly as you edit    │
+│  │ About   │  │   - Click any text/image in preview  │
+│  │ Project │  │     to jump to its field on the left │
+│  └─────────┘  │                                      │
+│               │                                      │
+│  Section ed.  │                                      │
+│  - text       │                                      │
+│  - image/vid  │                                      │
+│  - colour     │                                      │
+│  - font       │                                      │
+│               │                                      │
+│  [Save] [↺]   │                                      │
+└───────────────┴──────────────────────────────────────┘
 ```
 
-Headline animates word-by-word (mask reveal). Stat tiles slide up in sequence and the divider lines draw themselves left-to-right.
+### B1. What's editable
 
-## 3. `/work` grid — animated **layout**, not just elements
+**Per page** (Teaser, Work, About, each Project):
+- All headlines, sub-copy, body text, button labels, link URLs.
+- Images and videos (upload, replace, reorder, alt text).
+- Per-page accent colour + per-page heading font (overrides global).
 
-Instead of decorating each card, the grid itself is alive:
+**Global theme** (applies site-wide):
+- Brand colours: primary, accent, background, text, muted (colour-picker UI).
+- Fonts: heading font, body font (curated Google Fonts list + "custom upload").
+- Heading styles: H1/H2/H3 size + weight + tracking.
+- Logo / wordmark text.
 
-- **Bento layout** — cards have varied sizes (1×1, 2×1, 1×2 spans) using CSS grid + framer-motion `layout`. Featured projects take larger tiles; the rhythm feels editorial, not uniform.
-- **Layout morph on filter/sort** — small "All / Design / AI Ops / Brand" filter chips re-flow the grid using `<motion.div layout>`; cards physically slide to new positions with spring easing.
-- **Grid ↔ List view toggle** — switching views animates cards from tile → row using shared layout IDs (cards visibly transform, don't crossfade).
-- **Hover reshape** — hovered card expands to span 2 columns; neighbours politely reflow around it with `layout` spring. Releases on mouse-out.
-- **Cover-image zoom** + animated count-up on the metric (via new `useCountUp.ts`) stay as small polish on top.
+**Media library**:
+- Upload images + videos (mp4, webm) to a **storage bucket**.
+- Reuse uploaded media across any page.
+- Auto-generate responsive sizes for images.
 
-No 3D tilt — the motion lives in the grid structure itself.
+### B2. How it works (technical)
 
-## 4. `/work/:slug` — scannable case study
+**Backend (Lovable Cloud)**:
+- New tables (all behind admin-only RLS using the runtime password check via a session token):
+  - `site_content` — `{ page, section, key, value_json }`. Stores all text, links, image refs per page/section.
+  - `theme` — single-row `{ colors_json, fonts_json, headings_json }` for global tokens.
+  - `media` — `{ id, kind, url, alt, width, height }`.
+  - `projects` already covered by existing flow; merged into the new editor UI.
+- New **storage bucket** `site-media` (public read, admin write) for image/video uploads.
+- Edge functions: extend `verify-admin` to mint a short-lived session token; new `cms-save` function validates token + writes content.
 
-- **Hero shrinks** to 40vh/55vh.
-- **Sticky TL;DR bar** under hero: one-line problem · one-line outcome · the metric — always visible.
-- **Tabbed deep-dive**: Problem · Process · Honest moment · Outcome · Recognition. Tabs use shared layout indicator (the active underline slides between tabs, content panels swap with directional slide — layout-driven, not fade).
-- **"Read as long form"** toggle expands all panels inline using `layout` animation (page literally grows).
-- **Scroll-to-top on Next**: `useEffect` on `slug` change → `window.scrollTo({ top: 0, behavior: 'instant' })`.
+**Frontend**:
+- Public site reads content from a single `useSiteContent()` hook (cached via React Query) — falls back to current hard-coded copy if a key is missing, so nothing breaks on day one.
+- Theme tokens injected as CSS variables on `<html>` so colour/font changes are global and instant.
+- Existing components (`HeroSection`, `ProjectCells`, `About`, etc.) refactored to read from the content map instead of inline strings — done incrementally, page by page.
 
-## 5. `/about` — accurate + layout-dynamic
+**Admin split-view**:
+- New `/admin` shell: left panel (CMS form) + right panel (`<iframe src="/?preview=token">`).
+- Left panel uses **schema-driven forms** per page (one schema entry per editable field) so adding new editable fields later is one-line.
+- Right preview communicates via `postMessage`: 
+  - Site → CMS: "user clicked field X" (deep-link to that form field).
+  - CMS → Site: "draft updated, re-render" (live preview without save).
+- Save button persists draft → publishes to `site_content`. Undo restores previous version (last 10 kept).
 
-Copy fixes:
+### B3. Rollout order
+1. Schema + storage bucket + RLS + auth token.
+2. Split-view shell with iframe + page picker.
+3. Wire **Teaser** page first (proof of concept end-to-end).
+4. Wire About, Work hero, Projects, Case Study sections.
+5. Theme controls (colours, fonts, headings).
+6. Media library + click-to-edit overlay in preview.
 
-- Headline: "I started in graphic design. Now I build AI optimised workflows."
-- Sub: "The throughline is the same — act as a bridge to technical and non-technical departments."
-- "Creative director" removed everywhere.
-- Skills regrouped: Design foundation · AI Operations.
-- **Timeline removed** entirely (per your edit).
+You'll be able to ship after step 3 and iterate.
 
-Layout-driven dynamics:
-
-- **Animated "Now" status card** at top — pulsing dot + "Currently: Building [Company placeholder]". Card itself gently breathes (subtle scale loop).
-- **Then / Now split** — two columns labelled "Graphic Designer" and "AI Operations PM". On scroll into view, the columns slide in from opposite sides and a connecting line draws between them spelling the throughline (clarity · systems · craft).
-- **Mouse-reactive gradient orb** behind the hero — orb position follows cursor with spring lag.
-- **"How I work"** kept, copy updated to PM-at-AI-company voice. Cards use `layout` so they reflow elegantly on resize.
-
-I'll leave `[Company]` as a clearly marked placeholder you can swap in later.
-
-## 6. Build secrets — fallback path
-
-Since you can't find Build Secrets in Workspace Settings, I'll switch admin auth to **Lovable Cloud runtime secret** during build (works on any plan; needs Cloud enabled — I'll prompt for that step). The login UI stays identical.
+---
 
 ## Files touched
 
 ```text
-src/components/site/SiteFooter.tsx   (new)
-src/App.tsx                          (mount footer)
-src/pages/Work.tsx                   (hero + bento grid + layout animations + view toggle)
-src/hooks/useCountUp.ts              (new)
-src/pages/CaseStudy.tsx              (smaller hero + sticky TL;DR + tabs + scroll-to-top)
-src/pages/About.tsx                  (rewrite + Then/Now + Now card + orb)
-src/components/admin/AdminLogin.tsx  (switch to Lovable Cloud secret check)
+# Polish v3
+src/components/AdminLink.tsx                  (new — global bottom-left)
+src/components/site/SiteFooter.tsx            (remove admin link)
+src/App.tsx                                   (mount AdminLink globally)
+src/pages/Work.tsx                            (highlights + bento + remove count-up)
+src/hooks/useCountUp.ts                       (delete)
+src/pages/CaseStudy.tsx                       (back button + TL;DR fix)
+src/pages/About.tsx                           (scroll-top, 3-col fix, headshot, purple hierarchy, testimonials)
+src/assets/headshot-placeholder.jpg           (new)
+
+# CMS — phase 1 (schema + shell + Teaser wired)
+supabase migrations                           (site_content, theme, media tables + RLS)
+storage bucket                                 site-media (public read)
+supabase/functions/verify-admin/index.ts      (extend: issue session token)
+supabase/functions/cms-save/index.ts          (new — token-gated writes)
+src/hooks/useSiteContent.ts                   (new — cached content reader)
+src/lib/theme.ts                              (new — inject CSS vars from theme row)
+src/pages/Admin.tsx                           (rebuilt as split-view shell)
+src/components/admin/CMSPanel.tsx             (new — left form panel + page picker)
+src/components/admin/PreviewFrame.tsx         (new — right iframe + postMessage bridge)
+src/components/admin/fields/*                 (new — Text, RichText, Image, Video, Color, Font, Number)
+src/components/admin/MediaLibrary.tsx         (new — upload + browse)
+src/components/HeroSection.tsx                (read from useSiteContent, fallback to current copy)
 ```
 
-Homepage (`/`) untouched. All motion stays in the existing glass / indigo / framer-motion language — but the emphasis shifts from element-level fades to **layout-level choreography**.
+Phases 2–6 (About, Projects, theme controls, click-to-edit overlay) follow in subsequent passes once phase 1 is live.
