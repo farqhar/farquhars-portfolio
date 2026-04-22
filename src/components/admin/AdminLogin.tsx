@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { cmsSession } from "@/lib/cmsSession";
 
 const AdminLogin = ({ onSuccess }: { onSuccess: () => void }) => {
   const [password, setPassword] = useState("");
@@ -19,7 +20,7 @@ const AdminLogin = ({ onSuccess }: { onSuccess: () => void }) => {
         setLoading(false);
         return;
       }
-      sessionStorage.setItem("fm_admin_session", "true");
+      cmsSession.set(password);
       onSuccess();
     } catch {
       setError("Could not verify password. Please try again.");
