@@ -1,132 +1,123 @@
 
-# Polish v3 + Visual CMS
+# Quick wins + Split-view CMS shell (with full media editing everywhere)
 
-Two parts: (A) finalise the v3 polish with your tweaks, (B) build a true split-view visual CMS that controls the whole site.
+Doing all four items, with the explicit guarantee that **every image and video on every page** is replaceable via the CMS — not just the headshot.
 
----
+## 1. Headshot uploader wired into /admin
+- Mount `HeadshotUploader` inside the new CMS shell under **Global → Identity**.
+- `About.tsx` reads `headshot_url` from `site_settings` (fallback to placeholder).
 
-## A. Polish v3 — adjusted
+## 2. "See full portfolio" → top of /work
+- Add `useEffect(() => window.scrollTo(0,0), [])` to `Work.tsx`, `CaseStudy.tsx` (About already has it). Covers CTA, nav, direct URL.
 
-### A1. Admin link placement (consistent across site)
-- The teaser already has the **"See full portfolio →"** floating CTA bottom-right, so a bottom-right admin link would collide.
-- **New approach**: put the Admin link **bottom-left, fixed, tiny + muted** on every page (teaser, work, about, case study). Same component, same position site-wide. No clash with the floating CTA.
-- Implementation: rename `HomeAdminLink.tsx` → `AdminLink.tsx`, mount globally in `App.tsx` (hidden only on `/admin`). Remove the duplicate Admin link from `SiteFooter`.
+## 3. "← Back to site" pill on /admin
+- Fixed top-left glass pill on the CMS shell linking to `/`.
 
-### A2. All other v3 items proceed as approved
-- Case study back button (`← All work`, top-left glass pill) + TL;DR bar no truncation.
-- Honest highlight numbers with italic caveats.
-- Bento grid hand-tuned `gridTemplateAreas`, big background numbers 01–08, hover-reveal metric panel, **count-up removed**.
-- About page: scroll-to-top, 3-column Then/Connector/Now (fixes line overlap), circular headshot placeholder, purple `DISCOVER & DESIGN` / `RAPID ITERATION` hierarchy, testimonials section.
-
----
-
-## B. Visual CMS — split-view, whole-site content control
-
-A new admin experience at `/admin` that looks like this:
+## 4. Split-view CMS shell at /admin
 
 ```text
-┌───────────────┬──────────────────────────────────────┐
-│  CMS PANEL    │                                      │
-│  (left, 380px)│        LIVE SITE PREVIEW             │
-│               │        (iframe, right)               │
-│  Page picker  │                                      │
-│  ┌─────────┐  │   - Renders /, /work, /work/:slug,   │
-│  │ Teaser  │  │     /about exactly as published      │
-│  │ Work    │  │   - Updates instantly as you edit    │
-│  │ About   │  │   - Click any text/image in preview  │
-│  │ Project │  │     to jump to its field on the left │
-│  └─────────┘  │                                      │
-│               │                                      │
-│  Section ed.  │                                      │
-│  - text       │                                      │
-│  - image/vid  │                                      │
-│  - colour     │                                      │
-│  - font       │                                      │
-│               │                                      │
-│  [Save] [↺]   │                                      │
-└───────────────┴──────────────────────────────────────┘
+┌─ 380px ─────────┬──────────────────────────┐
+│ ← Back to site  │                          │
+│ PAGES           │  <iframe> live preview   │
+│  • Teaser       │  of selected page,       │
+│  • About        │  reloads on save         │
+│  • Work         │                          │
+│  • Projects ▸   │                          │
+│  • Global       │                          │
+│ ─────────────── │                          │
+│ Section fields  │                          │
+│ [Save]          │                          │
+└─────────────────┴──────────────────────────┘
 ```
 
-### B1. What's editable
+### Editable surface — every page, every asset
 
-**Per page** (Teaser, Work, About, each Project):
-- All headlines, sub-copy, body text, button labels, link URLs.
-- Images and videos (upload, replace, reorder, alt text).
-- Per-page accent colour + per-page heading font (overrides global).
+A reusable `<MediaField>` (image OR video) is used everywhere an image/video appears today. Each field uploads to the `site-media` bucket under a path like `site-media/<page>/<key>/<file>` and stores the public URL in `site_content`.
 
-**Global theme** (applies site-wide):
-- Brand colours: primary, accent, background, text, muted (colour-picker UI).
-- Fonts: heading font, body font (curated Google Fonts list + "custom upload").
-- Heading styles: H1/H2/H3 size + weight + tracking.
-- Logo / wordmark text.
+**Teaser (`/`)**
+- Hero: eyebrow, headline, subhead, CTA label + URL.
+- Hero background media (image/video swap).
+- Timeline carousel: each slide's heading, body, **image/video**.
+- Project cells: each card's title, blurb, **cover image**, modal carousel **images/videos** (add / remove / reorder).
+- CTA section: heading, body, button label + URL.
 
-**Media library**:
-- Upload images + videos (mp4, webm) to a **storage bucket**.
-- Reuse uploaded media across any page.
-- Auto-generate responsive sizes for images.
+**About (`/about`)**
+- Hero: eyebrow, headline, subhead, **headshot**.
+- Then/Now: each cell's heading + body.
+- "How I work": both purple section headings + bullet list (editable list).
+- Testimonials: add / edit / remove quote, name, role, **avatar image**.
+- Contact card: heading, body, button label + URL.
 
-### B2. How it works (technical)
+**Work (`/work`)**
+- Hero: eyebrow, headline, subhead.
+- Four highlight tiles: number + caveat (editable list).
+- Filter chip labels.
 
-**Backend (Lovable Cloud)**:
-- New tables (all behind admin-only RLS using the runtime password check via a session token):
-  - `site_content` — `{ page, section, key, value_json }`. Stores all text, links, image refs per page/section.
-  - `theme` — single-row `{ colors_json, fonts_json, headings_json }` for global tokens.
-  - `media` — `{ id, kind, url, alt, width, height }`.
-  - `projects` already covered by existing flow; merged into the new editor UI.
-- New **storage bucket** `site-media` (public read, admin write) for image/video uploads.
-- Edge functions: extend `verify-admin` to mint a short-lived session token; new `cms-save` function validates token + writes content.
+**Projects (`/work/:slug`)** — full per-project editor (extends today's editor)
+- All existing text fields.
+- **Cover image**, **hero image** — upload via `<MediaField>` instead of URL paste.
+- Gallery: add / remove / reorder **images and videos** with alt text.
+- Quotes list.
 
-**Frontend**:
-- Public site reads content from a single `useSiteContent()` hook (cached via React Query) — falls back to current hard-coded copy if a key is missing, so nothing breaks on day one.
-- Theme tokens injected as CSS variables on `<html>` so colour/font changes are global and instant.
-- Existing components (`HeroSection`, `ProjectCells`, `About`, etc.) refactored to read from the content map instead of inline strings — done incrementally, page by page.
+**Global (applies site-wide)**
+- Identity: name, tagline, headshot, LinkedIn URL, footer copy.
+- Theme placeholder (colours/fonts panel — phase 5, stub UI now).
 
-**Admin split-view**:
-- New `/admin` shell: left panel (CMS form) + right panel (`<iframe src="/?preview=token">`).
-- Left panel uses **schema-driven forms** per page (one schema entry per editable field) so adding new editable fields later is one-line.
-- Right preview communicates via `postMessage`: 
-  - Site → CMS: "user clicked field X" (deep-link to that form field).
-  - CMS → Site: "draft updated, re-render" (live preview without save).
-- Save button persists draft → publishes to `site_content`. Undo restores previous version (last 10 kept).
+### How media upload works
+- New `<MediaField kind="image|video|any" />` component:
+  - Drag-drop / click-to-upload, preview, replace, clear.
+  - Uploads via supabase-js to `site-media` bucket using admin session token.
+  - Returns public URL → saved into the relevant `site_content` row.
+  - Also writes a row into the `media` table for reuse later (media library, phase 6).
+- Storage RLS: extend `site-media` policies to allow INSERT/UPDATE/DELETE only when the request includes the admin session token (validated via the `cms-save` edge function's pre-signed upload, OR via a dedicated `cms-upload` edge function that streams the file with the service role). I'll use the edge-function approach so no client ever holds elevated keys.
 
-### B3. Rollout order
-1. Schema + storage bucket + RLS + auth token.
-2. Split-view shell with iframe + page picker.
-3. Wire **Teaser** page first (proof of concept end-to-end).
-4. Wire About, Work hero, Projects, Case Study sections.
-5. Theme controls (colours, fonts, headings).
-6. Media library + click-to-edit overlay in preview.
+### How content is read on the public site
+- New `useSiteContent(page)` hook → React Query, single fetch per page, returns `get(section, key, fallback)`.
+- Every component that currently has hard-coded copy or image paths (`HeroSection`, `TimelineCarousel`, `ProjectCells`, `CTASection`, `About`, `Work` highlights, `CaseStudy` body) is refactored to read via this hook with the **current value as fallback** — so nothing visually changes until you edit something.
 
-You'll be able to ship after step 3 and iterate.
-
----
+### Backend changes
+- Extend `cms-save` edge function to accept `site_content` writes (page/section/key/value_json) in addition to `site_settings`.
+- New `cms-upload` edge function: validates admin password, accepts multipart upload, writes to `site-media` bucket with service role, returns public URL + inserts `media` row.
+- Storage policy on `site-media`: public SELECT only; INSERT/UPDATE/DELETE denied to anon (only the service role used by `cms-upload` can write).
 
 ## Files touched
 
 ```text
-# Polish v3
-src/components/AdminLink.tsx                  (new — global bottom-left)
-src/components/site/SiteFooter.tsx            (remove admin link)
-src/App.tsx                                   (mount AdminLink globally)
-src/pages/Work.tsx                            (highlights + bento + remove count-up)
-src/hooks/useCountUp.ts                       (delete)
-src/pages/CaseStudy.tsx                       (back button + TL;DR fix)
-src/pages/About.tsx                           (scroll-top, 3-col fix, headshot, purple hierarchy, testimonials)
-src/assets/headshot-placeholder.jpg           (new)
+# Quick wins
+src/pages/Work.tsx                                  (scroll-to-top)
+src/pages/CaseStudy.tsx                             (scroll-to-top)
+src/pages/About.tsx                                 (read headshot from settings)
 
-# CMS — phase 1 (schema + shell + Teaser wired)
-supabase migrations                           (site_content, theme, media tables + RLS)
-storage bucket                                 site-media (public read)
-supabase/functions/verify-admin/index.ts      (extend: issue session token)
-supabase/functions/cms-save/index.ts          (new — token-gated writes)
-src/hooks/useSiteContent.ts                   (new — cached content reader)
-src/lib/theme.ts                              (new — inject CSS vars from theme row)
-src/pages/Admin.tsx                           (rebuilt as split-view shell)
-src/components/admin/CMSPanel.tsx             (new — left form panel + page picker)
-src/components/admin/PreviewFrame.tsx         (new — right iframe + postMessage bridge)
-src/components/admin/fields/*                 (new — Text, RichText, Image, Video, Color, Font, Number)
-src/components/admin/MediaLibrary.tsx         (new — upload + browse)
-src/components/HeroSection.tsx                (read from useSiteContent, fallback to current copy)
+# CMS shell
+src/pages/Admin.tsx                                 (rebuilt as CMSShell mount)
+src/components/admin/CMSShell.tsx                   (new — split layout + back pill)
+src/components/admin/PreviewFrame.tsx               (new — iframe + reload bridge)
+src/components/admin/PagePicker.tsx                 (new)
+
+# Section editors
+src/components/admin/sections/GlobalSection.tsx     (new — identity + headshot)
+src/components/admin/sections/TeaserSection.tsx     (new — hero, timeline, cells, CTA)
+src/components/admin/sections/AboutSection.tsx      (new — hero, then/now, how-i-work, testimonials)
+src/components/admin/sections/WorkSection.tsx       (new — hero, highlights, filters)
+src/components/admin/sections/ProjectsSection.tsx   (new — wraps existing project list/editor + media)
+
+# Reusable fields
+src/components/admin/fields/TextField.tsx           (new)
+src/components/admin/fields/TextAreaField.tsx       (new)
+src/components/admin/fields/ListField.tsx           (new — add/remove/reorder)
+src/components/admin/fields/MediaField.tsx          (new — image/video upload)
+
+# Public-site wiring
+src/hooks/useSiteContent.ts                         (new)
+src/components/HeroSection.tsx                      (read from site_content)
+src/components/TimelineCarousel.tsx                 (read from site_content)
+src/components/ProjectCells.tsx                     (read from site_content)
+src/components/CTASection.tsx                       (read from site_content)
+
+# Backend
+supabase/functions/cms-save/index.ts                (extend: site_content writes)
+supabase/functions/cms-upload/index.ts              (new — service-role media upload)
+supabase migration                                  (storage policies on site-media)
 ```
 
-Phases 2–6 (About, Projects, theme controls, click-to-edit overlay) follow in subsequent passes once phase 1 is live.
+After this lands: every image, video, headline, and bullet on every page is editable from `/admin` with a live preview, and uploads go through a secure server-side path.
