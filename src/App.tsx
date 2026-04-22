@@ -11,6 +11,7 @@ import CaseStudy from "./pages/CaseStudy.tsx";
 import About from "./pages/About.tsx";
 import Admin from "./pages/Admin.tsx";
 import SiteNav from "./components/site/SiteNav";
+import SiteFooter from "./components/site/SiteFooter";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
       <BrowserRouter>
         <SiteNav />
         <AnimatedRoutes />
+        <SiteFooter />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
