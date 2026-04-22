@@ -1,72 +1,225 @@
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
+import { LayoutGrid, Rows3 } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
-import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
 import { Project } from "@/data/projectsSeed";
+import { useCountUp, parseLeadingNumber } from "@/hooks/useCountUp";
 
-const CornerBrackets = () => (
-  <>
-    <div className="absolute top-3 left-3">
-      <div className="w-4 h-4 border-t border-l" style={{ borderColor: "hsla(var(--indigo), 0.25)" }} />
-    </div>
-    <div className="absolute bottom-3 right-3">
-      <div className="w-4 h-4 border-b border-r" style={{ borderColor: "hsla(var(--indigo), 0.25)" }} />
-    </div>
-  </>
+/* -------------------- Hero highlights -------------------- */
+
+const highlights = [
+  { value: "4,743%", label: "engagement lift" },
+  { value: "147 hrs/wk", label: "reclaimed" },
+  { value: "100+", label: "brand touchpoints owned" },
+  { value: "3d → 20m", label: "tender turnaround" },
+];
+
+const HeroHeadline = () => {
+  const lines = [
+    ["I", "turn", "messy", "workflows"],
+    ["into", "shipped", "systems."],
+  ];
+  let i = 0;
+  return (
+    <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight max-w-4xl">
+      {lines.map((line, li) => (
+        <span key={li} className="block overflow-hidden">
+          <span className="inline-block">
+            {line.map((word) => {
+              const delay = 0.15 + i * 0.07;
+              i++;
+              return (
+                <motion.span
+                  key={`${li}-${word}-${i}`}
+                  initial={{ y: "110%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+                  className="inline-block mr-[0.25em]"
+                >
+                  <span className={li === 0 ? "text-card-title" : "gradient-text-indigo"}>
+                    {word}
+                  </span>
+                </motion.span>
+              );
+            })}
+          </span>
+        </span>
+      ))}
+    </h1>
+  );
+};
+
+const HighlightsStrip = () => (
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-12 sm:mt-16">
+    {highlights.map((h, i) => (
+      <motion.div
+        key={h.label}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.9 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="glass rounded-2xl p-5 sm:p-6 relative overflow-hidden"
+      >
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.7, delay: 1.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+          style={{ transformOrigin: "left", background: "hsla(var(--indigo), 0.4)" }}
+          className="absolute top-0 left-0 right-0 h-px"
+        />
+        <p className="text-2xl sm:text-3xl lg:text-4xl font-semibold gradient-text-indigo leading-tight mb-2">
+          {h.value}
+        </p>
+        <p className="text-[11px] sm:text-xs tracking-wider uppercase text-muted-foreground">
+          {h.label}
+        </p>
+      </motion.div>
+    ))}
+  </div>
 );
 
-const WorkCard = ({ project, index }: { project: Project; index: number }) => {
+/* -------------------- Card -------------------- */
+
+type ViewMode = "grid" | "list";
+
+const featuredSlugs = new Set([
+  "cjc-digital-construction-landing-page",
+  "ai-workflow-survey-system",
+  "cv-generation-tool-engineering-tender-automation",
+]);
+
+const cardSpan = (idx: number, slug: string, view: ViewMode) => {
+  if (view === "list") return "col-span-12";
+  // bento rhythm: featured = 2 cols on lg, else 1 col; mobile always 1
+  if (featuredSlugs.has(slug)) return "col-span-12 sm:col-span-6 lg:col-span-8";
+  return "col-span-12 sm:col-span-6 lg:col-span-4";
+};
+
+const WorkCard = ({
+  project,
+  index,
+  view,
+  hovered,
+  setHovered,
+}: {
+  project: Project;
+  index: number;
+  view: ViewMode;
+  hovered: string | null;
+  setHovered: (s: string | null) => void;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const numeric = parseLeadingNumber(project.outcomeMetric);
+  const animated = useCountUp(numeric ?? 0, inView && numeric !== null);
+  const suffix = numeric !== null
+    ? project.outcomeMetric.replace(/^[-\d,\.]+/, "")
+    : "";
+  const displayMetric = numeric !== null
+    ? `${animated.toLocaleString()}${suffix}`
+    : project.outcomeMetric;
+
+  const isHovered = hovered === project.slug;
+  const isOther = hovered !== null && !isHovered;
+  const isList = view === "list";
+
   return (
     <motion.div
+      layout
       ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      onMouseEnter={() => setHovered(project.slug)}
+      onMouseLeave={() => setHovered(null)}
+      transition={{ layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }}
+      className={`${cardSpan(index, project.slug, view)} group`}
+      style={{ opacity: isOther ? 0.55 : 1 }}
     >
-      <Link to={`/work/${project.slug}`} className="block group">
-        <div className="relative">
+      <Link to={`/work/${project.slug}`} className="block h-full">
+        <motion.div
+          layout
+          className={`glass rounded-2xl overflow-hidden relative ${
+            isList ? "flex flex-row items-stretch" : "flex flex-col"
+          }`}
+          style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
+          whileHover={{ y: -4 }}
+        >
+          {/* Cursor spotlight */}
           <div
-            className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[80%] h-[40px] rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            style={{ background: "hsla(var(--indigo), 0.12)" }}
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            style={{
+              background: "radial-gradient(400px circle at var(--mx,50%) var(--my,50%), hsla(var(--indigo), 0.10), transparent 60%)",
+            }}
           />
-          <div
-            className="glass rounded-2xl overflow-hidden transition-all duration-300 group-hover:-translate-y-1"
-            style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.08)" }}
+          {/* Cover */}
+          <motion.div
+            layout
+            className={`relative overflow-hidden ${
+              isList ? "w-40 sm:w-56 shrink-0" : "h-[180px]"
+            }`}
+            style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.07), hsla(var(--purple), 0.12))" }}
           >
-            <div
-              className="relative h-[180px] flex items-center justify-center overflow-hidden"
-              style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.07), hsla(var(--purple), 0.12))" }}
-            >
-              <CornerBrackets />
-              <img src={project.cover} alt={project.title} className="w-full h-full object-cover" />
+            <motion.img
+              src={project.cover}
+              alt={project.title}
+              className="w-full h-full object-cover"
+              initial={false}
+              animate={{ scale: isHovered ? 1.06 : 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            />
+            <div className="absolute top-3 left-3 text-[10px] tracking-[0.18em] uppercase text-white/80 mix-blend-difference">
+              {String(index + 1).padStart(2, "0")} / 08
             </div>
-            <div className="p-5">
-              <p className="text-2xl sm:text-3xl font-semibold gradient-text-indigo leading-tight mb-2">
-                {project.outcomeMetric}
-              </p>
-              <h3 className="text-[15px] font-semibold text-card-title mb-1">{project.title}</h3>
-              <p className="text-[12px] text-card-desc">{project.role}</p>
-              <div className="mt-3 text-[10px] tracking-wider uppercase text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity">
-                Open case study →
-              </div>
+          </motion.div>
+
+          {/* Body */}
+          <motion.div layout className={`p-5 ${isList ? "flex-1" : ""}`}>
+            <p className="text-2xl sm:text-3xl font-semibold gradient-text-indigo leading-tight mb-2">
+              {displayMetric}
+            </p>
+            <h3 className="text-[15px] font-semibold text-card-title mb-1">{project.title}</h3>
+            <p className="text-[12px] text-card-desc">{project.role}</p>
+            <div className="mt-3 text-[10px] tracking-wider uppercase text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity">
+              Open case study →
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </Link>
     </motion.div>
   );
 };
 
+/* -------------------- Filters & view toggle -------------------- */
+
+type Filter = "All" | "Design" | "AI Ops" | "Brand";
+
+const filterFor = (p: Project): Filter[] => {
+  const r = p.role.toLowerCase();
+  const tags: Filter[] = ["All"];
+  if (/(brand|identity|signature|touchpoint)/.test(r)) tags.push("Brand");
+  if (/(design|motion|web|product)/.test(r)) tags.push("Design");
+  if (/(ai|workflow|operations|automation|tooling)/.test(r)) tags.push("AI Ops");
+  return tags;
+};
+
+/* -------------------- Page -------------------- */
+
 const Work = () => {
   const { projects } = useProjects();
+  const [filter, setFilter] = useState<Filter>("All");
+  const [view, setView] = useState<ViewMode>("grid");
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const filtered = useMemo(
+    () => projects.filter((p) => filter === "All" || filterFor(p).includes(filter)),
+    [projects, filter],
+  );
+
+  const filters: Filter[] = ["All", "Design", "AI Ops", "Brand"];
 
   return (
     <PageTransition>
-      <main className="pt-28 pb-24 sm:pt-32 sm:pb-32 relative overflow-hidden">
+      <main className="pt-24 pb-24 sm:pt-28 sm:pb-32 relative overflow-hidden">
+        {/* ambient orbs */}
         <div
           className="absolute top-0 left-10 w-[500px] h-[500px] rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.06) 0%, transparent 70%)" }}
@@ -77,27 +230,109 @@ const Work = () => {
         />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-          <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
-              Here's what I actually built
-            </p>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <h1 className="text-3xl sm:text-5xl font-semibold leading-[1.1] mb-3 text-card-title max-w-3xl">
-              Eight projects.
-            </h1>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p className="text-base sm:text-lg italic text-muted-foreground max-w-2xl mb-14 sm:mb-20">
-              Each one cost something to make. The metrics are real. The honest moments more so.
-            </p>
-          </Reveal>
+          {/* HERO */}
+          <section className="pt-8 pb-14 sm:pt-12 sm:pb-20">
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5"
+            >
+              I bridge design and AI operations
+            </motion.p>
+            <HeroHeadline />
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="text-base sm:text-lg italic text-muted-foreground max-w-2xl mt-6"
+            >
+              Eight projects. Real outcomes. Here's what I actually built — and what each one cost to make.
+            </motion.p>
+            <HighlightsStrip />
+          </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((p, i) => (
-              <WorkCard key={p.slug} project={p} index={i} />
-            ))}
+          {/* CONTROLS */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-2 flex-wrap">
+              {filters.map((f) => {
+                const active = f === filter;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className="relative text-[11px] tracking-[0.18em] uppercase px-4 py-2 rounded-full transition-colors"
+                    style={{
+                      color: active ? "hsl(var(--indigo))" : "hsl(var(--muted-foreground))",
+                    }}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="filter-pill"
+                        className="absolute inset-0 rounded-full"
+                        style={{ background: "hsla(var(--indigo), 0.10)", border: "1px solid hsla(var(--indigo), 0.25)" }}
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative">{f}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="glass rounded-full p-1 flex items-center">
+              {(["grid", "list"] as ViewMode[]).map((v) => {
+                const active = v === view;
+                return (
+                  <button
+                    key={v}
+                    onClick={() => setView(v)}
+                    className="relative px-3 py-1.5 rounded-full text-[11px] tracking-[0.18em] uppercase flex items-center gap-1.5"
+                    style={{ color: active ? "hsl(var(--indigo))" : "hsl(var(--muted-foreground))" }}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="view-pill"
+                        className="absolute inset-0 rounded-full"
+                        style={{ background: "hsla(var(--indigo), 0.10)" }}
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative flex items-center gap-1.5">
+                      {v === "grid" ? <LayoutGrid className="w-3 h-3" /> : <Rows3 className="w-3 h-3" />}
+                      {v}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* GRID */}
+          <motion.div
+            layout
+            onMouseMove={(e) => {
+              const card = (e.target as HTMLElement).closest<HTMLElement>(".group");
+              if (!card) return;
+              const r = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+              card.style.setProperty("--my", `${e.clientY - r.top}px`);
+            }}
+            className="grid grid-cols-12 gap-4 sm:gap-6"
+          >
+            <AnimatePresence>
+              {filtered.map((p, i) => (
+                <WorkCard
+                  key={p.slug}
+                  project={p}
+                  index={i}
+                  view={view}
+                  hovered={hovered}
+                  setHovered={setHovered}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </main>
     </PageTransition>

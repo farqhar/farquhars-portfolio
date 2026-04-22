@@ -1,16 +1,36 @@
-import { Link, useParams, Navigate } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
+
+type TabKey = "problem" | "process" | "honest" | "outcome" | "recognition";
+
+const tabs: { key: TabKey; label: string }[] = [
+  { key: "problem", label: "Problem" },
+  { key: "process", label: "Process" },
+  { key: "honest", label: "Honest moment" },
+  { key: "outcome", label: "Outcome" },
+  { key: "recognition", label: "Recognition" },
+];
 
 const CaseStudy = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { projects } = useProjects();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [-40, 40]);
+  const y = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+
+  const [tab, setTab] = useState<TabKey>("problem");
+  const [longForm, setLongForm] = useState(false);
+
+  // Reset state + scroll on slug change
+  useEffect(() => {
+    setTab("problem");
+    setLongForm(false);
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [slug]);
 
   const project = projects.find((p) => p.slug === slug);
   if (!project) return <Navigate to="/work" replace />;
@@ -18,13 +38,59 @@ const CaseStudy = () => {
   const idx = projects.findIndex((p) => p.slug === slug);
   const next = projects[(idx + 1) % projects.length];
 
+  const sections: Record<TabKey, JSX.Element> = {
+    problem: (
+      <p className="text-lg sm:text-xl leading-[1.6] text-card-title">{project.problem}</p>
+    ),
+    process: (
+      <div>
+        <p className="text-base leading-[1.7] text-card-desc whitespace-pre-line">{project.process}</p>
+        <div
+          className="mt-6 rounded-xl h-[200px] flex items-center justify-center"
+          style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))" }}
+        >
+          <span className="text-xs uppercase tracking-wider" style={{ color: "hsla(var(--indigo), 0.45)" }}>
+            Process visual
+          </span>
+        </div>
+      </div>
+    ),
+    honest: (
+      <blockquote
+        className="border-l-2 pl-5 sm:pl-6 italic text-base sm:text-lg leading-[1.7] text-card-desc"
+        style={{ borderColor: "hsl(var(--indigo))" }}
+      >
+        {project.honest}
+      </blockquote>
+    ),
+    outcome: (
+      <div>
+        <p className="text-4xl sm:text-6xl font-semibold gradient-text-indigo leading-[1.05] mb-5">
+          {project.outcomeMetric}
+        </p>
+        <p className="text-base leading-[1.7] text-card-desc">{project.outcome}</p>
+      </div>
+    ),
+    recognition: project.quotes.length > 0 ? (
+      <div className="space-y-4">
+        {project.quotes.map((q, i) => (
+          <blockquote key={i} className="glass rounded-2xl p-6 text-base sm:text-lg leading-[1.6] text-card-title">
+            "{q.replace(/^"|"$/g, "")}"
+          </blockquote>
+        ))}
+      </div>
+    ) : (
+      <p className="text-sm text-muted-foreground italic">No external recognition recorded yet.</p>
+    ),
+  };
+
   return (
     <PageTransition>
       <main className="pb-24 relative overflow-hidden">
-        {/* Hero */}
+        {/* Hero — shorter */}
         <div
           ref={heroRef}
-          className="relative h-[60vh] sm:h-[75vh] w-full overflow-hidden"
+          className="relative h-[40vh] sm:h-[55vh] w-full overflow-hidden"
           style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.08), hsla(var(--purple), 0.14))" }}
         >
           <motion.img
@@ -36,110 +102,116 @@ const CaseStudy = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20 relative z-10">
-          <Reveal>
-            <h1 className="text-3xl sm:text-5xl font-semibold text-card-title leading-[1.1] mb-3">
-              {project.title}
-            </h1>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <p className="text-sm sm:text-base text-muted-foreground mb-10">{project.role}</p>
-          </Reveal>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-10">
+          <motion.h1
+            layout
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl sm:text-5xl font-semibold text-card-title leading-[1.1] mb-2"
+          >
+            {project.title}
+          </motion.h1>
+          <p className="text-sm sm:text-base text-muted-foreground mb-8">{project.role}</p>
 
-          {/* Summary bar */}
-          <Reveal delay={0.16}>
-            <div className="glass rounded-2xl grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-foreground/5 mb-16">
-              {[
-                { label: "Role", value: project.role.split("·")[0]?.trim() ?? project.role },
-                { label: "Timeline", value: project.timeline },
-                { label: "Outcome", value: project.outcomeMetric },
-              ].map((item) => (
-                <div key={item.label} className="p-5">
-                  <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
-                    {item.label}
-                  </p>
-                  <p className="text-sm font-medium text-card-title">{item.value}</p>
-                </div>
-              ))}
+          {/* Sticky TL;DR */}
+          <motion.div
+            layout
+            className="sticky top-16 z-20 glass rounded-2xl p-4 sm:p-5 mb-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
+          >
+            <div>
+              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Problem</p>
+              <p className="text-sm text-card-title leading-snug line-clamp-2">{project.problem}</p>
             </div>
-          </Reveal>
-
-          {/* Problem */}
-          <Reveal>
-            <section className="mb-16">
-              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">The Problem</p>
-              <p className="text-lg sm:text-xl leading-[1.6] text-card-title">{project.problem}</p>
-            </section>
-          </Reveal>
-
-          {/* Process */}
-          <Reveal>
-            <section className="mb-16">
-              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">The Process</p>
-              <p className="text-base leading-[1.7] text-card-desc whitespace-pre-line">{project.process}</p>
-              <div
-                className="mt-6 rounded-xl h-[240px] flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, hsla(var(--indigo), 0.06), hsla(var(--purple), 0.1))" }}
-              >
-                <span className="text-xs uppercase tracking-wider" style={{ color: "hsla(var(--indigo), 0.45)" }}>
-                  Process visual
-                </span>
-              </div>
-            </section>
-          </Reveal>
-
-          {/* Honest moment */}
-          <Reveal>
-            <section className="mb-16">
-              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">An honest moment</p>
-              <blockquote
-                className="border-l-2 pl-5 sm:pl-6 italic text-base sm:text-lg leading-[1.7] text-card-desc"
-                style={{ borderColor: "hsl(var(--indigo))" }}
-              >
-                {project.honest}
-              </blockquote>
-            </section>
-          </Reveal>
-
-          {/* Outcome */}
-          <Reveal>
-            <section className="mb-16">
-              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">The Outcome</p>
-              <p className="text-4xl sm:text-6xl font-semibold gradient-text-indigo leading-[1.05] mb-5">
+            <div>
+              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Outcome</p>
+              <p className="text-sm text-card-title leading-snug line-clamp-2">{project.outcome}</p>
+            </div>
+            <div>
+              <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-1">Metric</p>
+              <p className="text-base font-semibold gradient-text-indigo leading-tight">
                 {project.outcomeMetric}
               </p>
-              <p className="text-base leading-[1.7] text-card-desc">{project.outcome}</p>
-            </section>
-          </Reveal>
+            </div>
+          </motion.div>
 
-          {/* Recognition */}
-          {project.quotes.length > 0 && (
-            <Reveal>
-              <section className="mb-20">
-                <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4">Recognition</p>
-                <div className="space-y-5">
-                  {project.quotes.map((q, i) => (
-                    <blockquote
-                      key={i}
-                      className="glass rounded-2xl p-6 text-base sm:text-lg leading-[1.6] text-card-title"
+          {/* View toggle */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">Deep dive</p>
+            <button
+              onClick={() => setLongForm((v) => !v)}
+              className="text-[10px] tracking-[0.18em] uppercase px-3 py-1.5 rounded-full border hover:bg-foreground/5 transition-colors"
+              style={{ borderColor: "hsla(var(--indigo), 0.3)", color: "hsl(var(--indigo))" }}
+            >
+              {longForm ? "Tabbed view" : "Read as long form"}
+            </button>
+          </div>
+
+          {/* Tabs */}
+          {!longForm && (
+            <>
+              <div className="relative flex flex-wrap gap-1 border-b border-foreground/10 mb-8">
+                {tabs.map((t) => {
+                  const active = t.key === tab;
+                  return (
+                    <button
+                      key={t.key}
+                      onClick={() => setTab(t.key)}
+                      className="relative px-3 sm:px-4 py-2.5 text-[11px] sm:text-xs tracking-[0.16em] uppercase transition-colors"
+                      style={{ color: active ? "hsl(var(--indigo))" : "hsl(var(--muted-foreground))" }}
                     >
-                      "{q.replace(/^"|"$/g, "")}"
-                    </blockquote>
-                  ))}
-                </div>
-              </section>
-            </Reveal>
+                      {active && (
+                        <motion.span
+                          layoutId="case-tab-underline"
+                          className="absolute left-2 right-2 -bottom-px h-[2px] rounded-full"
+                          style={{ background: "hsl(var(--indigo))" }}
+                          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                        />
+                      )}
+                      <span className="relative">{t.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={tab}
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -24 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="min-h-[200px] mb-16"
+                >
+                  {sections[tab]}
+                </motion.div>
+              </AnimatePresence>
+            </>
+          )}
+
+          {/* Long form */}
+          {longForm && (
+            <motion.div layout className="space-y-14 mb-16">
+              {tabs.map((t) => (
+                <motion.section layout key={t.key}>
+                  <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
+                    {t.label}
+                  </p>
+                  {sections[t.key]}
+                </motion.section>
+              ))}
+            </motion.div>
           )}
 
           {/* Next */}
-          <Reveal>
-            <Link
-              to={`/work/${next.slug}`}
-              className="inline-flex items-center gradient-indigo text-primary-foreground text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
-            >
-              Next: {next.title} →
-            </Link>
-          </Reveal>
+          <button
+            onClick={() => {
+              navigate(`/work/${next.slug}`);
+            }}
+            className="inline-flex items-center gradient-indigo text-primary-foreground text-sm font-medium px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
+          >
+            Next: {next.title} →
+          </button>
         </div>
       </main>
     </PageTransition>

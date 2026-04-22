@@ -1,67 +1,217 @@
+import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
 import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
 
 const howIWork = [
-  "I write the email before I open Figma. If I can't say it, I can't design it.",
-  "I'd rather kill a feature than ship a confused one.",
+  "I write the brief before I open the tool. If I can't say it, I can't ship it.",
+  "I'd rather kill a workflow than ship a confused one.",
   "I treat stakeholder management as the actual work, not the friction around it.",
-  "I use AI to remove the boring parts so the editorial judgment gets sharper, not lazier.",
+  "I use AI to remove the boring parts so editorial judgment gets sharper, not lazier.",
 ];
 
 const skills = {
-  Direction: ["Creative Direction", "Brand Strategy", "Product Design"],
-  Craft: ["Type Systems", "Motion", "Web", "Identity"],
-  Operations: ["AI Workflow Design", "Internal Tooling", "Process Mapping"],
-  Tools: ["Figma", "After Effects", "React", "Python", "Notion"],
+  "Design foundation": ["Brand systems", "Type & layout", "Motion", "Web"],
+  "AI Operations": ["Workflow design", "Internal tooling", "Process mapping", "Pilot evaluation"],
 };
 
-const timeline = [
-  { year: "2024 — Now", title: "Independent", body: "Founder of Wollip. Consulting on AI workflow + brand systems." },
-  { year: "2022 — 2024", title: "CJC Group", body: "Creative direction across digital, motion, and internal comms automation." },
-  { year: "2019 — 2022", title: "Studio + agency", body: "Brand and product design across early-stage and enterprise clients." },
-  { year: "2015 — 2019", title: "Design education", body: "Communication design — type, systems, and the politics of clarity." },
-];
+const thenNow = {
+  then: {
+    title: "Graphic Designer",
+    body: "Brand systems, identity, type, motion. Working out what something is and how it should feel.",
+    points: ["Visual systems", "Brand voice", "Editorial craft"],
+  },
+  now: {
+    title: "AI Operations PM",
+    body: "Designing AI workflows, internal tools, and the operating system around them. Same problem, different surface.",
+    points: ["Workflow design", "Tooling roadmaps", "Cross-team translation"],
+  },
+};
+
+/* -------------------- Mouse-reactive orb -------------------- */
+
+const HeroOrb = () => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 60, damping: 20 });
+  const sy = useSpring(y, { stiffness: 60, damping: 20 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      x.set((e.clientX / w - 0.5) * 80);
+      y.set((e.clientY / h - 0.5) * 80);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [x, y]);
+
+  return (
+    <motion.div
+      style={{
+        x: sx,
+        y: sy,
+        background:
+          "radial-gradient(circle, hsla(var(--indigo), 0.22) 0%, hsla(var(--purple), 0.12) 40%, transparent 70%)",
+      }}
+      className="absolute -top-32 -right-20 w-[680px] h-[680px] rounded-full pointer-events-none blur-2xl"
+    />
+  );
+};
+
+/* -------------------- Then / Now -------------------- */
+
+const ThenNow = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <div ref={ref} className="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4 items-stretch mb-20">
+      {/* Then */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={inView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        className="glass rounded-2xl p-6 sm:p-8 relative"
+      >
+        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Then</p>
+        <h3 className="text-xl font-semibold text-card-title mb-3">{thenNow.then.title}</h3>
+        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.then.body}</p>
+        <div className="flex flex-wrap gap-2">
+          {thenNow.then.points.map((p) => (
+            <span
+              key={p}
+              className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full"
+              style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Connecting line — desktop only */}
+      <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+        <motion.svg width="180" height="60" viewBox="0 0 180 60" fill="none">
+          <motion.path
+            d="M 8 30 C 60 30, 120 30, 172 30"
+            stroke="hsl(var(--indigo))"
+            strokeWidth="1.5"
+            strokeDasharray="4 4"
+            initial={{ pathLength: 0 }}
+            animate={inView ? { pathLength: 1 } : {}}
+            transition={{ duration: 1.1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            fill="none"
+          />
+        </motion.svg>
+        <motion.p
+          initial={{ opacity: 0, y: -6 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.4, duration: 0.5 }}
+          className="text-center text-[9px] tracking-[0.22em] uppercase text-muted-foreground -mt-3"
+        >
+          clarity · systems · craft
+        </motion.p>
+      </div>
+
+      {/* Now */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={inView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        className="glass rounded-2xl p-6 sm:p-8"
+        style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.10)" }}
+      >
+        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
+        <h3 className="text-xl font-semibold gradient-text-indigo mb-3">{thenNow.now.title}</h3>
+        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.now.body}</p>
+        <div className="flex flex-wrap gap-2">
+          {thenNow.now.points.map((p) => (
+            <span
+              key={p}
+              className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full"
+              style={{ background: "hsla(var(--purple), 0.10)", color: "hsl(var(--purple))" }}
+            >
+              {p}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+/* -------------------- Now status card -------------------- */
+
+const NowCard = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: 0.4 }}
+    className="inline-flex items-center gap-3 glass rounded-full pl-3 pr-5 py-2 mb-10"
+  >
+    <motion.span
+      animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
+      transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+      className="w-2 h-2 rounded-full"
+      style={{ background: "hsl(var(--indigo))", boxShadow: "0 0 10px hsl(var(--indigo))" }}
+    />
+    <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
+      Currently · Building AI operations at <span className="text-card-title">[Company]</span>
+    </p>
+  </motion.div>
+);
+
+/* -------------------- Page -------------------- */
 
 const About = () => {
   return (
     <PageTransition>
       <main className="pt-28 sm:pt-32 pb-24 relative overflow-hidden">
-        <div
-          className="absolute top-20 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsla(var(--purple), 0.06) 0%, transparent 70%)" }}
-        />
+        <HeroOrb />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-4">About</p>
           </Reveal>
+
+          <NowCard />
+
           <Reveal delay={0.1}>
-            <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-8 max-w-3xl">
-              <span className="gradient-text-indigo">I bridge design thinking and AI operations.</span>
+            <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
+              I started in <span className="text-card-title">graphic design.</span><br />
+              Now I build <span className="gradient-text-indigo">AI optimised workflows.</span>
             </h1>
           </Reveal>
           <Reveal delay={0.2}>
             <p className="text-lg leading-[1.7] text-card-desc max-w-2xl mb-20">
-              I'm Farquhar — a creative director who builds the systems behind the brand as carefully as the brand itself.
-              I work where craft meets operations, and I tend to be useful when the answer is somewhere between a Figma file
-              and a workflow.
+              The throughline is the same — act as a bridge between technical and non-technical departments,
+              and make complicated things make sense. I'm Farquhar — I work where craft meets operations,
+              most useful when the answer sits between a Figma file and a workflow.
             </p>
           </Reveal>
+
+          {/* Then / Now */}
+          <Reveal>
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Then / Now</p>
+          </Reveal>
+          <ThenNow />
 
           {/* How I work */}
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-20">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-20">
             {howIWork.map((line, i) => (
               <Reveal key={i} delay={i * 0.08}>
-                <div className="glass rounded-2xl p-6 h-full">
+                <motion.div layout className="glass rounded-2xl p-6 h-full">
                   <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">0{i + 1}</p>
                   <p className="text-base leading-[1.6] text-card-title">{line}</p>
-                </div>
+                </motion.div>
               </Reveal>
             ))}
-          </div>
+          </motion.div>
 
           {/* Skills */}
           <Reveal>
@@ -71,7 +221,7 @@ const About = () => {
             {Object.entries(skills).map(([group, items], gi) => (
               <Reveal key={group} delay={gi * 0.06}>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground sm:w-32 shrink-0">{group}</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground sm:w-44 shrink-0">{group}</p>
                   <div className="flex flex-wrap gap-2">
                     {items.map((item) => (
                       <span
@@ -82,24 +232,6 @@ const About = () => {
                         {item}
                       </span>
                     ))}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          {/* Timeline */}
-          <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Path</p>
-          </Reveal>
-          <div className="space-y-4 mb-20">
-            {timeline.map((entry, i) => (
-              <Reveal key={entry.year} delay={i * 0.08}>
-                <div className="glass rounded-2xl p-6 flex flex-col sm:flex-row sm:items-start gap-4">
-                  <p className="text-xs tracking-wider uppercase text-muted-foreground sm:w-32 shrink-0">{entry.year}</p>
-                  <div>
-                    <p className="text-base font-semibold text-card-title mb-1">{entry.title}</p>
-                    <p className="text-sm text-card-desc leading-relaxed">{entry.body}</p>
                   </div>
                 </div>
               </Reveal>
