@@ -9,10 +9,10 @@ import { useSiteContent } from "@/hooks/useSiteContent";
 const howIWork = {
   discover: {
     heading: "Discover & Design",
-    intro: "Understand the problem before reaching for the tool. Map the workflow before designing the screen.",
+     intro: "Understand the problem before reaching for the tool. Map the workflow before designing anything.",
     points: [
-      "Write the brief before opening Figma. If I can't say it, I can't ship it.",
-      "Treat stakeholder management as the actual work, not friction around it.",
+       "Write the brief before opening any tools. If I can't say it, I can't ship it.",
+       "Treat stakeholder management as the work, not friction around it.",
       "Map the system end-to-end before drawing a single component.",
     ],
   },
@@ -21,8 +21,8 @@ const howIWork = {
     intro: "Ship the smallest useful version, learn fast, and cut what isn't working.",
     points: [
       "Kill confused workflows instead of polishing them.",
-      "Use AI to remove the boring parts so editorial judgement gets sharper.",
-      "Prototype in days, not quarters — feedback is the only honest design tool.",
+       "Use AI to remove the manual parts so judgement gets sharper.",
+       "Prototype in days, feedback is the only honest design tool.",
     ],
   },
 };
@@ -30,9 +30,9 @@ const howIWork = {
 type Testimonial = { quote: string; name: string; role: string; avatar?: string };
 
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
-  { quote: "Brought clarity to a process we'd been stuck on for months. The tooling he designed is now part of how we operate.", name: "[Stakeholder]", role: "Operations lead" },
-  { quote: "Treats design and ops as the same problem. Rare combination — and exactly what we needed.", name: "[Director]", role: "Strategy & Brand" },
-  { quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.", name: "[Engineering manager]", role: "Product team" },
+   { quote: "Thank you for all the work you've done within the marketing team. There has been a lot of change, you've added enormous value beyond graphic design.", name: "JEN MANUEL", role: "MARKETING DIRECTOR" },
+   { quote: "The genuine excitement and enthusiasm you bring to the workplace makes collaborating with you energising, and you’ve already had a great impact within the AIQ team.", name: "PATRICK CARROLL", role: "GENERAL MANAGER · AIQ INNOVATION" },
+   { quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.", name: "[Director]", role: "MARKETING DIRECTOR · JACARANDA HUB" },
 ];
 
 const skills = {
@@ -199,13 +199,13 @@ const About = () => {
   const { value: hs } = useSiteSetting<{ url: string }>("headshot_url");
   const { get } = useSiteContent("about");
   const headshotSrc = hs?.url || headshot;
-  const status = get("hero", "status", "Currently · Building AI operations at [Company]");
-  const headline1 = get("hero", "headline1", "I started in graphic design.");
+   const status = get("hero", "status", "CURRENTLY · BUILDING AI OPERATIONS AT AIQ INNOVATION GROUP");
+   const headline1 = get("hero", "headline1", "I started in design.");
   const headline2 = get("hero", "headline2", "Now I build AI optimised workflows.");
   const intro = get(
     "hero",
     "intro",
-    "The throughline is the same — act as a bridge between technical and non-technical departments, and make complicated things make sense. I'm Farquhar — I work where craft meets operations, most useful when the answer sits between a Figma file and a workflow.",
+    "The concept is the same, act as a bridge between technical and non-technical departments, and translate complex ideas into digestible solutions.",
   );
   const contactHeading = get("contact", "heading", "Let's talk.");
   const contactSub = get("contact", "sub", "farqmac@me.com · Sydney, Australia");
