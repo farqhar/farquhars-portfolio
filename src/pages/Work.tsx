@@ -241,7 +241,7 @@ const Work = () => {
   }, []);
 
   const heroEyebrow = get("hero", "eyebrow", "I bridge design and AI operations");
-  const heroSubhead = get("hero", "subhead", "Eight projects. Real outcomes. Here's what I actually built — and what each one cost to make.");
+   const heroSubhead = get("hero", "subhead", "Eight projects. Real outcomes. Here's what I bring to my work.");
   const cmsHighlights = highlights.map((h, i) => ({
     value: get("highlights", `v${i + 1}`, h.value),
     label: get("highlights", `l${i + 1}`, h.label),
