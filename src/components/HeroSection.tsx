@@ -10,7 +10,7 @@ const HeroSection = () => {
   const phase1b = get("hero", "phase1_b", "with an F.");
   const eyebrow = get("hero", "eyebrow", "FARQUHAR MACDOUGALL");
   const headline = get("hero", "headline", "Some people make things look good.");
-  const subhead = get("hero", "subhead", "I make things make sense.");
+   const subhead = get("hero", "subhead", "Bridging design and AI operations.\nI make complicated things make sense.");
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 2400);
