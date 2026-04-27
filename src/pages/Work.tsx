@@ -10,10 +10,10 @@ import { useSiteContent } from "@/hooks/useSiteContent";
 /* -------------------- Hero highlights -------------------- */
 
 const highlights = [
-  { value: "4,743%", label: "engagement lift", caveat: "on one landing page I rebuilt" },
-  { value: "147 hrs/wk", label: "process waste", caveat: "identified in a workflow audit" },
-  { value: "100+", label: "brand touchpoints", caveat: "catalogued & systemised" },
-  { value: "3d → 20m", label: "tender drafting", caveat: "tool in build, supporting role" },
+   { value: "4,743%", label: "engagement lift", caveat: "on one landing page I rebuilt" },
+   { value: "147 hrs/wk", label: "process waste", caveat: "identified in a workflow audit" },
+   { value: "100+", label: "brand touchpoints", caveat: "catalogued, systemised & updated" },
+   { value: "$12M", label: "LOST", caveat: "identified in inefficient workflows" },
 ];
 
 const HeroHeadline = () => {

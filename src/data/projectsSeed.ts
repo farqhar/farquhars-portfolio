@@ -43,7 +43,7 @@ export const projectsSeed: Project[] = [
     title: "AI Workflow Survey System & Pain Point Analysis",
     role: "Operations Design · Research · AI Tooling",
     timeline: "10 weeks",
-    outcomeMetric: "147 hrs/wk reclaimed",
+     outcomeMetric: "147 hrs/wk identified",
     cover: placeholder,
     hero: placeholder,
     problem:
@@ -64,7 +64,7 @@ export const projectsSeed: Project[] = [
     title: "CJC Air & Ports Motion Video",
     role: "Creative Direction · Motion Design · Script",
     timeline: "4 weeks",
-    outcomeMetric: "Used in every pitch since",
+     outcomeMetric: "Multiple million dollar projects won",
     cover: placeholder,
     hero: placeholder,
     problem:
@@ -85,7 +85,7 @@ export const projectsSeed: Project[] = [
     title: "Brand Touchpoint Audit & Ownership Framework",
     role: "Brand Strategy · Systems · Stakeholder Management",
     timeline: "8 weeks",
-    outcomeMetric: "100+ touchpoints owned",
+     outcomeMetric: "100+ touchpoints tracked",
     cover: placeholder,
     hero: placeholder,
     problem:
@@ -106,7 +106,7 @@ export const projectsSeed: Project[] = [
     title: "Animated Email Signature Suite — CaSE Happy Holidays",
     role: "Design · Motion · Email Engineering",
     timeline: "2 weeks",
-    outcomeMetric: "320+ staff deployed",
+     outcomeMetric: "120+ staff deployed",
     cover: placeholder,
     hero: placeholder,
     problem:
