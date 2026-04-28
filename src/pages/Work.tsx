@@ -6,6 +6,7 @@ import { useProjects } from "@/hooks/useProjects";
 import PageTransition from "@/components/site/PageTransition";
 import { Project } from "@/data/projectsSeed";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import FolderCard from "@/components/work/FolderCard";
 
 /* -------------------- Hero highlights -------------------- */
 
@@ -371,22 +372,19 @@ const Work = () => {
           {/* GRID */}
           <motion.div
             layout
-            onMouseMove={(e) => {
-              const card = (e.target as HTMLElement).closest<HTMLElement>(".group");
-              if (!card) return;
-              const r = card.getBoundingClientRect();
-              card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-              card.style.setProperty("--my", `${e.clientY - r.top}px`);
-            }}
-            className="grid grid-cols-12 gap-4 sm:gap-6"
+            className={
+              view === "list"
+                ? "grid grid-cols-1 gap-6"
+                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            }
           >
             <AnimatePresence>
               {filtered.map((p, i) => (
-                <WorkCard
+                <FolderCard
                   key={p.slug}
                   project={p}
                   index={i}
-                  view={view}
+                  total={filtered.length}
                   hovered={hovered}
                   setHovered={setHovered}
                 />
