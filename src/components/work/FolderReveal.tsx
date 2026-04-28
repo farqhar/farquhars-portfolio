@@ -6,63 +6,113 @@ import {
   useScroll,
   useTransform,
   useReducedMotion,
+  MotionValue,
 } from "framer-motion";
-import { Project } from "@/data/projectsSeed";
+import { Project, ProjectFile } from "@/data/projectsSeed";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+/* ============================================================
+   FolderSequence — vertically pinned stack of project folders.
+   One <ProjectFolder/> per project; each opens, fans out its
+   files, and unpins as you scroll past it.
+   ============================================================ */
 
 type Props = { projects: Project[] };
 
-const TAB_OFFSET = 36; // px gap between tab strips when fanned
-
 const FolderReveal = ({ projects }: Props) => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const reduce = useReducedMotion();
+  const sorted = useMemo(
+    () => [...projects].sort((a, b) => a.order - b.order),
+    [projects],
+  );
 
-  const total = projects.length;
+  return (
+    <div className="relative">
+      {sorted.map((p, i) => (
+        <ProjectFolder
+          key={p.slug}
+          project={p}
+          index={i}
+          total={sorted.length}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default FolderReveal;
+
+/* ============================================================
+   Single project folder — pinned, scroll-driven open + fan
+   ============================================================ */
+
+const ProjectFolder = ({
+  project,
+  index,
+  total,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+}) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
+  const [activeFile, setActiveFile] = useState(0);
+  const [tappedOpen, setTappedOpen] = useState(false);
+
+  // Treat projects without files[] as having one synthetic "file"
+  const files: ProjectFile[] = useMemo(() => {
+    if (project.files && project.files.length > 0) return project.files;
+    return [
+      {
+        title: project.title,
+        caption: project.outcomeMetric,
+        image: project.cover,
+        href: `/work/${project.slug}`,
+      },
+    ];
+  }, [project]);
+
+  const skipScrollAnim = reduce || isMobile;
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  // Cover lifts and rotates open between 0 → 0.4
-  const coverRotate = useTransform(scrollYProgress, [0, 0.4], [0, -118]);
-  const coverY = useTransform(scrollYProgress, [0, 0.4], [0, -180]);
-  const coverOpacity = useTransform(scrollYProgress, [0.3, 0.42], [1, 0]);
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const bodyShadow = useTransform(
-    scrollYProgress,
-    [0, 0.5],
-    [
-      "0 8px 24px hsla(var(--indigo), 0.10)",
-      "0 30px 80px hsla(var(--indigo), 0.28)",
-    ],
+  // Cover lift: 0.10 → 0.45
+  const coverRotate = useTransform(scrollYProgress, [0.1, 0.45], [0, -110]);
+  const coverY = useTransform(scrollYProgress, [0.1, 0.45], [0, -160]);
+  const coverOpacity = useTransform(scrollYProgress, [0.32, 0.5], [1, 0]);
+  const coverPointer = useTransform(scrollYProgress, (v) =>
+    v > 0.5 ? "none" : "auto",
   );
 
-  // Each tab fades and slides into its fanned position between 0.25 → 0.85
-  const tabProgress = (i: number) => {
-    const start = 0.25 + (i / total) * 0.5;
-    const end = start + 0.18;
-    return { start: Math.min(start, 0.95), end: Math.min(end, 0.99) };
-  };
+  // Hint
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
 
-  const active = projects[activeIndex] ?? projects[0];
-  const numberLabel = (i: number) => String(i + 1).padStart(2, "0");
+  // Number label
+  const numLabel = String(index + 1).padStart(2, "0");
+  const totalLabel = String(total).padStart(2, "0");
 
-  // For reduced motion: render fully open, no scroll animation.
-  const fullyOpen = reduce;
-
-  const folderWidth = "min(820px, 92vw)";
+  // Force-open conditions (mobile tap, reduced motion)
+  const forceOpen = skipScrollAnim && (tappedOpen || reduce);
 
   return (
     <section
       ref={sectionRef}
+      aria-label={`Folder ${numLabel}: ${project.title}`}
       className="relative"
-      style={{ height: fullyOpen ? "auto" : "260vh" }}
-      aria-label="Projects folder"
+      style={{
+        height: skipScrollAnim ? "auto" : "150vh",
+      }}
     >
       <div
-        className="sticky top-0 h-screen flex items-center justify-center overflow-visible"
+        className={
+          skipScrollAnim
+            ? "relative w-full py-16 px-4 sm:px-6"
+            : "sticky top-0 h-screen w-full flex items-center justify-center px-4 sm:px-6"
+        }
         style={{ perspective: 1600 }}
       >
         {/* Ambient glow */}
@@ -71,20 +121,29 @@ const FolderReveal = ({ projects }: Props) => {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle at 50% 40%, hsla(var(--indigo), 0.10), transparent 60%)",
+              "radial-gradient(circle at 50% 45%, hsla(var(--indigo), 0.10), transparent 60%)",
           }}
         />
 
+        {/* Section index, top-left */}
+        <div className="absolute top-6 left-6 sm:top-10 sm:left-10 text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
+          Folder {numLabel} / {totalLabel}
+        </div>
+
         {/* Scroll hint */}
-        {!fullyOpen && (
+        {!skipScrollAnim && (
           <motion.div
             style={{ opacity: hintOpacity }}
-            className="absolute top-8 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.24em] uppercase text-muted-foreground flex items-center gap-2"
+            className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.24em] uppercase text-muted-foreground flex items-center gap-2"
           >
             <span>Scroll to open</span>
             <motion.span
               animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             >
               ↓
             </motion.span>
@@ -93,68 +152,47 @@ const FolderReveal = ({ projects }: Props) => {
 
         {/* The folder stage */}
         <div
-          className="relative"
+          className="relative mx-auto"
           style={{
-            width: folderWidth,
-            height: "min(560px, 78vh)",
+            width: "min(820px, 92vw)",
+            height: "min(560px, 76vh)",
+            minHeight: 460,
             transformStyle: "preserve-3d",
           }}
         >
-          {/* ===== FOLDER BODY (always visible, content swaps with active) ===== */}
+          {/* ===== FOLDER BODY (always visible underneath) ===== */}
           <FolderBody
-            project={active}
-            index={activeIndex}
-            total={total}
-            shadow={bodyShadow}
-            fullyOpen={fullyOpen}
+            project={project}
+            files={files}
+            activeFile={activeFile}
+            indexLabel={numLabel}
           />
 
-          {/* ===== FILE TABS (fan out as you scroll) ===== */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            {projects.map((p, i) => {
-              const { start, end } = tabProgress(i);
-              return (
-                <FileTab
-                  key={p.slug}
-                  project={p}
-                  index={i}
-                  total={total}
-                  scrollYProgress={scrollYProgress}
-                  appearStart={start}
-                  appearEnd={end}
-                  isActive={i === activeIndex}
-                  onHover={() => setActiveIndex(i)}
-                  fullyOpen={fullyOpen}
-                />
-              );
-            })}
-          </div>
+          {/* ===== FILE TABS (fan upward out of folder) ===== */}
+          {(forceOpen || !skipScrollAnim) && (
+            <FileFan
+              files={files}
+              scrollYProgress={scrollYProgress}
+              fullyOpen={forceOpen}
+              activeFile={activeFile}
+              onHoverFile={setActiveFile}
+              skipScrollAnim={skipScrollAnim}
+            />
+          )}
 
-          {/* ===== FRONT COVER (the closed folder cover, lifts on scroll) ===== */}
-          {!fullyOpen && (
-            <motion.div
-              aria-hidden
-              className="absolute inset-0 rounded-3xl overflow-hidden"
-              style={{
-                rotateX: coverRotate,
-                y: coverY,
-                opacity: coverOpacity,
-                transformOrigin: "top center",
-                transformPerspective: 1600,
-                background:
-                  "linear-gradient(140deg, hsla(var(--indigo), 0.18), hsla(var(--blue), 0.14) 50%, hsla(var(--purple), 0.18))",
-                border: "1px solid hsla(var(--indigo), 0.30)",
-                boxShadow:
-                  "0 24px 60px hsla(var(--indigo), 0.20), inset 0 1px 0 rgba(255,255,255,0.4)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-              }}
-            >
-              <FrontCoverContent total={total} />
-            </motion.div>
+          {/* ===== FRONT COVER (lifts on scroll, or tap on mobile) ===== */}
+          {!forceOpen && (
+            <FrontCover
+              project={project}
+              numLabel={numLabel}
+              filesCount={files.length}
+              coverRotate={coverRotate}
+              coverY={coverY}
+              coverOpacity={coverOpacity}
+              coverPointer={coverPointer}
+              skipScrollAnim={skipScrollAnim}
+              onTap={() => setTappedOpen(true)}
+            />
           )}
         </div>
       </div>
@@ -162,91 +200,147 @@ const FolderReveal = ({ projects }: Props) => {
   );
 };
 
-/* ---------------- Front cover ---------------- */
+/* ---------------- Front cover (closed state) ---------------- */
 
-const FrontCoverContent = ({ total }: { total: number }) => (
-  <div className="relative w-full h-full p-8 sm:p-10 flex flex-col">
-    {/* Top tab silhouette (gives it folder shape) */}
-    <div
-      aria-hidden
-      className="absolute -top-5 left-8 h-6 w-40 rounded-t-xl"
-      style={{
-        background: "hsla(var(--indigo), 0.22)",
-        border: "1px solid hsla(var(--indigo), 0.30)",
-        borderBottom: "none",
-      }}
-    />
-
-    <div className="flex items-start justify-between">
-      <div>
-        <p className="text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
-          Untitled Folder · Interactive
-        </p>
-        <p className="text-[10px] tracking-[0.24em] uppercase text-muted-foreground/70 mt-1">
-          {total} files · 4:3
-        </p>
-      </div>
-      <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-semibold"
-        style={{
-          background: "hsla(var(--indigo), 0.15)",
-          border: "1px solid hsla(var(--indigo), 0.30)",
-          color: "hsl(var(--indigo))",
-        }}
-      >
-        FM
-      </div>
-    </div>
-
-    <div className="mt-auto">
-      <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
-        Selected Work
-      </p>
-      <p
-        className="font-semibold leading-none gradient-text-indigo"
-        style={{ fontSize: "clamp(8rem, 22vw, 16rem)" }}
-      >
-        01
-      </p>
-    </div>
-  </div>
-);
-
-/* ---------------- Folder body (content swap area) ---------------- */
-
-const FolderBody = ({
+const FrontCover = ({
   project,
-  index,
-  total,
-  shadow,
-  fullyOpen,
+  numLabel,
+  filesCount,
+  coverRotate,
+  coverY,
+  coverOpacity,
+  coverPointer,
+  skipScrollAnim,
+  onTap,
 }: {
   project: Project;
-  index: number;
-  total: number;
-  shadow: ReturnType<typeof useTransform<string>> | string;
-  fullyOpen: boolean;
+  numLabel: string;
+  filesCount: number;
+  coverRotate: MotionValue<number>;
+  coverY: MotionValue<number>;
+  coverOpacity: MotionValue<number>;
+  coverPointer: MotionValue<string>;
+  skipScrollAnim: boolean;
+  onTap: () => void;
 }) => {
+  const dynamicStyle = skipScrollAnim
+    ? {}
+    : {
+        rotateX: coverRotate,
+        y: coverY,
+        opacity: coverOpacity,
+        pointerEvents: coverPointer as unknown as MotionValue<any>,
+      };
+
   return (
     <motion.div
-      className="absolute inset-0 rounded-3xl overflow-hidden"
+      className="absolute inset-0 rounded-3xl overflow-hidden cursor-pointer"
+      onClick={skipScrollAnim ? onTap : undefined}
       style={{
+        ...dynamicStyle,
+        transformOrigin: "top center",
+        transformPerspective: 1600,
         background:
-          "linear-gradient(160deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78))",
-        border: "1px solid hsla(var(--indigo), 0.18)",
-        boxShadow: fullyOpen
-          ? "0 24px 60px hsla(var(--indigo), 0.18)"
-          : (shadow as unknown as string),
+          "linear-gradient(140deg, hsla(var(--indigo), 0.20), hsla(var(--blue), 0.16) 50%, hsla(var(--purple), 0.20))",
+        border: "1px solid hsla(var(--indigo), 0.32)",
+        boxShadow:
+          "0 30px 80px hsla(var(--indigo), 0.22), inset 0 1px 0 rgba(255,255,255,0.5)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
+        zIndex: 30,
       }}
     >
-      {/* Top inner-tab silhouette so it still reads as a folder when open */}
+      {/* Top tab silhouette */}
       <div
         aria-hidden
         className="absolute -top-5 left-8 h-6 w-44 rounded-t-xl"
         style={{
-          background: "rgba(255,255,255,0.92)",
+          background: "hsla(var(--indigo), 0.24)",
+          border: "1px solid hsla(var(--indigo), 0.32)",
+          borderBottom: "none",
+        }}
+      />
+
+      <div className="relative w-full h-full p-7 sm:p-10 flex flex-col">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-muted-foreground">
+              Untitled Folder · Interactive
+            </p>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-muted-foreground/70 mt-1">
+              {filesCount} {filesCount === 1 ? "file" : "files"} inside
+            </p>
+          </div>
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center text-[10px] font-semibold"
+            style={{
+              background: "hsla(var(--indigo), 0.18)",
+              border: "1px solid hsla(var(--indigo), 0.32)",
+              color: "hsl(var(--indigo))",
+            }}
+          >
+            FM
+          </div>
+        </div>
+
+        <div className="mt-auto">
+          <p className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-3">
+            {project.role.split("·")[0].trim()}
+          </p>
+          <h3 className="text-xl sm:text-2xl font-semibold text-card-title leading-tight mb-4 max-w-[80%]">
+            {project.title}
+          </h3>
+          <p
+            className="font-semibold leading-none gradient-text-indigo"
+            style={{ fontSize: "clamp(6rem, 16vw, 11rem)" }}
+          >
+            {numLabel}
+          </p>
+        </div>
+
+        {skipScrollAnim && (
+          <div className="absolute bottom-6 right-6 text-[10px] tracking-[0.24em] uppercase text-muted-foreground flex items-center gap-2">
+            Tap to open <span>→</span>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+/* ---------------- Folder body (preview area) ---------------- */
+
+const FolderBody = ({
+  project,
+  files,
+  activeFile,
+  indexLabel,
+}: {
+  project: Project;
+  files: ProjectFile[];
+  activeFile: number;
+  indexLabel: string;
+}) => {
+  const file = files[activeFile] ?? files[0];
+  return (
+    <div
+      className="absolute inset-0 rounded-3xl overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(160deg, rgba(255,255,255,0.94), rgba(255,255,255,0.80))",
+        border: "1px solid hsla(var(--indigo), 0.18)",
+        boxShadow: "0 30px 80px hsla(var(--indigo), 0.22)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        zIndex: 10,
+      }}
+    >
+      {/* Inner top tab silhouette so it still reads as a folder */}
+      <div
+        aria-hidden
+        className="absolute -top-5 left-8 h-6 w-44 rounded-t-xl"
+        style={{
+          background: "rgba(255,255,255,0.94)",
           border: "1px solid hsla(var(--indigo), 0.18)",
           borderBottom: "none",
         }}
@@ -254,14 +348,13 @@ const FolderBody = ({
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={project.slug}
-          initial={{ opacity: 0, y: 12 }}
+          key={`${project.slug}-${activeFile}`}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
           className="relative w-full h-full flex flex-col"
         >
-          {/* Cover image */}
           <div
             className="relative w-full overflow-hidden"
             style={{
@@ -271,152 +364,177 @@ const FolderBody = ({
             }}
           >
             <img
-              src={project.cover}
-              alt={project.title}
+              src={file.image || project.cover}
+              alt={file.title}
               className="w-full h-full object-cover"
+              style={{ objectPosition: "center 40%" }}
             />
-            <div className="absolute top-3 left-3 text-[10px] tracking-[0.18em] uppercase text-white/85 mix-blend-difference">
-              {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            <div className="absolute top-3 left-3 text-[10px] tracking-[0.18em] uppercase text-white/85 mix-blend-difference font-mono">
+              File {String(activeFile + 1).padStart(2, "0")} /{" "}
+              {String(files.length).padStart(2, "0")}
             </div>
           </div>
-
-          {/* Meta */}
           <div className="relative flex-1 p-5 sm:p-7">
             <div
               aria-hidden
               className="absolute -top-2 right-4 text-[100px] sm:text-[140px] font-semibold leading-none pointer-events-none select-none gradient-text-indigo opacity-[0.10]"
             >
-              {String(index + 1).padStart(2, "0")}
+              {indexLabel}
             </div>
-            <p className="text-2xl sm:text-3xl font-semibold gradient-text-indigo leading-tight mb-1">
-              {project.outcomeMetric}
-            </p>
-            <h3 className="text-[15px] sm:text-base font-semibold text-card-title leading-snug mb-1">
+            <p className="text-xs tracking-[0.18em] uppercase text-muted-foreground mb-2">
               {project.title}
-            </h3>
-            <p className="text-[11px] text-card-desc">{project.role}</p>
+            </p>
+            <h4 className="text-lg sm:text-xl font-semibold text-card-title leading-snug mb-1">
+              {file.title}
+            </h4>
+            <p className="text-[12px] sm:text-sm text-card-desc leading-relaxed max-w-xl">
+              {file.caption}
+            </p>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mt-3">
-              Hover a file to preview · Click to open
+              Hover a file to preview · Click to open the case study
             </p>
           </div>
         </motion.div>
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 
-/* ---------------- File tab ---------------- */
+/* ---------------- File fan (the staggered tabs) ---------------- */
+
+const FileFan = ({
+  files,
+  scrollYProgress,
+  fullyOpen,
+  activeFile,
+  onHoverFile,
+  skipScrollAnim,
+}: {
+  files: ProjectFile[];
+  scrollYProgress: MotionValue<number>;
+  fullyOpen: boolean;
+  activeFile: number;
+  onHoverFile: (i: number) => void;
+  skipScrollAnim: boolean;
+}) => {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ transformStyle: "preserve-3d" }}
+    >
+      {files.map((file, i) => (
+        <FileTab
+          key={`${file.title}-${i}`}
+          file={file}
+          index={i}
+          total={files.length}
+          scrollYProgress={scrollYProgress}
+          fullyOpen={fullyOpen}
+          isActive={i === activeFile}
+          onHover={() => onHoverFile(i)}
+          skipScrollAnim={skipScrollAnim}
+        />
+      ))}
+    </div>
+  );
+};
 
 const FileTab = ({
-  project,
+  file,
   index,
   total,
   scrollYProgress,
-  appearStart,
-  appearEnd,
+  fullyOpen,
   isActive,
   onHover,
-  fullyOpen,
+  skipScrollAnim,
 }: {
-  project: Project;
+  file: ProjectFile;
   index: number;
   total: number;
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-  appearStart: number;
-  appearEnd: number;
+  scrollYProgress: MotionValue<number>;
+  fullyOpen: boolean;
   isActive: boolean;
   onHover: () => void;
-  fullyOpen: boolean;
+  skipScrollAnim: boolean;
 }) => {
-  // Final fanned position: stagger from the top of the folder downward
-  const finalTop = 14 + index * TAB_OFFSET;
+  // Window per tab (across the 0.5 → 0.95 portion of scroll)
+  const span = 0.45;
+  const start = 0.5 + (index / Math.max(1, total)) * span * 0.5;
+  const end = Math.min(0.97, start + 0.18);
 
-  // Animate from -40px (tucked into folder) → finalTop
-  const top = useTransform(
-    scrollYProgress,
-    [appearStart, appearEnd],
-    [-40, finalTop],
-  );
-  const opacity = useTransform(
-    scrollYProgress,
-    [appearStart, appearEnd],
-    [0, 1],
-  );
+  // Final fanned offset above the folder body
+  const finalY = -((index + 1) * 38) - 24;
+  const horizontalOffset = (index / Math.max(1, total - 1 || 1)) * 60;
 
-  // Tabs drift right with index for that "fanned cards" cascade
-  const horizontalOffset = useMemo(() => {
-    // Stagger left → right across width, but keep first one anchored.
-    const max = 60; // px
-    return (index / Math.max(1, total - 1)) * max;
-  }, [index, total]);
+  // Animate y from 0 (tucked) → finalY (fanned upward)
+  const y = useTransform(scrollYProgress, [start, end], [0, finalY]);
+  const opacity = useTransform(scrollYProgress, [start, end], [0, 1]);
 
-  const numberLabel = String(index + 1).padStart(2, "0");
-  const sectionLabel = index === 0 ? "SECTION 01" : `FILE ${numberLabel}`;
+  const animatedStyle =
+    fullyOpen || skipScrollAnim
+      ? { y: finalY, opacity: 1 }
+      : { y, opacity };
 
   return (
     <motion.div
       className="absolute left-0 right-0 pointer-events-auto"
-      style={
-        fullyOpen
-          ? { top: finalTop, opacity: 1, zIndex: 10 + index }
-          : { top, opacity, zIndex: 10 + index }
-      }
+      style={{
+        top: 16,
+        zIndex: 20 + index,
+        ...animatedStyle,
+      }}
     >
       <Link
-        to={`/work/${project.slug}`}
+        to={file.href || "#"}
         onMouseEnter={onHover}
         onFocus={onHover}
         className="block"
+        aria-label={`Open ${file.title}`}
       >
         <motion.div
-          whileHover={{ y: -28, zIndex: 80 }}
+          whileHover={{ y: -22 }}
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
           style={{
-            marginLeft: horizontalOffset + 24,
-            marginRight: 24,
-            zIndex: isActive ? 60 : 10 + index,
+            marginLeft: horizontalOffset + 28,
+            marginRight: 28,
           }}
         >
-          {/* Tab strip */}
-          <div className="flex items-end -mb-px">
-            <div
-              className="rounded-t-xl px-4 py-2 flex items-center gap-3 transition-colors duration-200"
-              style={{
-                background: isActive
-                  ? "hsla(var(--indigo), 0.95)"
-                  : "hsla(var(--indigo), 0.16)",
-                border: "1px solid hsla(var(--indigo), 0.35)",
-                borderBottom: "none",
-                color: isActive ? "white" : "hsl(var(--indigo))",
-                minWidth: "55%",
-                maxWidth: "75%",
-                boxShadow: isActive
-                  ? "0 8px 24px hsla(var(--indigo), 0.35)"
-                  : "0 2px 6px hsla(var(--indigo), 0.10)",
-              }}
-            >
-              <span className="text-[10px] font-mono opacity-80">
-                {sectionLabel}
-              </span>
-              <span className="text-[11px] tracking-[0.14em] uppercase font-medium truncate">
-                {project.title}
-              </span>
-              <span className="ml-auto text-[10px] opacity-70">
-                {project.outcomeMetric}
-              </span>
-            </div>
-          </div>
-
-          {/* Tab "page" sliver — gives a hint of the file body when hovered */}
           <div
-            className="h-2 rounded-b-md"
+            className="rounded-t-xl px-4 py-2.5 flex items-center gap-3 transition-colors duration-200"
             style={{
               background: isActive
-                ? "hsla(var(--indigo), 0.25)"
-                : "hsla(var(--indigo), 0.08)",
-              border: "1px solid hsla(var(--indigo), 0.20)",
-              borderTop: "none",
-              marginRight: 24,
+                ? "hsl(var(--indigo))"
+                : "hsla(var(--indigo), 0.18)",
+              border: "1px solid hsla(var(--indigo), 0.38)",
+              borderBottom: "none",
+              color: isActive ? "white" : "hsl(var(--indigo))",
+              boxShadow: isActive
+                ? "0 10px 28px hsla(var(--indigo), 0.40)"
+                : "0 2px 8px hsla(var(--indigo), 0.10)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+            }}
+          >
+            <span className="text-[10px] font-mono opacity-80 tracking-wider">
+              FILE {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="text-[11px] tracking-[0.14em] uppercase font-medium truncate flex-1">
+              {file.title}
+            </span>
+            <span className="text-[10px] opacity-70 hidden sm:inline">
+              open →
+            </span>
+          </div>
+          <div
+            className="h-1.5 rounded-b-md"
+            style={{
+              background: isActive
+                ? "hsla(var(--indigo), 0.30)"
+                : "hsla(var(--indigo), 0.10)",
+              borderLeft: "1px solid hsla(var(--indigo), 0.22)",
+              borderRight: "1px solid hsla(var(--indigo), 0.22)",
+              borderBottom: "1px solid hsla(var(--indigo), 0.22)",
             }}
           />
         </motion.div>
@@ -424,5 +542,3 @@ const FileTab = ({
     </motion.div>
   );
 };
-
-export default FolderReveal;

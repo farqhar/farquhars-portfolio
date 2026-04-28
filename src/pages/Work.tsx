@@ -4,6 +4,7 @@ import { useProjects } from "@/hooks/useProjects";
 import PageTransition from "@/components/site/PageTransition";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import FolderReveal from "@/components/work/FolderReveal";
+import WorkClosingCTA from "@/components/work/WorkClosingCTA";
 
 /* -------------------- Hero highlights -------------------- */
 
@@ -154,6 +155,9 @@ const Work = () => {
 
         {/* FOLDER — scroll-driven reveal */}
         {projects.length > 0 && <FolderReveal projects={projects} />}
+
+        {/* Closing CTA */}
+        <WorkClosingCTA />
       </main>
     </PageTransition>
   );
