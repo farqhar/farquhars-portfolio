@@ -47,6 +47,63 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          cover: string
+          created_at: string
+          files: Json
+          hero: string
+          honest: string
+          order: number
+          outcome: string
+          outcome_metric: string
+          problem: string
+          process: string
+          quotes: Json
+          role: string
+          slug: string
+          timeline: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover?: string
+          created_at?: string
+          files?: Json
+          hero?: string
+          honest?: string
+          order?: number
+          outcome?: string
+          outcome_metric?: string
+          problem?: string
+          process?: string
+          quotes?: Json
+          role?: string
+          slug: string
+          timeline?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          cover?: string
+          created_at?: string
+          files?: Json
+          hero?: string
+          honest?: string
+          order?: number
+          outcome?: string
+          outcome_metric?: string
+          problem?: string
+          process?: string
+          quotes?: Json
+          role?: string
+          slug?: string
+          timeline?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           created_at: string
