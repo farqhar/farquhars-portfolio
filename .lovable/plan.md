@@ -1,89 +1,57 @@
-# Project image uploads + "Untitled Folder" Work grid
+# Scroll-driven folder reveal — the Work page
 
-Two changes, both centred on the Projects feature. **Hero on `/work` is preserved exactly as-is** (eyebrow, headline, subhead, and the 4 highlight tiles). The folder grid replaces only the bento grid that sits below the hero.
+Replace the entire grid below the hero with a single closed folder that opens as you scroll, fans out the projects as files inside, and lets you hover/click each file to enter its case study.
 
-## 1. Real image uploads for each project
+**Hero stays exactly as it is** (eyebrow, headline, subhead, 4 highlight tiles). Everything below — filter pills, view toggle, current grid — is removed.
 
-Today the admin's `ProjectEditor` only accepts URL strings for cover/hero images, and projects live in `localStorage` (`useProjects`) — so even a working uploader wouldn't sync between devices. We fix both:
+## The interaction (matches the screen recording)
 
-- **Move projects into the database.** New `projects` table mirroring the `Project` type, plus a `files` jsonb column for sub-folder galleries (see §2).
-- **Seed existing 8 projects** from `projectsSeed.ts` in the migration.
-- **Rewrite `useProjects`** to read from Supabase (with realtime sync) and write through the `cms-save` edge function.
-- **Replace URL inputs in `ProjectEditor`** with the existing `MediaField` component — already wired to `cms-upload` and the `site-media` bucket. Files land in `site-media/projects/{slug}/...`.
+1. **Closed state** — A single tall folder card sits centred on the page. Front cover shows: small "Untitled Folder Interactive · 4:3" label, a giant `01` numeral, and a tiny `vve`-style brand chip in the corner. Indigo/blue gradient on glass, soft layered shadow.   
+**As the user scrolls past the folder**, a sticky scroll section drives the reveal:
+  - The folder's **front cover lifts up** (rotates ~-12° at the top edge, like opening a paper folder) and slides off the top.
+    - Behind it, a **stack of file tabs fans out** one by one (staggered) — each tab is a project, labelled like `SECTION 01 · CJC LANDING PAGE`, `FILE 02 · WOLLIP`, etc., cascaded with a 28px vertical offset so every tab is visible.
+2. **Fully open state** (sticky pinned while scrolling completes) — All 8 file tabs are visible, fanned. Hovering any tab:
+  - **Lifts that tab up ~24px** and brings it forward (z-index spike).
+    - The folder body underneath cross-fades to that project's preview: cover image, title, outcome metric, role, big faded number.
+3. **Click a tab** → navigates to `/work/<slug>` (the case study).
+4. **Mobile**: scroll-driven open is replaced with a one-tap "Open folder" affordance that triggers the same fan animation; tabs become a vertical accordion list, tap to preview, tap again to enter.
 
-Result: click "Upload", file goes to storage, URL persists, "Saved ✓" toast — same UX as the rest of the CMS.
+## How the scroll works
 
-## 2. "Untitled Folder" style grid (below the existing hero)
+- A tall sticky section (`h-[200vh]`) wraps the folder.
+- `useScroll` + `useTransform` map scroll progress 0 → 1 to:
+  - Front cover `rotateX` 0 → -110°, `y` 0 → -200, `opacity` 1 → 0 (over 0–0.4)
+  - Each tab `y` 0 → its fanned position, `opacity` 0 → 1, staggered across 0.3 → 0.9
+- Once `progress > 0.95`, hover interactions become active.
+- A subtle scroll hint ("scroll to open ↓") fades out as opening begins.
 
-Replicating the Velvele reference: stacked manila-folder cards that scroll-rise, lift on hover, and expand to reveal sub-files inside.
+## Visuals
 
-### Public — `/work`
+- **On-brand, not skeuomorphic**: glass morphism for tabs and folder body, indigo/blue gradient backgrounds, no Apple-grey manila.
+- Front cover typography: oversized `01` in `gradient-text-indigo`, "Untitled Folder · Interactive" in mono uppercase eyebrow, brand chip top-right.
+- Active tab gets indigo accent border + soft glow.
+- Folder body shadow deepens as the cover lifts (sells the "opening" feeling).
 
-- **Hero stays untouched** — eyebrow, "I turn messy workflows / into shipped systems.", subhead, and the 4 highlight tiles remain at the top.
-- Below the hero (and the existing filter pills + grid/list toggle), the bento `WorkCard` grid is **replaced** with a folder grid.
-- **FolderCard** = tabbed shape: a coloured tab strip on top showing project number + short title, body holds the cover image and metric. Indigo/blue palette (no skeuomorphic beige) — keeps the Apple-minimal aesthetic.
-- **Scroll-in**: each folder rises and fades in on viewport entry, staggered ~70ms (Framer Motion `whileInView`).
-- **Hover**: folder lifts (`y: -8`), tab darkens, shadow grows, cover scales 1.04. Other folders dim slightly (existing pattern).
-- **Click**: folder expands in place into a row of "file" sub-cards (image + caption). Clicking a file opens the case study (or a custom link). Clicking the tab again collapses it. Uses `layout` + `AnimatePresence` so the grid reflows smoothly.
-- Existing `featuredSlugs` keep their wider bento spans.
-
-### Admin — `/admin → Projects`
-
-`ProjectEditor` gains a **Sub-projects (files in this folder)** section:
-- Add / remove / reorder rows
-- Each row: title, caption, image (via `MediaField`), optional link
-- Stored as a `jsonb` array on the project row
-
-## Technical details
-
-**Migration**
-
-```sql
-create table public.projects (
-  slug text primary key,
-  title text not null,
-  role text not null default '',
-  timeline text not null default '',
-  outcome_metric text not null default '',
-  cover text not null default '/placeholder.svg',
-  hero text not null default '/placeholder.svg',
-  problem text not null default '',
-  process text not null default '',
-  outcome text not null default '',
-  honest text not null default '',
-  quotes jsonb not null default '[]'::jsonb,
-  files jsonb not null default '[]'::jsonb, -- [{title, caption, image, href}]
-  "order" int not null default 0,
-  updated_at timestamptz not null default now()
-);
-alter table public.projects enable row level security;
-create policy "public read projects" on public.projects for select using (true);
--- writes go through cms-save (service role); no insert/update policy needed
--- seed: insert all 8 rows from projectsSeed
-```
-
-**Edge function**
-
-Extend `cms-save` to accept `kind: "project"` with `{ slug, fields }` → upsert into `public.projects`. Auth check unchanged (`x-admin-password`).
-
-**Frontend**
-
-- `src/hooks/useProjects.ts` — Supabase-backed (load + realtime; writes via edge function).
-- `src/data/projectsSeed.ts` — extend `Project` type with `files`; keep as fallback.
-- `src/components/admin/ProjectEditor.tsx` — `MediaField` for cover/hero + new sub-projects editor.
-- `src/pages/Work.tsx` — keep hero + controls; replace `WorkCard` with new `FolderCard` (tab + body + expand-on-click).
-
-## Files touched
+## Files
 
 ```
-NEW  supabase/migrations/<ts>_projects_table.sql
-NEW  src/components/admin/fields/SubProjectsField.tsx
-NEW  src/components/work/FolderCard.tsx
-EDIT supabase/functions/cms-save/index.ts        (handle kind:"project")
-EDIT src/hooks/useProjects.ts                    (Supabase-backed)
-EDIT src/data/projectsSeed.ts                    (add `files` to type)
-EDIT src/components/admin/ProjectEditor.tsx      (MediaField + sub-projects)
-EDIT src/pages/Work.tsx                          (swap grid only; hero preserved)
+NEW    src/components/work/FolderReveal.tsx    (whole scroll-driven folder + stack)
+EDIT   src/pages/Work.tsx                      (remove filter pills, view toggle,
+                                                old grid; mount <FolderReveal />)
+DELETE src/components/work/FolderCard.tsx      (no longer used)
 ```
 
-After this lands: hero stays exactly as it is today, the folder grid sits beneath it (scroll-rise, hover-lift, click-to-expand into sub-files), and every project supports real image uploads stored in Lovable Cloud.
+No DB or admin changes — uses the existing `projects` table and the editor we just shipped.
+
+## Technical notes
+
+- `useScroll({ target: sectionRef, offset: ["start start", "end end"] })` for the sticky-section progress.
+- Front cover uses `rotateX` with `transformOrigin: "top center"` and `transformPerspective: 1200` for the paper-fold.
+- Tabs absolutely positioned within the folder body container; `top: i * 28px` once fanned. Hover via `whileHover={{ y: -24, zIndex: 50 }}` with spring.
+- Folder body content driven by `activeIndex` state with `<AnimatePresence mode="wait">` cross-fade.
+- Defaults `activeIndex = 0` so the body always shows project 01 at rest.
+- `prefers-reduced-motion`: skip scroll animation, render fully open immediately.
+
+## What carries over
+
+The `files[]` sub-projects field on each project (added last step) is **kept** — clicking a tab still goes to its case study, where those sub-files render inside the case study layout. We can wire those back into the folder body later if you want a "preview the sub-files inline" affordance, but for this pass the folder = projects, click = enter.
