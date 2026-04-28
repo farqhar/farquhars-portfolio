@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const allowedTables = new Set(["site_settings", "site_content", "theme"]);
+    const allowedTables = new Set(["site_settings", "site_content", "theme", "projects"]);
     if (!table || !allowedTables.has(table)) {
       return new Response(JSON.stringify({ ok: false, error: "Invalid table" }), {
         status: 400,
@@ -111,6 +111,51 @@ Deno.serve(async (req) => {
         if (error) throw error;
       } else {
         const { error } = await admin.from("theme").insert(update);
+        if (error) throw error;
+      }
+    }
+
+    if (table === "projects") {
+      const op = (body as { op?: string }).op || "upsert";
+      if (op === "delete") {
+        const slug = (body as { slug?: string }).slug;
+        if (!slug) {
+          return new Response(JSON.stringify({ ok: false, error: "slug required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { error } = await admin.from("projects").delete().eq("slug", slug);
+        if (error) throw error;
+      } else {
+        // upsert: value is the full project row (camelCase from frontend)
+        const v = (value ?? {}) as Record<string, unknown>;
+        const slug = (v.slug as string) || (body as { slug?: string }).slug;
+        if (!slug) {
+          return new Response(JSON.stringify({ ok: false, error: "slug required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const row: Record<string, unknown> = {
+          slug,
+          title: v.title ?? "",
+          role: v.role ?? "",
+          timeline: v.timeline ?? "",
+          outcome_metric: v.outcomeMetric ?? v.outcome_metric ?? "",
+          cover: v.cover ?? "/placeholder.svg",
+          hero: v.hero ?? "/placeholder.svg",
+          problem: v.problem ?? "",
+          process: v.process ?? "",
+          outcome: v.outcome ?? "",
+          honest: v.honest ?? "",
+          quotes: v.quotes ?? [],
+          files: v.files ?? [],
+          order: v.order ?? 0,
+        };
+        const { error } = await admin
+          .from("projects")
+          .upsert(row, { onConflict: "slug" });
         if (error) throw error;
       }
     }
