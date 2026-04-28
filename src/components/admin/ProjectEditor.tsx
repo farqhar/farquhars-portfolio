@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Project } from "@/data/projectsSeed";
+import { Project, ProjectFile } from "@/data/projectsSeed";
+import MediaField from "@/components/admin/fields/MediaField";
+import SubProjectsField from "@/components/admin/fields/SubProjectsField";
 
 type Props = {
   project: Project;
@@ -13,7 +15,10 @@ const inputCls =
   "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900";
 
 const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
-  const [draft, setDraft] = useState<Project>(project);
+  const [draft, setDraft] = useState<Project>({
+    ...project,
+    files: project.files ?? [],
+  });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
 
   const set = <K extends keyof Project>(key: K, value: Project[K]) =>
@@ -80,14 +85,22 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             />
           </div>
         </div>
-        <div>
-          <label className={labelCls}>Cover image URL</label>
-          <input className={inputCls} value={draft.cover} onChange={(e) => set("cover", e.target.value)} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <MediaField
+            label="Cover image"
+            folder={`projects/${draft.slug}/cover`}
+            currentUrl={draft.cover}
+            onSaved={(url) => set("cover", url)}
+          />
+          <MediaField
+            label="Hero image"
+            folder={`projects/${draft.slug}/hero`}
+            currentUrl={draft.hero}
+            onSaved={(url) => set("hero", url)}
+          />
         </div>
-        <div>
-          <label className={labelCls}>Hero image URL</label>
-          <input className={inputCls} value={draft.hero} onChange={(e) => set("hero", e.target.value)} />
-        </div>
+
         <div>
           <label className={labelCls}>Problem</label>
           <textarea
@@ -133,6 +146,18 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             onChange={(e) => setQuotesText(e.target.value)}
           />
         </div>
+
+        <div className="pt-4 border-t border-gray-200">
+          <SubProjectsField
+            slug={draft.slug}
+            value={draft.files ?? []}
+            onChange={(files: ProjectFile[]) => set("files", files)}
+          />
+        </div>
+
+        <p className="text-[11px] text-gray-500 italic pt-2">
+          Click <strong>Save</strong> at the top to persist your changes.
+        </p>
       </div>
     </div>
   );
