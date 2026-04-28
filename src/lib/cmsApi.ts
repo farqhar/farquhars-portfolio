@@ -45,6 +45,30 @@ export async function saveTheme(
   window.dispatchEvent(new Event("fm_cms_updated"));
 }
 
+/** Upsert a project row. */
+export async function saveProject(project: unknown) {
+  const password = cmsSession.get();
+  const { data, error } = await supabase.functions.invoke("cms-save", {
+    body: { password, table: "projects", op: "upsert", value: project },
+  });
+  if (error || !data?.ok) {
+    throw new Error(data?.error || error?.message || "Save failed");
+  }
+  window.dispatchEvent(new Event("fm_cms_updated"));
+}
+
+/** Delete a project by slug. */
+export async function deleteProject(slug: string) {
+  const password = cmsSession.get();
+  const { data, error } = await supabase.functions.invoke("cms-save", {
+    body: { password, table: "projects", op: "delete", slug },
+  });
+  if (error || !data?.ok) {
+    throw new Error(data?.error || error?.message || "Delete failed");
+  }
+  window.dispatchEvent(new Event("fm_cms_updated"));
+}
+
 /** Persist every dirty field tracked by cmsDirty in a batch. */
 export async function saveAllDirty(): Promise<void> {
   const entries = cmsDirty.all();
