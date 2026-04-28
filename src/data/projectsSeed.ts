@@ -1,3 +1,10 @@
+export type ProjectFile = {
+  title: string;
+  caption: string;
+  image: string;
+  href: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -11,6 +18,7 @@ export type Project = {
   outcome: string;
   honest: string;
   quotes: string[];
+  files?: ProjectFile[];
   order: number;
 };
 
