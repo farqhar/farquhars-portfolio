@@ -1,75 +1,113 @@
 import { useCallback, useEffect, useState } from "react";
 import { Project, projectsSeed } from "@/data/projectsSeed";
+import { supabase } from "@/integrations/supabase/client";
+import { saveProject as apiSaveProject, deleteProject as apiDeleteProject } from "@/lib/cmsApi";
 
-const STORAGE_KEY = "fm_projects_v1";
+type Row = {
+  slug: string;
+  title: string;
+  role: string;
+  timeline: string;
+  outcome_metric: string;
+  cover: string;
+  hero: string;
+  problem: string;
+  process: string;
+  outcome: string;
+  honest: string;
+  quotes: unknown;
+  files: unknown;
+  order: number;
+};
 
-function load(): Project[] {
-  if (typeof window === "undefined") return projectsSeed;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return projectsSeed;
-    const parsed = JSON.parse(raw) as Project[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return projectsSeed;
-    return parsed.sort((a, b) => a.order - b.order);
-  } catch {
-    return projectsSeed;
-  }
-}
+const rowToProject = (r: Row): Project => ({
+  slug: r.slug,
+  title: r.title,
+  role: r.role,
+  timeline: r.timeline,
+  outcomeMetric: r.outcome_metric,
+  cover: r.cover,
+  hero: r.hero,
+  problem: r.problem,
+  process: r.process,
+  outcome: r.outcome,
+  honest: r.honest,
+  quotes: Array.isArray(r.quotes) ? (r.quotes as string[]) : [],
+  files: Array.isArray(r.files) ? (r.files as Project["files"]) : [],
+  order: r.order ?? 0,
+});
 
-function persist(projects: Project[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-  window.dispatchEvent(new Event("fm_projects_updated"));
+async function fetchAll(): Promise<Project[]> {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .order("order", { ascending: true });
+  if (error || !data) return projectsSeed;
+  if (data.length === 0) return projectsSeed;
+  return (data as unknown as Row[]).map(rowToProject);
 }
 
 export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>(() => load());
+  const [projects, setProjects] = useState<Project[]>(projectsSeed);
+
+  const refresh = useCallback(async () => {
+    const list = await fetchAll();
+    setProjects(list);
+  }, []);
 
   useEffect(() => {
-    const sync = () => setProjects(load());
-    window.addEventListener("fm_projects_updated", sync);
-    window.addEventListener("storage", sync);
+    refresh();
+    const sync = () => refresh();
+    window.addEventListener("fm_cms_updated", sync);
+
+    const channel = supabase
+      .channel("projects-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "projects" },
+        () => refresh(),
+      )
+      .subscribe();
+
     return () => {
-      window.removeEventListener("fm_projects_updated", sync);
-      window.removeEventListener("storage", sync);
+      window.removeEventListener("fm_cms_updated", sync);
+      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [refresh]);
 
-  const save = useCallback((updated: Project) => {
-    const next = load().map((p) => (p.slug === updated.slug ? updated : p));
-    persist(next);
-    setProjects(next);
-  }, []);
+  const save = useCallback(async (updated: Project) => {
+    await apiSaveProject(updated);
+    await refresh();
+  }, [refresh]);
 
-  const add = useCallback((project: Project) => {
-    const current = load();
-    const next = [...current, { ...project, order: current.length }];
-    persist(next);
-    setProjects(next);
-  }, []);
+  const add = useCallback(async (project: Project) => {
+    const next = { ...project, order: projects.length };
+    await apiSaveProject(next);
+    await refresh();
+  }, [projects.length, refresh]);
 
-  const remove = useCallback((slug: string) => {
-    const next = load().filter((p) => p.slug !== slug).map((p, i) => ({ ...p, order: i }));
-    persist(next);
-    setProjects(next);
-  }, []);
+  const remove = useCallback(async (slug: string) => {
+    await apiDeleteProject(slug);
+    await refresh();
+  }, [refresh]);
 
-  const reorder = useCallback((slug: string, direction: -1 | 1) => {
-    const list = load();
-    const idx = list.findIndex((p) => p.slug === slug);
+  const reorder = useCallback(async (slug: string, direction: -1 | 1) => {
+    const idx = projects.findIndex((p) => p.slug === slug);
     const target = idx + direction;
-    if (idx < 0 || target < 0 || target >= list.length) return;
-    const next = [...list];
-    [next[idx], next[target]] = [next[target], next[idx]];
-    next.forEach((p, i) => (p.order = i));
-    persist(next);
-    setProjects(next);
-  }, []);
+    if (idx < 0 || target < 0 || target >= projects.length) return;
+    const a = projects[idx];
+    const b = projects[target];
+    await Promise.all([
+      apiSaveProject({ ...a, order: target }),
+      apiSaveProject({ ...b, order: idx }),
+    ]);
+    await refresh();
+  }, [projects, refresh]);
 
-  const reset = useCallback(() => {
-    persist(projectsSeed);
-    setProjects(projectsSeed);
-  }, []);
+  const reset = useCallback(async () => {
+    await Promise.all(projectsSeed.map((p) => apiSaveProject(p)));
+    await refresh();
+  }, [refresh]);
 
   const getBySlug = useCallback(
     (slug: string) => projects.find((p) => p.slug === slug),
