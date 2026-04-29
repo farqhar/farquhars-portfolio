@@ -542,13 +542,14 @@ const ProcessJourney = () => {
 
           {/* Ship caption — outside-bottom-right of loop */}
           <CaptionPill
-            xPct={xPct(SHIP.x + 30)}
-            yPct={yPct(SHIP.y + 70)}
+            xPct={xPct(SHIP.x - 10)}
+            yPct={yPct(SHIP.y + 110)}
             label="Ship small"
             caption="Smallest useful version, fast."
             opacity={shipCaptionOpacity}
             reduced={reduced}
-            align="left"
+            align="center"
+            maxWidth="22ch"
           />
           {/* Feedback caption — outside-top-left of loop */}
           <CaptionPill
@@ -560,28 +561,6 @@ const ProcessJourney = () => {
             reduced={reduced}
             align="right"
           />
-
-          {/* Lap counter under the loop */}
-          <motion.div
-            className="absolute pointer-events-none"
-            style={{
-              left: `${xPct(LOOP_CX)}%`,
-              top: `${yPct(LOOP_CY + LOOP_R + 20)}%`,
-              transform: "translate(-50%, 0)",
-              opacity: reduced ? 1 : lapCounterOpacity,
-            }}
-          >
-            <p
-              className="text-[10px] font-semibold tabular-nums"
-              style={{
-                color: "hsl(var(--purple))",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-              }}
-            >
-              Lap {reduced ? TOTAL_LAPS : Math.max(1, lap || 1)} / {TOTAL_LAPS}
-            </p>
-          </motion.div>
         </div>
       </div>
     </div>
