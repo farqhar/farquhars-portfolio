@@ -32,7 +32,6 @@ type Testimonial = { quote: string; name: string; role: string; avatar?: string 
 const DEFAULT_TESTIMONIALS: Testimonial[] = [
    { quote: "Thank you for all the work you've done within the marketing team. There has been a lot of change, you've added enormous value beyond graphic design.", name: "JEN MANUEL", role: "MARKETING DIRECTOR" },
    { quote: "The genuine excitement and enthusiasm you bring to the workplace makes collaborating with you energising, and you’ve already had a great impact within the AIQ team.", name: "PATRICK CARROLL", role: "GENERAL MANAGER · AIQ INNOVATION" },
-   { quote: "He'll tell you the honest version, not the polished one. That's why the work actually ships.", name: "[Director]", role: "MARKETING DIRECTOR · JACARANDA HUB" },
 ];
 
 const skills = {
