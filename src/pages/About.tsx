@@ -96,22 +96,23 @@ const ThenNow = () => {
       ref={ref}
       className="relative grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 md:gap-6 items-stretch mb-20"
     >
-      {/* Then */}
+      {/* Now (highlighted) */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="glass rounded-2xl p-6 sm:p-8 relative"
+        style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.10)" }}
       >
-        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Then</p>
-        <h3 className="text-xl font-semibold text-card-title mb-3">{thenNow.then.title}</h3>
-        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.then.body}</p>
+        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
+        <h3 className="text-xl font-semibold gradient-text-indigo mb-3">{thenNow.now.title}</h3>
+        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.now.body}</p>
         <div className="flex flex-wrap gap-2">
-          {thenNow.then.points.map((p) => (
+          {thenNow.now.points.map((p) => (
             <span
               key={p}
               className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full"
-              style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}
+              style={{ background: "hsla(var(--purple), 0.10)", color: "hsl(var(--purple))" }}
             >
               {p}
             </span>
@@ -143,23 +144,22 @@ const ThenNow = () => {
         </motion.p>
       </div>
 
-      {/* Now */}
+      {/* Then */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         className="glass rounded-2xl p-6 sm:p-8"
-        style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.10)" }}
       >
-        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
-        <h3 className="text-xl font-semibold gradient-text-indigo mb-3">{thenNow.now.title}</h3>
-        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.now.body}</p>
+        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Then</p>
+        <h3 className="text-xl font-semibold text-card-title mb-3">{thenNow.then.title}</h3>
+        <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.then.body}</p>
         <div className="flex flex-wrap gap-2">
-          {thenNow.now.points.map((p) => (
+          {thenNow.then.points.map((p) => (
             <span
               key={p}
               className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full"
-              style={{ background: "hsla(var(--purple), 0.10)", color: "hsl(var(--purple))" }}
+              style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}
             >
               {p}
             </span>
