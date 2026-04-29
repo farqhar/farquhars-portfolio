@@ -2,6 +2,7 @@ import { motion, useMotionValue, useSpring, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Reveal from "@/components/site/Reveal";
 import PageTransition from "@/components/site/PageTransition";
+import ProcessJourney from "@/components/about/ProcessJourney";
 import headshot from "@/assets/headshot-placeholder.jpg";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
 import { useSiteContent } from "@/hooks/useSiteContent";
@@ -275,33 +276,8 @@ const About = () => {
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
           </Reveal>
-          <div className="space-y-14 mb-20">
-            {([howIWork.discover, howIWork.iterate]).map((block, bi) => (
-              <div key={block.heading}>
-                <Reveal>
-                  <h2 className="text-3xl sm:text-4xl font-semibold gradient-text-purple leading-tight mb-3">
-                    {block.heading}
-                  </h2>
-                </Reveal>
-                <Reveal delay={0.08}>
-                  <p className="text-base leading-[1.7] text-card-desc max-w-2xl mb-6">
-                    {block.intro}
-                  </p>
-                </Reveal>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {block.points.map((line, i) => (
-                    <Reveal key={line} delay={0.1 + i * 0.06}>
-                      <div className="glass rounded-2xl p-5 h-full">
-                        <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
-                          0{bi * 3 + i + 1}
-                        </p>
-                        <p className="text-sm leading-[1.55] text-card-title">{line}</p>
-                      </div>
-                    </Reveal>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="mb-20">
+            <ProcessJourney />
           </div>
 
           {/* Testimonials */}
