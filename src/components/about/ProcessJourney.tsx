@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
   MotionValue,
 } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 /* -------------------- Layout constants (SVG viewBox 1000 x 600) -------------------- */
 
@@ -79,6 +79,7 @@ const CaptionPill = ({
   opacity,
   reduced,
   align = "center",
+  maxWidth = "16ch",
 }: {
   xPct: number;
   yPct: number;
@@ -87,6 +88,7 @@ const CaptionPill = ({
   opacity: MotionValue<number> | number;
   reduced: boolean;
   align?: "left" | "center" | "right";
+  maxWidth?: string;
 }) => {
   const translateX =
     align === "left" ? "0%" : align === "right" ? "-100%" : "-50%";
@@ -98,7 +100,7 @@ const CaptionPill = ({
         top: `${yPct}%`,
         transform: `translate(${translateX}, -50%)`,
         opacity: reduced ? 1 : (opacity as MotionValue<number>),
-        maxWidth: "16ch",
+        maxWidth,
       }}
       className="pointer-events-none"
     >
