@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
   MotionValue,
 } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 /* -------------------- Layout constants (SVG viewBox 1000 x 600) -------------------- */
 
@@ -79,6 +79,7 @@ const CaptionPill = ({
   opacity,
   reduced,
   align = "center",
+  maxWidth = "16ch",
 }: {
   xPct: number;
   yPct: number;
@@ -87,6 +88,7 @@ const CaptionPill = ({
   opacity: MotionValue<number> | number;
   reduced: boolean;
   align?: "left" | "center" | "right";
+  maxWidth?: string;
 }) => {
   const translateX =
     align === "left" ? "0%" : align === "right" ? "-100%" : "-50%";
@@ -98,7 +100,7 @@ const CaptionPill = ({
         top: `${yPct}%`,
         transform: `translate(${translateX}, -50%)`,
         opacity: reduced ? 1 : (opacity as MotionValue<number>),
-        maxWidth: "16ch",
+        maxWidth,
       }}
       className="pointer-events-none"
     >
@@ -206,16 +208,17 @@ const LoopNode = ({
             }
       }
     >
-      <circle cx={x} cy={y} r={22} fill={`${color}1A`} />
+      <circle cx={x} cy={y} r={24} fill={color} fillOpacity={0.08} />
       <circle
         cx={x}
         cy={y}
         r={11}
         fill="#ffffff"
         stroke={color}
-        strokeWidth={1.8}
+        strokeOpacity={0.6}
+        strokeWidth={1.2}
       />
-      <circle cx={x} cy={y} r={3.5} fill={color} />
+      <circle cx={x} cy={y} r={3} fill={color} />
     </motion.g>
   );
 };
@@ -251,13 +254,6 @@ const ProcessJourney = () => {
   // never disappears before the user has watched the laps.
   const exitX = useTransform(scrollYProgress, [0.94, 1], [0, 320]);
   const exitOpacity = useTransform(scrollYProgress, [0.94, 1], [1, 0]);
-
-  // Lap counter
-  const [lap, setLap] = useState(0);
-  useMotionValueEvent(spinDeg, "change", (v) => {
-    const next = Math.min(TOTAL_LAPS, Math.floor(v / 360));
-    setLap(next);
-  });
 
   // Pulse Ship (angle 0°) and Feedback (angle 180°) each time tracer crosses
   const shipPulse = useMotionValue(1);
@@ -305,9 +301,10 @@ const ProcessJourney = () => {
     [0.38, 0.46],
     [0, 1],
   );
-  const lapCounterOpacity = useTransform(
+  // Solid ring opacity — fade in once the loop has drawn.
+  const solidRingOpacity = useTransform(
     scrollYProgress,
-    [0.4, 0.48],
+    [0.36, 0.42],
     [0, 1],
   );
 
@@ -316,8 +313,8 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "500vh" }}>
-      <div className="sticky top-0 h-screen flex items-center justify-center">
+    <div ref={wrapperRef} className="relative" style={{ height: "420vh" }}>
+      <div className="sticky top-0 h-screen flex items-start justify-center pt-[6vh]">
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
           {/* SVG layer */}
           <motion.svg
@@ -335,21 +332,10 @@ const ProcessJourney = () => {
                 <stop offset="0%" stopColor="hsl(var(--indigo))" />
                 <stop offset="100%" stopColor="hsl(var(--purple))" />
               </linearGradient>
-              <radialGradient id="tracer-glow">
-                <stop offset="0%" stopColor="hsl(var(--purple))" stopOpacity="1" />
+              <radialGradient id="arrow-glow">
+                <stop offset="0%" stopColor="hsl(var(--purple))" stopOpacity="0.55" />
                 <stop offset="100%" stopColor="hsl(var(--purple))" stopOpacity="0" />
               </radialGradient>
-              <marker
-                id="arrow"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--purple))" />
-              </marker>
             </defs>
 
             {/* Faint baseline path (left) */}
@@ -377,7 +363,6 @@ const ProcessJourney = () => {
               stroke="url(#journey-stroke)"
               strokeWidth={2.5}
               strokeLinecap="round"
-              markerEnd="url(#arrow)"
               style={
                 reduced
                   ? { pathLength: 1 }
@@ -401,6 +386,18 @@ const ProcessJourney = () => {
                   : { pathLength: loopDrawLength }
               }
               initial={reduced ? { pathLength: 1 } : { pathLength: 0 }}
+            />
+
+            {/* Solid, unbroken ring — fades in once draw-in finishes so the
+                loop is always visually complete during the laps. */}
+            <motion.circle
+              cx={LOOP_CX}
+              cy={LOOP_CY}
+              r={LOOP_R}
+              fill="none"
+              stroke="url(#loop-stroke)"
+              strokeWidth={2.5}
+              style={reduced ? undefined : { opacity: solidRingOpacity }}
             />
 
             {/* Linear nodes */}
@@ -431,39 +428,44 @@ const ProcessJourney = () => {
               reduced={reduced}
             />
 
-            {/* Spinning tracer arc + dot */}
-            {!reduced && (
-              <motion.g
-                style={{
-                  rotate: spinDeg,
-                  transformOrigin: `${LOOP_CX}px ${LOOP_CY}px`,
-                  opacity: shipOpacity,
-                }}
-              >
-                {/* comet arc — 110° */}
+            {/* Two chevron arrows orbiting the ring (clockwise) — makes the
+                feedback / iteration loop unmistakable. */}
+            <motion.g
+              style={
+                reduced
+                  ? { opacity: 1 }
+                  : {
+                      rotate: spinDeg,
+                      transformOrigin: `${LOOP_CX}px ${LOOP_CY}px`,
+                      opacity: shipOpacity,
+                    }
+              }
+            >
+              {/* Arrow A — at 3 o'clock, tangent pointing clockwise (down) */}
+              <g transform={`translate(${LOOP_CX + LOOP_R} ${LOOP_CY}) rotate(90)`}>
+                <circle cx={0} cy={0} r={14} fill="url(#arrow-glow)" />
                 <path
-                  d={describeArc(LOOP_CX, LOOP_CY, LOOP_R, -110, 0)}
+                  d="M -7 -6 L 0 0 L -7 6"
                   fill="none"
-                  stroke="url(#loop-stroke)"
-                  strokeWidth={4}
+                  stroke="hsl(var(--purple))"
+                  strokeWidth={2.5}
                   strokeLinecap="round"
-                  opacity={0.85}
+                  strokeLinejoin="round"
                 />
-                {/* tracer head dot at 0° (right of circle) */}
-                <circle
-                  cx={LOOP_CX + LOOP_R}
-                  cy={LOOP_CY}
-                  r={14}
-                  fill="url(#tracer-glow)"
+              </g>
+              {/* Arrow B — at 9 o'clock, tangent pointing clockwise (up) */}
+              <g transform={`translate(${LOOP_CX - LOOP_R} ${LOOP_CY}) rotate(-90)`}>
+                <circle cx={0} cy={0} r={14} fill="url(#arrow-glow)" />
+                <path
+                  d="M -7 -6 L 0 0 L -7 6"
+                  fill="none"
+                  stroke="hsl(var(--indigo))"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-                <circle
-                  cx={LOOP_CX + LOOP_R}
-                  cy={LOOP_CY}
-                  r={5}
-                  fill="hsl(var(--purple))"
-                />
-              </motion.g>
-            )}
+              </g>
+            </motion.g>
           </motion.svg>
 
           {/* Section labels (HTML for crispness) */}
@@ -540,13 +542,14 @@ const ProcessJourney = () => {
 
           {/* Ship caption — outside-bottom-right of loop */}
           <CaptionPill
-            xPct={xPct(SHIP.x + 30)}
-            yPct={yPct(SHIP.y + 70)}
+            xPct={xPct(SHIP.x - 10)}
+            yPct={yPct(SHIP.y + 110)}
             label="Ship small"
             caption="Smallest useful version, fast."
             opacity={shipCaptionOpacity}
             reduced={reduced}
-            align="left"
+            align="center"
+            maxWidth="22ch"
           />
           {/* Feedback caption — outside-top-left of loop */}
           <CaptionPill
@@ -558,28 +561,6 @@ const ProcessJourney = () => {
             reduced={reduced}
             align="right"
           />
-
-          {/* Lap counter under the loop */}
-          <motion.div
-            className="absolute pointer-events-none"
-            style={{
-              left: `${xPct(LOOP_CX)}%`,
-              top: `${yPct(LOOP_CY + LOOP_R + 20)}%`,
-              transform: "translate(-50%, 0)",
-              opacity: reduced ? 1 : lapCounterOpacity,
-            }}
-          >
-            <p
-              className="text-[10px] font-semibold tabular-nums"
-              style={{
-                color: "hsl(var(--purple))",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-              }}
-            >
-              Lap {reduced ? TOTAL_LAPS : Math.max(1, lap || 1)} / {TOTAL_LAPS}
-            </p>
-          </motion.div>
         </div>
       </div>
     </div>
