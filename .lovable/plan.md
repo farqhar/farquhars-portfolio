@@ -1,58 +1,56 @@
-# Polish "How I Work" — clearer feedback loop with arrows
+## Goals
 
-Tighten the section, fix the visual issues from the previous iteration, and replace the current "spinning comet" with a clean, unbroken circle that has **arrow heads chasing around it** to make the feedback/iteration loop unmistakable.
+1. "Discover & Design" label should appear *after* the Brief node animates in (not at the same time as the line).
+2. The "Rapid Iteration" loop should visually start where the linear path ends — no gap.
+3. Reduce empty space between How I Work and What People Say.
+4. Make the small section eyebrow headings (How I work, Skills, Then / Now, What people say) read more clearly as headings instead of fading into the page.
 
-## 1. Pull the section up — remove floating empty space
+## Changes
 
-In `src/pages/About.tsx`:
-- Tighten the eyebrow under "How I work" (`mb-5` → `mb-2`).
-- Add a negative top offset on the `ProcessJourney` wrapper (`-mt-16 sm:-mt-24`) and reduce its bottom margin (`mb-20` → `mb-10`).
+### `src/components/about/ProcessJourney.tsx`
 
-In `src/components/about/ProcessJourney.tsx`:
-- Anchor the sticky stage to the upper portion of the viewport: change the inner sticky from `flex items-center` to `flex items-start pt-[6vh]` so the diagram appears earlier as you scroll in.
-- Reduce the wrapper height from `500vh` to `420vh` (still ample dwell time for the laps).
+**Label timing (Discover & Design)**
+- Currently: `labelDiscover = useTransform(scrollYProgress, [0.03, 0.1], [0, 1])` — fades in immediately with the line.
+- Update to fade in just after the Brief node lands: `[0.11, 0.16]`. Brief threshold is `0.1`, so label appears once Brief is visible.
+- Keep `labelIterate` aligned with loop draw (currently `[0.32, 0.42]` — fine).
 
-## 2. Remove the floating purple triangle
+**Loop joins the path end**
+- Path currently ends at `(720, 320)`. Loop is centered at `(820, 320)` with radius `110`, so its left edge sits at `x = 710` — close, but the path's actual end direction leaves a visible disconnect (curve ends going down/right while loop's left is at 9 o'clock).
+- Extend `LEFT_PATH` so its final point lands exactly on the loop's left edge tangentially:
+  - Change last segment so the path terminates at `(710, 320)` (Feedback / 9 o'clock point of the loop) with a smooth horizontal approach:
+  - New path: `"M 80 380 C 180 380, 220 200, 320 200 S 460 380, 560 380 S 680 320, 710 320"`
+- Move `LOOP_CX` left from `820` to `820` (unchanged) — left edge `710` now matches path end.
+- This means the path visually flows directly into the Feedback node and the iteration ring begins exactly where the journey line ends.
 
-Delete the `markerEnd="url(#arrow)"` from the animated left path and remove the `<marker id="arrow">` def. (The new loop arrows below replace the need for any path arrowheads.)
+**Tighten bottom spacing**
+- Reduce wrapper height from `420vh` to `360vh` so the pinned section releases sooner.
+- Reduce sticky top padding from `pt-[6vh]` to `pt-[4vh]`.
 
-## 3. Clean, unbroken feedback loop with chasing arrows
+### `src/pages/About.tsx`
 
-Replace the current spinning comet arc + glow dot with a much clearer construct:
+**Stronger eyebrow headings**
+- Current pattern: `text-[10px] tracking-[0.18em] uppercase text-muted-foreground` — too faint.
+- Upgrade the four section eyebrows (Then / Now, Skills, How I work, What people say) to a more obvious heading style:
+  - `text-xs font-semibold tracking-[0.2em] uppercase text-card-title` (darker, bolder)
+  - Add a short accent rule: a `<span>` 24px wide gradient bar (`gradient-indigo`) before or above the label, e.g.:
+    ```tsx
+    <div className="flex items-center gap-3 mb-5">
+      <span className="block h-px w-8 bg-gradient-to-r from-[hsl(var(--indigo))] to-[hsl(var(--purple))]" />
+      <p className="text-xs font-semibold tracking-[0.22em] uppercase text-card-title">Skills</p>
+    </div>
+    ```
+- Apply identically to all four eyebrows for consistency.
 
-- **Always-visible full ring**: keep one solid circle stroked with the indigo→purple gradient at full opacity once the loop has drawn in. The ring never breaks or disappears during the laps — this addresses "make sure the circle is not broken".
-- **Two chevron arrows orbiting the ring**: render two small arrow markers (`▶`-style chevrons made from a short SVG path) placed 180° apart, both tangent to the ring so they read as "flowing around it". Wrap them in a `motion.g` with `rotate: spinDeg` around `(LOOP_CX, LOOP_CY)` so they travel together around the loop as you scroll, completing 3 laps.
-- **Subtle trailing glow** behind each arrow (small radial gradient, ~20px) so the motion has weight without competing with the ring.
-- Each arrow's tip points along the direction of travel (clockwise), which visually reinforces "iteration / feedback flowing".
+**Reduce How I Work → Testimonials gap**
+- ProcessJourney wrapper currently `mb-2` and the "How I work" eyebrow is in its own block above with default flow.
+- Change ProcessJourney wrapper from `mb-2` to `-mt-8 mb-0` to pull the testimonials block up snugly under where the pinned animation releases.
+- Also reduce the section-above margin: the eyebrow block currently has no explicit bottom margin issue, but ensure `mb-2` on the eyebrow stays tight.
 
-Reduced-motion fallback: render the ring + two static arrows at 0° and 180° with no rotation.
+## Files
 
-## 4. Lighten the loop nodes (no more heavy black look)
+- `src/components/about/ProcessJourney.tsx` — path geometry, label timing, wrapper height.
+- `src/pages/About.tsx` — eyebrow heading style (4 places), spacing around ProcessJourney.
 
-Soften `LoopNode`:
-- Outer halo `r=24`, fill at ~8% alpha.
-- Middle white disc keeps `r=11` but stroke goes from `1.8` → `1.2` and uses the node color at 60% alpha instead of full strength.
-- Inner dot `r=3`.
+## Out of scope
 
-This removes the "black bullseye" reading from the screenshot.
-
-## 5. Give "Ship small" room to breathe
-
-Currently it wraps to four squashed lines.
-- Move it from `xPct(SHIP.x + 30), yPct(SHIP.y + 70)` to `xPct(SHIP.x - 10), yPct(SHIP.y + 110)`, `align="center"`.
-- Add an optional `maxWidth` prop on `CaptionPill` and pass `22ch` for this one pill so it reads as "Smallest useful version, fast." in two comfortable lines.
-
-## 6. Remove the lap counter
-
-Delete the `Lap N / 3` block, the `lapCounterOpacity` transform, and the `lap` state + `setLap` listener. Keep the pulse-on-crossing logic so Ship/Feedback still flash gently each time an arrow passes them — that becomes the new visual cue for "a cycle completed".
-
-## Files to edit
-
-- `src/pages/About.tsx` — spacing only.
-- `src/components/about/ProcessJourney.tsx` — arrows, ring cleanup, node lightening, Ship caption move, lap counter removal, sticky positioning.
-
-## Technical notes
-
-- Arrow chevron path: `M -6 -5 L 0 0 L -6 5` translated to `(LOOP_CX + LOOP_R, LOOP_CY)` and rotated 90° so it points clockwise tangent to the ring at the 3-o'clock position. The second arrow is the same path translated to `(LOOP_CX - LOOP_R, LOOP_CY)` rotated -90°. Wrapping both in a `motion.g` rotated by `spinDeg` makes them orbit while keeping their tangent orientation.
-- The unbroken ring is just a static `<circle>` (no `pathLength` animation) shown once `loopDrawLength` reaches 1; the existing draw-in `<motion.circle>` stays for the initial reveal phase, then we render the solid ring on top with `opacity` driven by `useTransform(scrollYProgress, [0.36, 0.42], [0, 1])`.
-- No new dependencies.
+No content rewrites, no testimonial content changes, no color palette changes.
