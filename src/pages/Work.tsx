@@ -8,10 +8,10 @@ import WorkClosingCTA from "@/components/work/WorkClosingCTA";
 /* -------------------- Hero highlights -------------------- */
 
 const highlights = [
-  { value: "4,743%", label: "engagement lift", caveat: "on one landing page I rebuilt" },
-  { value: "147 hrs/wk", label: "process waste", caveat: "identified in a workflow audit" },
-  { value: "100+", label: "brand touchpoints", caveat: "catalogued, systemised & updated" },
-  { value: "$12M", label: "LOST", caveat: "identified in inefficient workflows" },
+  { value: "$12.7M", label: "inefficiency identified", caveat: "across one engineering firm" },
+  { value: "124", label: "pain points mapped", caveat: "quantified and prioritised" },
+  { value: "40+", label: "stakeholders interviewed", caveat: "across departments" },
+  { value: "v2", label: "AIQ ROI Platform", caveat: "phased commercialisation" },
 ];
 
 const HeroHeadline = () => {

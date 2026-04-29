@@ -17,9 +17,9 @@ const WorkSection = () => {
         {[1, 2, 3, 4].map((n) => (
           <div key={n} className="mb-3">
             <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Tile {n}</p>
-            <TextField label="Value" page="work" section="highlights" fieldKey={`v${n}`} fallback={get("highlights", `v${n}`, ["4,743%", "147 hrs/wk", "100+", "3d → 20m"][n - 1])} />
-            <TextField label="Label" page="work" section="highlights" fieldKey={`l${n}`} fallback={get("highlights", `l${n}`, ["engagement lift", "process waste", "brand touchpoints", "tender drafting"][n - 1])} />
-            <TextField label="Caveat" page="work" section="highlights" fieldKey={`c${n}`} fallback={get("highlights", `c${n}`, ["on one landing page I rebuilt", "identified in a workflow audit", "catalogued & systemised", "tool in build, supporting role"][n - 1])} />
+            <TextField label="Value" page="work" section="highlights" fieldKey={`v${n}`} fallback={get("highlights", `v${n}`, ["$12.7M", "124", "40+", "v2"][n - 1])} />
+            <TextField label="Label" page="work" section="highlights" fieldKey={`l${n}`} fallback={get("highlights", `l${n}`, ["inefficiency identified", "pain points mapped", "stakeholders interviewed", "AIQ ROI Platform"][n - 1])} />
+            <TextField label="Caveat" page="work" section="highlights" fieldKey={`c${n}`} fallback={get("highlights", `c${n}`, ["across one engineering firm", "quantified and prioritised", "across departments", "phased commercialisation"][n - 1])} />
           </div>
         ))}
       </Section>

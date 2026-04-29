@@ -18,6 +18,15 @@ type Row = {
   quotes: unknown;
   files: unknown;
   order: number;
+  tagline?: string;
+  client?: string;
+  overview?: string;
+  stats?: unknown;
+  tags?: unknown;
+  bg_class?: string;
+  mock_type?: string;
+  hero_background?: string;
+  label?: string;
 };
 
 const rowToProject = (r: Row): Project => ({
@@ -35,6 +44,15 @@ const rowToProject = (r: Row): Project => ({
   quotes: Array.isArray(r.quotes) ? (r.quotes as string[]) : [],
   files: Array.isArray(r.files) ? (r.files as Project["files"]) : [],
   order: r.order ?? 0,
+  tagline: r.tagline ?? "",
+  client: r.client ?? "",
+  overview: r.overview ?? "",
+  stats: Array.isArray(r.stats) ? (r.stats as Project["stats"]) : [],
+  tags: Array.isArray(r.tags) ? (r.tags as string[]) : [],
+  bgClass: r.bg_class ?? "bg-1",
+  mockType: (r.mock_type === "dark" ? "dark" : "light"),
+  heroBackground: r.hero_background ?? "",
+  label: r.label ?? "",
 });
 
 async function fetchAll(): Promise<Project[]> {
