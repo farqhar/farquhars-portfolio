@@ -149,9 +149,24 @@ const ThenNow = () => {
         initial={{ opacity: 0, x: 40 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        className="glass rounded-2xl p-6 sm:p-8"
-        style={{ boxShadow: "0 8px 16px rgba(0,0,0,0.06), 0 30px 80px hsla(var(--indigo), 0.35), 0 0 0 1px hsla(var(--indigo), 0.15)" }}
+        className="relative"
       >
+        {/* Outer glow halo — sits behind the card so it's always visible */}
+        <div
+          aria-hidden
+          className="absolute -inset-4 rounded-3xl pointer-events-none blur-2xl"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, hsla(var(--indigo), 0.45), hsla(var(--purple), 0.22) 50%, transparent 75%)",
+          }}
+        />
+        <div
+          className="glass rounded-2xl p-6 sm:p-8 relative"
+          style={{
+            boxShadow:
+              "0 10px 24px rgba(0,0,0,0.08), 0 24px 60px hsla(var(--indigo), 0.45), 0 0 0 1.5px hsla(var(--indigo), 0.35)",
+          }}
+        >
         <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
         <h3 className="text-xl font-semibold gradient-text-indigo mb-3">{thenNow.now.title}</h3>
         <p className="text-sm leading-relaxed text-card-desc mb-5">{thenNow.now.body}</p>
@@ -165,6 +180,7 @@ const ThenNow = () => {
               {p}
             </span>
           ))}
+        </div>
         </div>
       </motion.div>
     </div>
