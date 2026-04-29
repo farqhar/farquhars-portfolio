@@ -228,27 +228,29 @@ const ProcessJourney = () => {
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
-    offset: ["start 10%", "end 90%"],
+    offset: ["start start", "end end"],
   });
 
   // Path drawing across left half + into loop
-  const leftPathLength = useTransform(scrollYProgress, [0.05, 0.42], [0, 1]);
-  const loopDrawLength = useTransform(scrollYProgress, [0.42, 0.55], [0, 1]);
+  const leftPathLength = useTransform(scrollYProgress, [0.04, 0.28], [0, 1]);
+  const loopDrawLength = useTransform(scrollYProgress, [0.28, 0.38], [0, 1]);
 
   // Section labels
-  const labelDiscover = useTransform(scrollYProgress, [0.04, 0.12], [0, 1]);
-  const labelIterate = useTransform(scrollYProgress, [0.46, 0.56], [0, 1]);
+  const labelDiscover = useTransform(scrollYProgress, [0.03, 0.1], [0, 1]);
+  const labelIterate = useTransform(scrollYProgress, [0.32, 0.42], [0, 1]);
 
-  // Loop spin: 3 laps across the iteration scroll range
+  // Loop spin: 3 laps across the bulk of the scroll — held in the middle so the
+  // rapid iteration phase remains visible for a long stretch of pinned scroll.
   const spinDeg = useTransform(
     scrollYProgress,
-    [0.55, 0.92],
+    [0.4, 0.88],
     [0, 360 * TOTAL_LAPS],
   );
 
-  // Exit translation (off the right edge)
-  const exitX = useTransform(scrollYProgress, [0.92, 1], [0, 320]);
-  const exitOpacity = useTransform(scrollYProgress, [0.92, 1], [1, 0]);
+  // Exit translation (off the right edge) — only at the very end so the loop
+  // never disappears before the user has watched the laps.
+  const exitX = useTransform(scrollYProgress, [0.94, 1], [0, 320]);
+  const exitOpacity = useTransform(scrollYProgress, [0.94, 1], [1, 0]);
 
   // Lap counter
   const [lap, setLap] = useState(0);
@@ -281,9 +283,9 @@ const ProcessJourney = () => {
     lastDeg.current = v;
   });
 
-  // Loop node base opacity
-  const shipOpacity = useTransform(scrollYProgress, [0.48, 0.55], [0, 1]);
-  const feedbackOpacity = useTransform(scrollYProgress, [0.5, 0.58], [0, 1]);
+  // Loop node base opacity — appear right as the loop draws in.
+  const shipOpacity = useTransform(scrollYProgress, [0.32, 0.4], [0, 1]);
+  const feedbackOpacity = useTransform(scrollYProgress, [0.34, 0.42], [0, 1]);
 
   // Caption opacities
   const captionOpacities = LINEAR_NODES.map((n) =>
@@ -295,17 +297,17 @@ const ProcessJourney = () => {
   );
   const shipCaptionOpacity = useTransform(
     scrollYProgress,
-    [0.52, 0.6],
+    [0.36, 0.44],
     [0, 1],
   );
   const feedbackCaptionOpacity = useTransform(
     scrollYProgress,
-    [0.55, 0.63],
+    [0.38, 0.46],
     [0, 1],
   );
   const lapCounterOpacity = useTransform(
     scrollYProgress,
-    [0.58, 0.66],
+    [0.4, 0.48],
     [0, 1],
   );
 
@@ -314,9 +316,9 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "360vh" }}>
-      <div className="sticky top-[10vh] h-[80vh] flex items-center">
-        <div className="relative w-full">
+    <div ref={wrapperRef} className="relative" style={{ height: "500vh" }}>
+      <div className="sticky top-0 h-screen flex items-center justify-center">
+        <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
           {/* SVG layer */}
           <motion.svg
             viewBox={`0 0 ${VB_W} ${VB_H}`}
