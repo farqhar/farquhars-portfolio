@@ -1,16 +1,20 @@
-I’ll fix the About page so the shadow is clearly around the AI Operations PM card on the right, while Graphic Designer on the left stays flat.
+You’re right — I can see why this has been frustrating. The previous attempts used shadow colors like `hsla(var(--indigo), 0.45)`. Because the CSS variable is stored as space-separated HSL values, that syntax can be ignored by the browser, meaning the intended indigo shadow/halo may not render at all.
 
 Plan:
-1. Update `src/pages/About.tsx` in the Then / Now section.
+1. Edit `src/pages/About.tsx` in the Then / Now card section.
 2. Keep the layout exactly as requested:
-   - Left: Then / Graphic Designer
-   - Right: Now / AI Operations PM
-3. Remove/neutralize any shadow from the Graphic Designer card.
-4. Add a much more visible highlight treatment to the AI Operations PM card, likely using:
-   - stronger indigo outer glow
-   - subtle indigo border/ring
-   - a faint radial glow behind the card if needed, so it reads clearly on the white background
-5. Make sure the effect is applied to the actual card wrapper, not just the text, so the whole AI Operations PM cell has the visible shadow around it.
+   - Left card: Then / Graphic Designer
+   - Right card: Now / AI Operations PM
+3. Keep the Graphic Designer card flat with no shadow.
+4. Replace the AI Operations PM shadow and glow with reliable CSS that will definitely render, using either:
+   - `hsl(var(--indigo) / 0.45)` syntax, or
+   - explicit fallback colors like `rgba(99, 102, 241, 0.45)`.
+5. Make the shadow visually obvious by applying it directly to the AI Operations PM card wrapper, for example:
+   - strong soft purple/indigo outer shadow
+   - visible border/ring around the card
+   - optional glow layer behind the card using valid CSS color syntax
+6. Remove any invalid `hsla(var(--indigo), ...)` / `hsla(var(--purple), ...)` syntax from this section so the browser cannot silently drop the effect again.
+7. Visually check `/about` after the change to confirm the right-hand AI Operations PM card has the shadow and the left-hand Graphic Designer card is flat.
 
 Technical note:
-The current inline `boxShadow` exists on the AI Operations card, but it is too subtle against the white/glass styling in the preview. I’ll make the glow/border stronger and ensure the card is `relative` with a visible surrounding glow that cannot be hidden by the glass styling.
+The core issue is likely CSS color syntax, not the card selection. `hsl(var(--indigo))` works, but `hsla(var(--indigo), 0.45)` can fail because the CSS variable is defined as `239 84% 67%`, not comma-separated values. I’ll use browser-safe syntax so the shadow actually appears.
