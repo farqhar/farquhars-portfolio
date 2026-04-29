@@ -255,13 +255,6 @@ const ProcessJourney = () => {
   const exitX = useTransform(scrollYProgress, [0.94, 1], [0, 320]);
   const exitOpacity = useTransform(scrollYProgress, [0.94, 1], [1, 0]);
 
-  // Lap counter
-  const [lap, setLap] = useState(0);
-  useMotionValueEvent(spinDeg, "change", (v) => {
-    const next = Math.min(TOTAL_LAPS, Math.floor(v / 360));
-    setLap(next);
-  });
-
   // Pulse Ship (angle 0°) and Feedback (angle 180°) each time tracer crosses
   const shipPulse = useMotionValue(1);
   const feedbackPulse = useMotionValue(1);
