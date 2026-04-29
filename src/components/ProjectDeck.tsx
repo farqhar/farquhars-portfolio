@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import type { Project as DbProject } from "@/data/projectsSeed";
+import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
 
 /**
  * ProjectDeck.tsx
@@ -32,6 +32,7 @@ type Project = {
   bgClass: string;
   mockType: "dark" | "light";
   heroBackground: string;
+  gallery: GalleryImage[];
 };
 
 const dbToCard = (p: DbProject): Project => ({
@@ -48,6 +49,7 @@ const dbToCard = (p: DbProject): Project => ({
   bgClass: p.bgClass || "bg-1",
   mockType: p.mockType === "dark" ? "dark" : "light",
   heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
+  gallery: Array.isArray(p.gallery) ? p.gallery : [],
 });
 
 const VISIBLE_BEHIND = 3;
