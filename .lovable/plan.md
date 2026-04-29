@@ -1,20 +1,17 @@
-You’re right — I can see why this has been frustrating. The previous attempts used shadow colors like `hsla(var(--indigo), 0.45)`. Because the CSS variable is stored as space-separated HSL values, that syntax can be ignored by the browser, meaning the intended indigo shadow/halo may not render at all.
-
 Plan:
-1. Edit `src/pages/About.tsx` in the Then / Now card section.
-2. Keep the layout exactly as requested:
-   - Left card: Then / Graphic Designer
-   - Right card: Now / AI Operations PM
-3. Keep the Graphic Designer card flat with no shadow.
-4. Replace the AI Operations PM shadow and glow with reliable CSS that will definitely render, using either:
-   - `hsl(var(--indigo) / 0.45)` syntax, or
-   - explicit fallback colors like `rgba(99, 102, 241, 0.45)`.
-5. Make the shadow visually obvious by applying it directly to the AI Operations PM card wrapper, for example:
-   - strong soft purple/indigo outer shadow
-   - visible border/ring around the card
-   - optional glow layer behind the card using valid CSS color syntax
-6. Remove any invalid `hsla(var(--indigo), ...)` / `hsla(var(--purple), ...)` syntax from this section so the browser cannot silently drop the effect again.
-7. Visually check `/about` after the change to confirm the right-hand AI Operations PM card has the shadow and the left-hand Graphic Designer card is flat.
 
-Technical note:
-The core issue is likely CSS color syntax, not the card selection. `hsl(var(--indigo))` works, but `hsla(var(--indigo), 0.45)` can fail because the CSS variable is defined as `239 84% 67%`, not comma-separated values. I’ll use browser-safe syntax so the shadow actually appears.
+1. Update the Then / Now section in `src/pages/About.tsx`.
+2. Keep the layout the same:
+   - Left: Graphic Designer
+   - Right: AI Operations PM
+3. Remove the purple/indigo glow halo behind the AI Operations PM card entirely.
+4. Change the AI Operations PM card interior to a plain white background, not glassy or tinted.
+5. Add a smaller, neutral grey shadow behind the AI Operations PM card only.
+6. Keep the Graphic Designer card flat with no shadow.
+7. Preserve the existing rounded corners, spacing, typography, and content.
+
+Technical details:
+- Replace the current `absolute -inset-6 blur-2xl` coloured halo with no halo layer.
+- Replace the current strong multi-layer purple/indigo `boxShadow` with a subtle grey shadow, for example `0 14px 30px rgba(15, 23, 42, 0.14)`.
+- Override the right card background to `#ffffff` so the cell reads as plain white.
+- Keep the border subtle and neutral, e.g. `1px solid rgba(15, 23, 42, 0.08)`, rather than purple.
