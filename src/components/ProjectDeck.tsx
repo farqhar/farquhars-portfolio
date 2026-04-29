@@ -321,6 +321,38 @@ export default function ProjectDeck() {
         .pd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; }
         .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
 
+        /* Two-column detail layout */
+        .pd-detail-wrap { max-width: 1320px; margin: 0 auto; padding: 80px 32px 120px; transform: translateY(20px); opacity: 0; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s; }
+        .pd-overlay.open .pd-detail-wrap { transform: translateY(0); opacity: 1; }
+        .pd-detail-grid { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 56px; align-items: start; }
+        .pd-detail-left { min-width: 0; position: sticky; top: 80px; }
+        .pd-detail-right { min-width: 0; }
+        .pd-detail-left .pd-title { font-size: clamp(36px, 4.6vw, 60px); margin-bottom: 20px; }
+        .pd-detail-left .pd-tagline { margin-bottom: 40px; }
+        .pd-detail-left .pd-section { margin-bottom: 40px; }
+        .pd-detail-left .pd-stats { margin: 40px 0; padding: 28px 0; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        .pd-detail-left .pd-stat-value { font-size: clamp(28px, 3.4vw, 40px); }
+        .pd-detail-left .pd-tags { margin-top: 28px; }
+
+        /* Auto-scroll marquee */
+        .pd-marquee { position: relative; width: 100%; overflow: hidden; mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); }
+        .pd-marquee:hover .pd-marquee-track { animation-play-state: paused; }
+        .pd-marquee-track { display: flex; gap: 20px; width: max-content; animation: pd-marquee 50s linear infinite; will-change: transform; }
+        @keyframes pd-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .pd-marquee-item { flex: 0 0 auto; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); background: #F0EDE8; cursor: zoom-in; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+        .pd-marquee-item:hover { transform: translateY(-4px); }
+        .pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
+        .pd-marquee-empty { width: 100%; aspect-ratio: 4/5; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); }
+
+        /* Lightbox */
+        .pd-lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.92); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 32px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .pd-lightbox.open { opacity: 1; pointer-events: all; }
+        .pd-lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+        .pd-lb-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: background 0.2s; }
+        .pd-lb-btn:hover { background: rgba(255,255,255,0.22); }
+        .pd-lb-prev { left: 24px; } .pd-lb-next { right: 24px; }
+        .pd-lb-close { position: absolute; top: 24px; right: 24px; }
+
         @media (max-width: 768px) {
           .pd-stack { width: 92vw; height: 70vh; }
           .pd-card { width: 84vw; height: 64vh; border-radius: 20px; }
@@ -331,6 +363,13 @@ export default function ProjectDeck() {
           .pd-bar { height: 7px; }
           .pd-header { left: 24px; right: 24px; top: 24px; }
           .pd-detail-content { padding: 64px 24px 80px; }
+        }
+
+        @media (max-width: 900px) {
+          .pd-detail-grid { grid-template-columns: 1fr; gap: 40px; }
+          .pd-detail-left { position: static; }
+          .pd-detail-wrap { padding: 64px 20px 80px; }
+          .pd-marquee-item { height: 220px; }
         }
       `}</style>
 
