@@ -1,27 +1,23 @@
-## Changes
+## Problem
+
+The "Rapid Iteration" loop currently begins drawing from the top (12 o'clock / 0°), which is why the screenshot shows a small arc floating disconnected from where the main wave line terminates. The main wave ends at the **left side** of the circle (9 o'clock / 270°), at the Feedback node, so the loop should start drawing from there.
+
+## Change
 
 ### `src/components/about/ProcessJourney.tsx`
 
-1. **Delay "Discover & Design" label** until after the line passes Stakeholders (threshold 0.2):
-   - Change `labelDiscover` range from `[0.11, 0.16]` to `[0.21, 0.26]`.
+The animated loop circle uses `transform={`rotate(-90 ${LOOP_CX} ${LOOP_CY})`}` (line 382). An SVG `<circle>`'s `pathLength` animation starts at the 3 o'clock position by default; `rotate(-90)` shifts that start point to 12 o'clock.
 
-2. **Reposition "Discover & Design" label** — align with the left of the SVG (under where the journey begins, matching the visual column of the "How I work" eyebrow above), and move lower:
-   - In its overlay div, change `left: ${xPct(280)}%` → `left: ${xPct(80)}%`.
-   - Change `top: ${yPct(40)}%` → `top: ${yPct(110)}%`.
-   - Update the transform to `translate(0, -50%)` (left-aligned instead of centered) so it lines up flush left with the path origin.
+To start the draw from the **9 o'clock** position (where the main wave ends at the Feedback node), change the rotation to `180`:
 
-3. **Lower the "Rapid Iteration" label**:
-   - Change its `top: ${yPct(40)}%` → `top: ${yPct(150)}%` (sits closer to the top of the loop ring rather than floating high above).
+```tsx
+transform={`rotate(180 ${LOOP_CX} ${LOOP_CY})`}
+```
 
-### `src/pages/About.tsx`
+This will make the loop draw clockwise starting from the left edge of the circle — flowing seamlessly out of the end of the main wave path.
 
-4. **Tighten gap between How I Work pinned section and testimonials**:
-   - The `ProcessJourney` wrapper currently uses `-mt-8 mb-0`. Add an aggressive negative margin to the testimonials block to pull it up — change the container `<div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">` that follows ProcessJourney to add `-mt-24 sm:-mt-32`.
-   - Alternatively (and cleaner), reduce ProcessJourney wrapper to `style={{ height: "320vh" }}` inside ProcessJourney.tsx so the pinned scroll releases sooner, and apply `-mt-16` to the testimonials wrapper.
-
-   Final approach: set ProcessJourney height to `320vh` and apply `-mt-20` to the testimonials container.
+No other changes required.
 
 ## Files
 
-- `src/components/about/ProcessJourney.tsx`
-- `src/pages/About.tsx`
+- `src/components/about/ProcessJourney.tsx` (single line edit on the animated `<motion.circle>` transform)
