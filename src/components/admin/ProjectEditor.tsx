@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Project, ProjectFile, ProjectStat } from "@/data/projectsSeed";
+import { useState, ChangeEvent } from "react";
+import { toast } from "sonner";
+import { Project, ProjectFile, ProjectStat, GalleryImage } from "@/data/projectsSeed";
 import MediaField from "@/components/admin/fields/MediaField";
 import SubProjectsField from "@/components/admin/fields/SubProjectsField";
+import { uploadMedia } from "@/lib/cmsApi";
 
 type Props = {
   project: Project;
@@ -20,15 +22,59 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
     files: project.files ?? [],
     stats: project.stats ?? [],
     tags: project.tags ?? [],
+    gallery: project.gallery ?? [],
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
   const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
   const [statsText, setStatsText] = useState(
     (project.stats ?? []).map((s) => `${s.value} | ${s.label}`).join("\n"),
   );
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   const set = <K extends keyof Project>(key: K, value: Project[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
+
+  const gallery: GalleryImage[] = draft.gallery ?? [];
+
+  const handleGalleryFiles = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setGalleryUploading(true);
+    try {
+      const uploaded: GalleryImage[] = [];
+      for (const file of files) {
+        const ext = file.name.split(".").pop() || "bin";
+        const path = `projects/${draft.slug}/gallery/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const url = await uploadMedia(file, path, "image");
+        uploaded.push({ url, alt: "" });
+      }
+      set("gallery", [...gallery, ...uploaded]);
+      toast.success(`Added ${uploaded.length} image${uploaded.length === 1 ? "" : "s"}`);
+    } catch (ex) {
+      toast.error("Upload failed", { description: (ex as Error).message });
+    } finally {
+      setGalleryUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const updateGalleryAlt = (i: number, alt: string) => {
+    const next = [...gallery];
+    next[i] = { ...next[i], alt };
+    set("gallery", next);
+  };
+
+  const removeGallery = (i: number) => {
+    set("gallery", gallery.filter((_, idx) => idx !== i));
+  };
+
+  const moveGallery = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= gallery.length) return;
+    const next = [...gallery];
+    [next[i], next[j]] = [next[j], next[i]];
+    set("gallery", next);
+  };
 
   const handleSave = () => {
     const parsedStats: ProjectStat[] = statsText
@@ -167,6 +213,74 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             value={tagsText}
             onChange={(e) => setTagsText(e.target.value)}
           />
+        </div>
+
+        <div className="pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <label className={labelCls + " mb-0"}>Gallery images (auto-scroll on the project page)</label>
+            <label className="inline-block bg-gray-900 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-md hover:bg-gray-800 cursor-pointer">
+              {galleryUploading ? "Uploading…" : "Add images"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleGalleryFiles}
+                disabled={galleryUploading}
+              />
+            </label>
+          </div>
+          {gallery.length === 0 ? (
+            <p className="text-[11px] text-gray-500 italic">
+              No images yet. The right column will fall back to the hero gradient.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {gallery.map((g, i) => (
+                <li
+                  key={`${g.url}-${i}`}
+                  className="flex items-center gap-3 border border-gray-200 rounded-md p-2 bg-white"
+                >
+                  <div className="w-14 h-14 rounded overflow-hidden bg-gray-100 shrink-0">
+                    <img src={g.url} alt={g.alt || ""} className="w-full h-full object-cover" />
+                  </div>
+                  <input
+                    className={inputCls + " flex-1"}
+                    placeholder="Alt text (optional)"
+                    value={g.alt ?? ""}
+                    onChange={(e) => updateGalleryAlt(i, e.target.value)}
+                  />
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => moveGallery(i, -1)}
+                      disabled={i === 0}
+                      className="text-xs px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-30"
+                      aria-label="Move up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveGallery(i, 1)}
+                      disabled={i === gallery.length - 1}
+                      className="text-xs px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-30"
+                      aria-label="Move down"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeGallery(i)}
+                      className="text-xs px-2 py-1 text-red-600 border border-red-200 rounded hover:bg-red-50"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div>
