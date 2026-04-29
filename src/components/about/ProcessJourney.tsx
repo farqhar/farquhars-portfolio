@@ -228,7 +228,7 @@ const ProcessJourney = () => {
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
-    offset: ["start end", "end start"],
+    offset: ["start 10%", "end 90%"],
   });
 
   // Path drawing across left half + into loop
@@ -314,7 +314,7 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "260vh" }}>
+    <div ref={wrapperRef} className="relative" style={{ height: "360vh" }}>
       <div className="sticky top-[10vh] h-[80vh] flex items-center">
         <div className="relative w-full">
           {/* SVG layer */}
