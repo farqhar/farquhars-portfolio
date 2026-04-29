@@ -5,6 +5,11 @@ export type ProjectFile = {
   href: string;
 };
 
+export type ProjectStat = {
+  value: string;
+  label: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -20,177 +25,193 @@ export type Project = {
   quotes: string[];
   files?: ProjectFile[];
   order: number;
+  // Folder-card content (used by ProjectDeck)
+  tagline?: string;
+  client?: string;
+  overview?: string;
+  stats?: ProjectStat[];
+  tags?: string[];
+  bgClass?: string;
+  mockType?: "dark" | "light";
+  heroBackground?: string;
+  label?: string;
 };
 
 const placeholder = "/placeholder.svg";
 
 export const projectsSeed: Project[] = [
   {
-    slug: "cjc-digital-construction-landing-page",
-    title: "CJC Digital Construction Landing Page",
-    role: "Creative Direction · Web Design · Stakeholder Management",
-    timeline: "6 weeks",
-    outcomeMetric: "4,743% engagement",
+    slug: "caber-aiq-programme",
+    title: "CABER AIQ Programme",
+    role: "AI Programme Manager",
+    timeline: "12 months · ongoing",
+    outcomeMetric: "$12.7M inefficiency identified",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "CJC's digital arm had no way to communicate what it actually did. The existing page collapsed three offerings into one paragraph, and bounce rates told the story.",
+      "A 200-person engineering and design firm wanted AI capability but had no operating model, no pipeline, and no shared evidence of where AI would actually pay off.",
     process:
-      "Mapped the service offering with three department leads, prototyped a narrative-led page in two passes, and pushed for fewer words and more proof. Worked through five rounds of stakeholder feedback without losing the structural spine.",
+      "Stood up the programme from a single discovery sprint: ran 40+ stakeholder interviews, built the request pipeline, designed the sprint cadence, and put a stakeholder communications layer around it.",
     outcome:
-      "Engagement jumped 4,743% in the first quarter post-launch. The page became the default link in business development conversations.",
+      "AIQ now runs on a structured operating model with 124 documented pain points and a board-credible inefficiency number to prioritise against.",
     honest:
-      "I underestimated how much internal alignment the page would force. Half the work happened in stakeholder rooms, not in Figma.",
-    quotes: [
-      "It finally explains what we do without an apology. — Department Lead",
-    ],
+      "The programme design mattered more than any single tool. People needed a way to ask, not another dashboard to check.",
+    quotes: [],
     order: 0,
+    tagline:
+      "Standing up an AI transformation programme inside a 200-person engineering and design firm — from discovery to delivery.",
+    client: "CABER Group",
+    overview:
+      "Built CABER's internal AI capability from a single discovery sprint into a structured operating model. Designed the request pipeline, sprint cadence, and stakeholder communications layer that AIQ runs on today.",
+    stats: [
+      { value: "40+", label: "Staff interviewed" },
+      { value: "124", label: "Pain points mapped" },
+      { value: "$12.7M", label: "Inefficiency identified" },
+    ],
+    tags: ["Programme Design", "Stakeholder Mgmt", "AI Strategy", "Operating Model"],
+    bgClass: "bg-1",
+    mockType: "dark",
+    heroBackground:
+      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #2B5BFF 100%)",
+    label: "2025 · Strategy",
   },
   {
-    slug: "ai-workflow-survey-system",
-    title: "AI Workflow Survey System & Pain Point Analysis",
-    role: "Operations Design · Research · AI Tooling",
-    timeline: "10 weeks",
-     outcomeMetric: "147 hrs/wk identified",
+    slug: "aiq-roi-platform",
+    title: "AIQ ROI Platform",
+    role: "Product Lead · Designer · Builder",
+    timeline: "6 months · v1 shipped",
+    outcomeMetric: "4 live modules",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "Leadership knew AI could help but had no shared evidence of where time was actually being lost. Anecdotes were driving tooling decisions.",
+      "Every AI programme dies on the same question — what's the actual ROI? Without a system to link pain points to deployed solutions to dollars, every pilot becomes a debate.",
     process:
-      "Designed a structured intake survey, ran it across departments, then built a tagging framework that grouped pain points by frequency, severity, and automatability.",
+      "Designed and built the platform end-to-end on Lovable + Supabase, with the Claude API powering the analysis layer. Four live modules covering intake, prioritisation, deployment, and ROI tracking.",
     outcome:
-      "Surfaced 147 weekly hours of reclaimable work and a prioritised tooling roadmap leadership now uses to greenlight pilots.",
+      "Live across the AIQ programme, tracking 12 deployed solutions. Phased commercialisation as v2.",
     honest:
-      "The hardest part wasn't the analysis — it was getting busy people to answer honestly. I rewrote the intake three times.",
-    quotes: [
-      "First time we've had data instead of opinions on this. — Head of Operations",
-    ],
+      "It's tempting to over-build the dashboard. The hard part was getting the input data clean enough to mean anything.",
+    quotes: [],
     order: 1,
+    tagline:
+      "A purpose-built intelligence dashboard linking identified pain points to deployed AI solutions and tracked financial return.",
+    client: "CABER · Internal",
+    overview:
+      "Built in Lovable + Supabase with the Claude API powering the analysis layer. Solves the problem of every AI programme: proving the ROI is real, not theoretical.",
+    stats: [
+      { value: "4", label: "Live modules" },
+      { value: "12", label: "Solutions tracked" },
+      { value: "v2", label: "Phased commercialisation" },
+    ],
+    tags: ["Lovable", "Supabase", "Claude API", "Product Design"],
+    bgClass: "bg-2",
+    mockType: "light",
+    heroBackground:
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.15) 50%, rgba(123,91,255,0.1) 100%)",
+    label: "2025 · AI + Product",
   },
   {
-    slug: "cjc-air-and-ports-motion-video",
-    title: "CJC Air & Ports Motion Video",
-    role: "Creative Direction · Motion Design · Script",
-    timeline: "4 weeks",
-     outcomeMetric: "Multiple million dollar projects won",
+    slug: "ascenda-health",
+    title: "Ascenda Health",
+    role: "Designer",
+    timeline: "3 weeks",
+    outcomeMetric: "24 slides delivered",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "The Air & Ports division needed a sales-room asset that explained scale and capability in under 90 seconds, without leaning on stock footage.",
+      "A clinical digital-health product was raising seed capital and needed a deck investors could move on inside one read.",
     process:
-      "Wrote the script around three customer truths, storyboarded a motion treatment, and directed the build with a motion designer. Two rounds, no stock.",
+      "Worked with the founding team to translate the clinical model into a narrative arc, then built a visual system designed to be reused across follow-up materials.",
     outcome:
-      "The video became the opening asset in every Air & Ports pitch deck and is now embedded in the division's homepage.",
+      "Deck delivered in three weeks, with a system that survived into investor follow-ups and product collateral.",
     honest:
-      "I cut the runtime in half on the last revision and the video got better. I should've started shorter.",
-    quotes: [
-      "It actually sounds like us. — Division Director",
-    ],
+      "The trap on pitch decks is over-designing the slide and under-designing the story. I cut three slides on the last pass.",
+    quotes: [],
     order: 2,
+    tagline:
+      "A 24-slide investor pitch deck for a digital health platform raising seed capital.",
+    client: "Ascenda Health",
+    overview:
+      "Worked closely with the founding team to translate a complex clinical product into a narrative investors could move on. Visual system designed for repeated reuse across follow-up materials.",
+    stats: [
+      { value: "24", label: "Slides delivered" },
+      { value: "1", label: "Visual system" },
+      { value: "∞", label: "Reusable assets" },
+    ],
+    tags: ["Pitch Deck", "Brand System", "Investor Comms"],
+    bgClass: "bg-3",
+    mockType: "light",
+    heroBackground: "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
+    label: "2024 · Design",
   },
   {
-    slug: "brand-touchpoint-audit-ownership-framework",
-    title: "Brand Touchpoint Audit & Ownership Framework",
-    role: "Brand Strategy · Systems · Stakeholder Management",
-    timeline: "8 weeks",
-     outcomeMetric: "100+ touchpoints tracked",
+    slug: "pain-point-discovery",
+    title: "Pain Point Discovery",
+    role: "Programme Lead",
+    timeline: "4 months",
+    outcomeMetric: "$12.7M annualised cost",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "No one could say who owned what across the brand. Templates drifted, signage was inconsistent, and the same fix kept being made in three different places.",
+      "Leadership knew there was waste in the system but couldn't put a number on it. Without quantification, AI stayed a cost line, not a capital project.",
     process:
-      "Audited every customer-facing surface, built a single ownership matrix, and walked it through with each owner until they agreed it was theirs.",
+      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and built the model that turned them into an annualised cost.",
     outcome:
-      "Over 100 touchpoints now have a named owner, a review cadence, and a single source of truth.",
+      "A board presentation that reframed AI from cost line to capital project, with $12.7M of annualised inefficiency on the table.",
     honest:
-      "Half the work was diplomacy. Naming an owner is easy. Getting them to accept it is the project.",
-    quotes: [
-      "I finally know what I'm responsible for. — Marketing Manager",
-    ],
+      "Quantification is half methodology, half courage. People will give you the number — you have to be willing to write it down.",
+    quotes: [],
     order: 3,
-  },
-  {
-    slug: "animated-email-signature-suite-case-happy-holidays",
-    title: "Animated Email Signature Suite — CaSE Happy Holidays",
-    role: "Design · Motion · Email Engineering",
-    timeline: "2 weeks",
-     outcomeMetric: "120+ staff deployed",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "The annual holiday signature was a 4MB JPEG no one updated. It looked tired, broke on Outlook, and gave nothing back to the brand.",
-    process:
-      "Designed a lightweight animated signature that degraded gracefully on Outlook, then built a one-click install path so 320+ staff could deploy it themselves.",
-    outcome:
-      "Deployed across the org in under a week. Held up across Outlook, Gmail, and Apple Mail without a single helpdesk ticket.",
-    honest:
-      "Email is hostile design territory. Half the time I spent on this was pretending it was 2009.",
-    quotes: [
-      "First holiday signature that didn't make me wince. — Internal Comms Lead",
+    tagline:
+      "A board-ready audit quantifying $12.7M of annualised inefficiency across one engineering firm.",
+    client: "CABER Group",
+    overview:
+      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and quantified annualised cost. Output: a board presentation that reframed AI from cost line to capital project.",
+    stats: [
+      { value: "40+", label: "Interviews" },
+      { value: "124", label: "Unique pain points" },
+      { value: "$12.7M", label: "Annualised cost" },
     ],
-    order: 4,
+    tags: ["Discovery", "Quantification", "Stakeholder Research", "Board Reporting"],
+    bgClass: "bg-4",
+    mockType: "dark",
+    heroBackground:
+      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
+    label: "2024 · Data",
   },
   {
-    slug: "aiq-control-centre-internal-comms-automation",
-    title: "AIQ Control Centre & Internal Comms Automation",
-    role: "Product Design · AI Workflow · Comms Strategy",
-    timeline: "12 weeks",
-    outcomeMetric: "80% comms automated",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "Internal comms were stitched together by hand every week — pulling metrics, writing summaries, formatting emails. The work was invisible until it broke.",
-    process:
-      "Designed a control centre that pulls from source systems, drafts the comms with an AI layer, and routes them to a human approver before sending.",
-    outcome:
-      "Around 80% of weekly internal comms now ship through the control centre. Human time shifted from assembly to editorial.",
-    honest:
-      "Automating comms doesn't remove the editorial judgment — it concentrates it. That part surprised me.",
-    quotes: [
-      "I get my Fridays back. — Internal Comms Lead",
-    ],
-    order: 5,
-  },
-  {
-    slug: "wollip-email-signature-saas",
-    title: "Wollip — Email Signature SaaS",
-    role: "Founder · Product Design · Brand",
+    slug: "wollip-signatures",
+    title: "Wollip Signatures",
+    role: "Co-founder · Designer · Product",
     timeline: "Ongoing",
-    outcomeMetric: "In private beta",
+    outcomeMetric: "1 source of truth",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "Every company I worked with had the same email signature problem and no SaaS that solved it without enterprise pricing or an IT project.",
+      "The most-seen brand surface in B2B is the email signature, and it's also the most ungoverned. Every company I worked with had the same drift problem.",
     process:
-      "Designed the product around a single insight: signatures should be deployed centrally and edited locally. Built the brand, the marketing site, and the onboarding flow in parallel.",
+      "Productised the service into a self-serve platform: animated HTML signatures with GIF fallbacks, brand-controlled rollout, and click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIFs.",
     outcome:
-      "Currently in private beta with three paying companies. Validated the central-deploy / local-edit model.",
+      "Live with paying customers in private beta, with a central-deploy / local-edit model that holds across Outlook, Gmail, and Apple Mail.",
     honest:
       "I keep wanting to add features. The product gets better when I delete them.",
-    quotes: [
-      "This is the thing we've been building badly in-house for years. — Beta Customer",
+    quotes: [],
+    order: 4,
+    tagline:
+      "A SaaS platform that turns the most-seen brand surface in B2B — the email signature — into a controlled marketing channel.",
+    client: "Wollip Digital & Design",
+    overview:
+      "Started as a service offering, productised into a self-serve platform. Animated HTML signatures with GIF fallbacks, brand-controlled rollout, click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIF generation.",
+    stats: [
+      { value: "100%", label: "On-brand rollout" },
+      { value: "~80", label: "Emails/day per user" },
+      { value: "1", label: "Source of truth" },
     ],
-    order: 6,
-  },
-  {
-    slug: "cv-generation-tool-engineering-tender-automation",
-    title: "CV Generation Tool — Engineering Tender Automation",
-    role: "Product Design · AI Workflow · Internal Tooling",
-    timeline: "9 weeks",
-    outcomeMetric: "From 3 days to 20 mins",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "Every engineering tender required tailored CVs for 8–20 staff, hand-assembled in Word. The process took three days and blocked bid teams.",
-    process:
-      "Designed a structured CV database, a tender-brief intake, and an AI layer that drafts the tailored CV. Bid leads review and ship.",
-    outcome:
-      "Tailored-CV turnaround dropped from three days to twenty minutes. Bid teams now spend that time on the win themes.",
-    honest:
-      "The AI was the easy part. The hard part was convincing engineers their CV deserved a database row.",
-    quotes: [
-      "I'd never go back to the old process. — Bid Manager",
-    ],
-    order: 7,
+    tags: ["SaaS", "B2B", "Brand Tooling", "Founder"],
+    bgClass: "bg-5",
+    mockType: "light",
+    heroBackground:
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
+    label: "2024 · Brand",
   },
 ];
