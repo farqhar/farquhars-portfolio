@@ -233,14 +233,14 @@ export default function ProjectDeck() {
         .pd-folder-name::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); box-shadow: 0 0 0 3px rgba(43,91,255,0.1); }
         .pd-item-count { font-family: 'SF Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #B8B8BD; font-weight: 500; }
 
-        .pd-stack { position: relative; width: 380px; height: 480px; display: flex; align-items: center; justify-content: center; z-index: 1; }
-        .pd-card { position: absolute; width: 300px; height: 400px; border-radius: 18px; overflow: hidden; background: white; will-change: transform, opacity; cursor: pointer; transform-origin: center center; }
+        .pd-stack { position: relative; width: min(560px, 92vw); height: min(720px, 78vh); display: flex; align-items: center; justify-content: center; z-index: 1; }
+        .pd-card { position: absolute; width: min(460px, 84vw); height: min(620px, 72vh); border-radius: 24px; overflow: hidden; background: white; will-change: transform, opacity; cursor: pointer; transform-origin: center center; }
         .pd-card .pd-card-bg { width: 100%; height: 70%; position: relative; overflow: hidden; }
-        .pd-card .pd-card-info { background: white; padding: 20px 22px; height: 30%; display: flex; flex-direction: column; justify-content: center; border-top: 0.5px solid rgba(0,0,0,0.06); position: relative; }
-        .pd-card-label { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 600; margin-bottom: 6px; font-family: 'SF Mono', ui-monospace, monospace; display: flex; align-items: center; gap: 8px; }
-        .pd-card-label-dot { width: 4px; height: 4px; border-radius: 50%; background: #0A0A0A; opacity: 0.4; }
-        .pd-card-title { font-size: 17px; font-weight: 600; color: #0A0A0A; letter-spacing: -0.022em; line-height: 1.2; }
-        .pd-card-sub { font-size: 12px; color: #86868B; margin-top: 4px; letter-spacing: -0.01em; }
+        .pd-card .pd-card-info { background: white; padding: 28px 30px; height: 30%; display: flex; flex-direction: column; justify-content: center; border-top: 0.5px solid rgba(0,0,0,0.06); position: relative; }
+        .pd-card-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 600; margin-bottom: 10px; font-family: 'SF Mono', ui-monospace, monospace; display: flex; align-items: center; gap: 10px; }
+        .pd-card-label-dot { width: 5px; height: 5px; border-radius: 50%; background: #0A0A0A; opacity: 0.4; }
+        .pd-card-title { font-size: 24px; font-weight: 600; color: #0A0A0A; letter-spacing: -0.022em; line-height: 1.2; }
+        .pd-card-sub { font-size: 15px; color: #86868B; margin-top: 6px; letter-spacing: -0.01em; }
 
         .pd-bg-1 { background: #0A0A0A; position: relative; }
         .pd-bg-1::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 0%, rgba(43,91,255,0.4) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(123,91,255,0.3) 0%, transparent 50%); opacity: 0.6; }
@@ -253,14 +253,14 @@ export default function ProjectDeck() {
         .pd-bg-5 { background: white; position: relative; border: 0.5px solid rgba(0,0,0,0.06); }
         .pd-bg-5::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(43,91,255,0.04) 0%, transparent 100%); }
 
-        .pd-mock { position: absolute; inset: 24px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; padding: 18px; }
+        .pd-mock { position: absolute; inset: 32px; border-radius: 14px; display: flex; flex-direction: column; gap: 14px; padding: 26px; }
         .pd-mock-dark { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,0.1); }
         .pd-mock-light { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 0.5px solid rgba(0,0,0,0.04); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        .pd-bar { height: 6px; border-radius: 3px; }
+        .pd-bar { height: 9px; border-radius: 4px; }
         .pd-mock-dark .pd-bar { background: rgba(255,255,255,0.2); }
         .pd-mock-light .pd-bar { background: rgba(0,0,0,0.1); }
         .pd-bar-short { width: 35%; } .pd-bar-med { width: 60%; } .pd-bar-full { width: 88%; }
-        .pd-block { flex: 1; border-radius: 6px; margin-top: 6px; position: relative; overflow: hidden; }
+        .pd-block { flex: 1; border-radius: 10px; margin-top: 8px; position: relative; overflow: hidden; }
         .pd-mock-dark .pd-block { background: rgba(255,255,255,0.08); }
         .pd-mock-light .pd-block { background: rgba(0,0,0,0.04); }
         .pd-mock-dark .pd-block::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(43,91,255,0.3) 0%, transparent 60%); }
@@ -308,8 +308,13 @@ export default function ProjectDeck() {
         .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
 
         @media (max-width: 768px) {
-          .pd-stack { width: 320px; height: 420px; }
-          .pd-card { width: 260px; height: 340px; }
+          .pd-stack { width: 92vw; height: 70vh; }
+          .pd-card { width: 84vw; height: 64vh; border-radius: 20px; }
+          .pd-card .pd-card-info { padding: 20px 22px; }
+          .pd-card-title { font-size: 20px; }
+          .pd-card-sub { font-size: 13px; }
+          .pd-mock { inset: 20px; padding: 18px; gap: 10px; }
+          .pd-bar { height: 7px; }
           .pd-header { left: 24px; right: 24px; top: 24px; }
           .pd-detail-content { padding: 64px 24px 80px; }
         }
