@@ -27,6 +27,7 @@ type Row = {
   mock_type?: string;
   hero_background?: string;
   label?: string;
+  gallery?: unknown;
 };
 
 const rowToProject = (r: Row): Project => ({
@@ -53,6 +54,7 @@ const rowToProject = (r: Row): Project => ({
   mockType: (r.mock_type === "dark" ? "dark" : "light"),
   heroBackground: r.hero_background ?? "",
   label: r.label ?? "",
+  gallery: Array.isArray(r.gallery) ? (r.gallery as Project["gallery"]) : [],
 });
 
 async function fetchAll(): Promise<Project[]> {
