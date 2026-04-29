@@ -28,7 +28,7 @@ const LOOP_R = 110;
 const SHIP = { x: LOOP_CX + LOOP_R, y: LOOP_CY };
 const FEEDBACK = { x: LOOP_CX - LOOP_R, y: LOOP_CY };
 
-const TOTAL_LAPS = 3;
+const TOTAL_LAPS = 2;
 
 /* -------------------- Linear nodes (left half) -------------------- */
 

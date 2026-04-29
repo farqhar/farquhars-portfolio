@@ -273,6 +273,31 @@ const About = () => {
           </Reveal>
           <ThenNow />
 
+          {/* Skills */}
+          <Reveal>
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Skills</p>
+          </Reveal>
+          <div className="space-y-5 mb-20">
+            {Object.entries(skills).map(([group, items], gi) => (
+              <Reveal key={group} delay={gi * 0.06}>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground sm:w-44 shrink-0">{group}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((item) => (
+                      <span
+                        key={item}
+                        className="text-[11px] tracking-wider uppercase px-3 py-1.5 rounded-full"
+                        style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
           {/* How I work */}
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">How I work</p>
@@ -280,7 +305,7 @@ const About = () => {
         </div>
 
         {/* Pinned scroll chapter — full width so sticky pins reliably */}
-        <div className="relative -mt-16 sm:-mt-24 mb-10">
+        <div className="relative mb-2">
           <ProcessJourney />
         </div>
 
@@ -289,7 +314,7 @@ const About = () => {
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">What people say</p>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-20 max-w-3xl mx-auto">
             {testimonials.map((t, i) => (
               <Reveal key={i} delay={i * 0.08}>
                 <div className="glass rounded-2xl p-6 h-full relative overflow-hidden">
@@ -310,31 +335,6 @@ const About = () => {
                     <p className="text-[11px] tracking-wider uppercase text-muted-foreground">
                       {t.name} <span className="opacity-60">· {t.role}</span>
                     </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          {/* Skills */}
-          <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Skills</p>
-          </Reveal>
-          <div className="space-y-5 mb-20">
-            {Object.entries(skills).map(([group, items], gi) => (
-              <Reveal key={group} delay={gi * 0.06}>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground sm:w-44 shrink-0">{group}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {items.map((item) => (
-                      <span
-                        key={item}
-                        className="text-[11px] tracking-wider uppercase px-3 py-1.5 rounded-full"
-                        style={{ background: "hsla(var(--indigo), 0.08)", color: "hsl(var(--indigo))" }}
-                      >
-                        {item}
-                      </span>
-                    ))}
                   </div>
                 </div>
               </Reveal>
