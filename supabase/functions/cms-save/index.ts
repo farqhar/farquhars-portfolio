@@ -152,6 +152,15 @@ Deno.serve(async (req) => {
           quotes: v.quotes ?? [],
           files: v.files ?? [],
           order: v.order ?? 0,
+          tagline: v.tagline ?? "",
+          client: v.client ?? "",
+          overview: v.overview ?? "",
+          stats: v.stats ?? [],
+          tags: v.tags ?? [],
+          bg_class: v.bgClass ?? v.bg_class ?? "bg-1",
+          mock_type: v.mockType ?? v.mock_type ?? "light",
+          hero_background: v.heroBackground ?? v.hero_background ?? "",
+          label: v.label ?? "",
         };
         const { error } = await admin
           .from("projects")
