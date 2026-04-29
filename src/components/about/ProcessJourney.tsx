@@ -332,21 +332,10 @@ const ProcessJourney = () => {
                 <stop offset="0%" stopColor="hsl(var(--indigo))" />
                 <stop offset="100%" stopColor="hsl(var(--purple))" />
               </linearGradient>
-              <radialGradient id="tracer-glow">
-                <stop offset="0%" stopColor="hsl(var(--purple))" stopOpacity="1" />
+              <radialGradient id="arrow-glow">
+                <stop offset="0%" stopColor="hsl(var(--purple))" stopOpacity="0.55" />
                 <stop offset="100%" stopColor="hsl(var(--purple))" stopOpacity="0" />
               </radialGradient>
-              <marker
-                id="arrow"
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto-start-reverse"
-              >
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="hsl(var(--purple))" />
-              </marker>
             </defs>
 
             {/* Faint baseline path (left) */}
@@ -374,7 +363,6 @@ const ProcessJourney = () => {
               stroke="url(#journey-stroke)"
               strokeWidth={2.5}
               strokeLinecap="round"
-              markerEnd="url(#arrow)"
               style={
                 reduced
                   ? { pathLength: 1 }
@@ -398,6 +386,18 @@ const ProcessJourney = () => {
                   : { pathLength: loopDrawLength }
               }
               initial={reduced ? { pathLength: 1 } : { pathLength: 0 }}
+            />
+
+            {/* Solid, unbroken ring — fades in once draw-in finishes so the
+                loop is always visually complete during the laps. */}
+            <motion.circle
+              cx={LOOP_CX}
+              cy={LOOP_CY}
+              r={LOOP_R}
+              fill="none"
+              stroke="url(#loop-stroke)"
+              strokeWidth={2.5}
+              style={reduced ? undefined : { opacity: solidRingOpacity }}
             />
 
             {/* Linear nodes */}
@@ -428,39 +428,44 @@ const ProcessJourney = () => {
               reduced={reduced}
             />
 
-            {/* Spinning tracer arc + dot */}
-            {!reduced && (
-              <motion.g
-                style={{
-                  rotate: spinDeg,
-                  transformOrigin: `${LOOP_CX}px ${LOOP_CY}px`,
-                  opacity: shipOpacity,
-                }}
-              >
-                {/* comet arc — 110° */}
+            {/* Two chevron arrows orbiting the ring (clockwise) — makes the
+                feedback / iteration loop unmistakable. */}
+            <motion.g
+              style={
+                reduced
+                  ? { opacity: 1 }
+                  : {
+                      rotate: spinDeg,
+                      transformOrigin: `${LOOP_CX}px ${LOOP_CY}px`,
+                      opacity: shipOpacity,
+                    }
+              }
+            >
+              {/* Arrow A — at 3 o'clock, tangent pointing clockwise (down) */}
+              <g transform={`translate(${LOOP_CX + LOOP_R} ${LOOP_CY}) rotate(90)`}>
+                <circle cx={0} cy={0} r={14} fill="url(#arrow-glow)" />
                 <path
-                  d={describeArc(LOOP_CX, LOOP_CY, LOOP_R, -110, 0)}
+                  d="M -7 -6 L 0 0 L -7 6"
                   fill="none"
-                  stroke="url(#loop-stroke)"
-                  strokeWidth={4}
+                  stroke="hsl(var(--purple))"
+                  strokeWidth={2.5}
                   strokeLinecap="round"
-                  opacity={0.85}
+                  strokeLinejoin="round"
                 />
-                {/* tracer head dot at 0° (right of circle) */}
-                <circle
-                  cx={LOOP_CX + LOOP_R}
-                  cy={LOOP_CY}
-                  r={14}
-                  fill="url(#tracer-glow)"
+              </g>
+              {/* Arrow B — at 9 o'clock, tangent pointing clockwise (up) */}
+              <g transform={`translate(${LOOP_CX - LOOP_R} ${LOOP_CY}) rotate(-90)`}>
+                <circle cx={0} cy={0} r={14} fill="url(#arrow-glow)" />
+                <path
+                  d="M -7 -6 L 0 0 L -7 6"
+                  fill="none"
+                  stroke="hsl(var(--indigo))"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-                <circle
-                  cx={LOOP_CX + LOOP_R}
-                  cy={LOOP_CY}
-                  r={5}
-                  fill="hsl(var(--purple))"
-                />
-              </motion.g>
-            )}
+              </g>
+            </motion.g>
           </motion.svg>
 
           {/* Section labels (HTML for crispness) */}
