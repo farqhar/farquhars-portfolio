@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
-import type { Project as DbProject } from "@/data/projectsSeed";
+import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
 
 /**
  * ProjectDeck.tsx
@@ -32,6 +32,7 @@ type Project = {
   bgClass: string;
   mockType: "dark" | "light";
   heroBackground: string;
+  gallery: GalleryImage[];
 };
 
 const dbToCard = (p: DbProject): Project => ({
@@ -48,6 +49,7 @@ const dbToCard = (p: DbProject): Project => ({
   bgClass: p.bgClass || "bg-1",
   mockType: p.mockType === "dark" ? "dark" : "light",
   heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
+  gallery: Array.isArray(p.gallery) ? p.gallery : [],
 });
 
 const VISIBLE_BEHIND = 3;
@@ -66,6 +68,7 @@ export default function ProjectDeck() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const tickingRef = useRef(false);
 
   // Compute scroll progress and apply transforms
@@ -203,15 +206,26 @@ export default function ProjectDeck() {
   // Escape key closes detail
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && openProject) setOpenProject(null);
+      if (e.key === "Escape") {
+        if (lightboxIdx !== null) setLightboxIdx(null);
+        else if (openProject) setOpenProject(null);
+      }
+      if (lightboxIdx !== null && openProject) {
+        const len = openProject.gallery.length;
+        if (len > 0) {
+          if (e.key === "ArrowRight") setLightboxIdx((i) => ((i ?? 0) + 1) % len);
+          if (e.key === "ArrowLeft") setLightboxIdx((i) => ((i ?? 0) - 1 + len) % len);
+        }
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [openProject]);
+  }, [openProject, lightboxIdx]);
 
   const handleCardClick = (project: Project, i: number) => {
     if (i !== activeIdx) return;
     setOpenProject(project);
+    setLightboxIdx(null);
   };
 
   return (
@@ -307,6 +321,38 @@ export default function ProjectDeck() {
         .pd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; }
         .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
 
+        /* Two-column detail layout */
+        .pd-detail-wrap { max-width: 1320px; margin: 0 auto; padding: 80px 32px 120px; transform: translateY(20px); opacity: 0; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s; }
+        .pd-overlay.open .pd-detail-wrap { transform: translateY(0); opacity: 1; }
+        .pd-detail-grid { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 56px; align-items: start; }
+        .pd-detail-left { min-width: 0; position: sticky; top: 80px; }
+        .pd-detail-right { min-width: 0; }
+        .pd-detail-left .pd-title { font-size: clamp(36px, 4.6vw, 60px); margin-bottom: 20px; }
+        .pd-detail-left .pd-tagline { margin-bottom: 40px; }
+        .pd-detail-left .pd-section { margin-bottom: 40px; }
+        .pd-detail-left .pd-stats { margin: 40px 0; padding: 28px 0; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        .pd-detail-left .pd-stat-value { font-size: clamp(28px, 3.4vw, 40px); }
+        .pd-detail-left .pd-tags { margin-top: 28px; }
+
+        /* Auto-scroll marquee */
+        .pd-marquee { position: relative; width: 100%; overflow: hidden; mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%); }
+        .pd-marquee:hover .pd-marquee-track { animation-play-state: paused; }
+        .pd-marquee-track { display: flex; gap: 20px; width: max-content; animation: pd-marquee 50s linear infinite; will-change: transform; }
+        @keyframes pd-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .pd-marquee-item { flex: 0 0 auto; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); background: #F0EDE8; cursor: zoom-in; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+        .pd-marquee-item:hover { transform: translateY(-4px); }
+        .pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
+        .pd-marquee-empty { width: 100%; aspect-ratio: 4/5; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); }
+
+        /* Lightbox */
+        .pd-lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.92); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 32px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .pd-lightbox.open { opacity: 1; pointer-events: all; }
+        .pd-lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+        .pd-lb-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: background 0.2s; }
+        .pd-lb-btn:hover { background: rgba(255,255,255,0.22); }
+        .pd-lb-prev { left: 24px; } .pd-lb-next { right: 24px; }
+        .pd-lb-close { position: absolute; top: 24px; right: 24px; }
+
         @media (max-width: 768px) {
           .pd-stack { width: 92vw; height: 70vh; }
           .pd-card { width: 84vw; height: 64vh; border-radius: 20px; }
@@ -317,6 +363,13 @@ export default function ProjectDeck() {
           .pd-bar { height: 7px; }
           .pd-header { left: 24px; right: 24px; top: 24px; }
           .pd-detail-content { padding: 64px 24px 80px; }
+        }
+
+        @media (max-width: 900px) {
+          .pd-detail-grid { grid-template-columns: 1fr; gap: 40px; }
+          .pd-detail-left { position: static; }
+          .pd-detail-wrap { padding: 64px 20px 80px; }
+          .pd-marquee-item { height: 220px; }
         }
       `}</style>
 
@@ -398,7 +451,7 @@ export default function ProjectDeck() {
         {/* Detail overlay */}
         <div className={`pd-overlay ${openProject ? "open" : ""}`}>
           {openProject && (
-            <div className="pd-detail-content">
+            <div className="pd-detail-wrap">
               <button
                 className="pd-back"
                 onClick={() => setOpenProject(null)}
@@ -416,48 +469,136 @@ export default function ProjectDeck() {
                 Back to projects
               </button>
 
-              <div className="pd-meta">
-                <span>{openProject.label}</span>
-                <span>{openProject.client}</span>
-                <span>{openProject.timeline}</span>
-              </div>
-
-              <h1 className="pd-title">{openProject.title}</h1>
-              <p className="pd-tagline">{openProject.tagline}</p>
-
-              <div
-                className="pd-hero"
-                style={{ background: openProject.heroBackground }}
-              />
-
-              <div className="pd-section">
-                <div className="pd-section-label">Role</div>
-                <h2>{openProject.role}</h2>
-                <p>{openProject.overview}</p>
-              </div>
-
-              <div className="pd-stats">
-                {openProject.stats.map((s, i) => (
-                  <div key={i}>
-                    <div className="pd-stat-value">{s.value}</div>
-                    <div className="pd-stat-label">{s.label}</div>
+              <div className="pd-detail-grid">
+                {/* LEFT: project info */}
+                <div className="pd-detail-left">
+                  <div className="pd-meta">
+                    <span>{openProject.label}</span>
+                    <span>{openProject.client}</span>
+                    <span>{openProject.timeline}</span>
                   </div>
-                ))}
-              </div>
 
-              <div className="pd-section">
-                <div className="pd-section-label">Capabilities</div>
-                <div className="pd-tags">
-                  {openProject.tags.map((t, i) => (
-                    <span key={i} className="pd-tag">
-                      {t}
-                    </span>
-                  ))}
+                  <h1 className="pd-title">{openProject.title}</h1>
+                  <p className="pd-tagline">{openProject.tagline}</p>
+
+                  <div className="pd-section">
+                    <div className="pd-section-label">Role</div>
+                    <h2>{openProject.role}</h2>
+                    <p>{openProject.overview}</p>
+                  </div>
+
+                  {openProject.stats.length > 0 && (
+                    <div className="pd-stats">
+                      {openProject.stats.map((s, i) => (
+                        <div key={i}>
+                          <div className="pd-stat-value">{s.value}</div>
+                          <div className="pd-stat-label">{s.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {openProject.tags.length > 0 && (
+                    <div className="pd-section">
+                      <div className="pd-section-label">Capabilities</div>
+                      <div className="pd-tags">
+                        {openProject.tags.map((t, i) => (
+                          <span key={i} className="pd-tag">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT: auto-scrolling gallery */}
+                <div className="pd-detail-right">
+                  {openProject.gallery.length > 0 ? (
+                    <div className="pd-marquee">
+                      <div className="pd-marquee-track">
+                        {[...openProject.gallery, ...openProject.gallery].map((img, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className="pd-marquee-item"
+                            onClick={() =>
+                              setLightboxIdx(i % openProject.gallery.length)
+                            }
+                            aria-label={img.alt || `Image ${(i % openProject.gallery.length) + 1}`}
+                          >
+                            <img
+                              src={img.url}
+                              alt={img.alt || ""}
+                              loading="lazy"
+                              draggable={false}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="pd-marquee-empty"
+                      style={{ background: openProject.heroBackground }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
           )}
         </div>
+
+        {/* Lightbox */}
+        {openProject && openProject.gallery.length > 0 && (
+          <div
+            className={`pd-lightbox ${lightboxIdx !== null ? "open" : ""}`}
+            onClick={() => setLightboxIdx(null)}
+          >
+            {lightboxIdx !== null && (
+              <>
+                <img
+                  src={openProject.gallery[lightboxIdx].url}
+                  alt={openProject.gallery[lightboxIdx].alt || ""}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {openProject.gallery.length > 1 && (
+                  <>
+                    <button
+                      className="pd-lb-btn pd-lb-prev"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const len = openProject.gallery.length;
+                        setLightboxIdx((i) => ((i ?? 0) - 1 + len) % len);
+                      }}
+                      aria-label="Previous image"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 3 L5 8 L10 13" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                    <button
+                      className="pd-lb-btn pd-lb-next"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const len = openProject.gallery.length;
+                        setLightboxIdx((i) => ((i ?? 0) + 1) % len);
+                      }}
+                      aria-label="Next image"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 3 L11 8 L6 13" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                  </>
+                )}
+                <button
+                  className="pd-lb-btn pd-lb-close"
+                  onClick={(e) => { e.stopPropagation(); setLightboxIdx(null); }}
+                  aria-label="Close"
+                >
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16"><path d="M3 3 L13 13 M13 3 L3 13" strokeLinecap="round" /></svg>
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
         <button
           className={`pd-close ${openProject ? "visible" : ""}`}

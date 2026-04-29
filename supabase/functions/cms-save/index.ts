@@ -161,6 +161,7 @@ Deno.serve(async (req) => {
           mock_type: v.mockType ?? v.mock_type ?? "light",
           hero_background: v.heroBackground ?? v.hero_background ?? "",
           label: v.label ?? "",
+          gallery: v.gallery ?? [],
         };
         const { error } = await admin
           .from("projects")
