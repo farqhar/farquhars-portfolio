@@ -1,60 +1,79 @@
-Replace the "Discover & Design" + "Rapid Iteration" sections in `src/pages/About.tsx` with a single scroll-driven, visually-led graphic inspired by the Gartner reference (Design Thinking → Lean Startup → Agile, but reframed in Farquhar's voice).
+Rework the How I Work scroll journey: fix the sticky pinning, drop "AI leverage", give every label real breathing room, and turn the right-hand iteration loop into an animated 2–3 lap spiral that visibly cycles as you scroll.
 
-## Visual concept
+## 1. Fix sticky pinning
 
-A horizontal "double curve + cycle" path that draws itself as the user scrolls:
+`<main>` in `About.tsx` uses `overflow-hidden` (for HeroOrb), which kills `position: sticky` for descendants — that's why the journey scrolls past.
 
-```text
-  Discover         Iterate
-   ___              ___
-  /   \   ___    .-'   '-.
- /     \_/   \_.'         '.
-*       *     *             *
-brief  map   ship          learn
-```
+- Remove `overflow-hidden` from `<main>`.
+- Wrap only the hero/orb in its own `relative overflow-hidden` clipper so HeroOrb is still contained.
+- Inner journey container: `sticky top-[10vh] h-[80vh]` inside a `260vh` wrapper so there's plenty of scroll room for the loop to spin multiple times.
 
-- One continuous SVG path: a rising arc on the left (Discover & Design), descending into a node, then a circular loop on the right (Rapid Iteration).
-- 6 milestone nodes positioned along the path. Each maps to one of the existing 6 bullet points (3 from `discover.points`, 3 from `iterate.points`).
-- A small icon glyph (lightbulb, map, flask, rocket, refresh, spark) sits at each node. No long copy — just the milestone label as a short caption that fades in when scroll reaches that node.
-- Two section labels — "Discover & Design" and "Rapid Iteration" — anchor each half, replacing the current heading + intro paragraphs.
+## 2. Five milestones (AI leverage removed)
 
-## Scroll behaviour
-
-- The whole graphic lives inside a tall `section` (≈200vh) with the SVG in a `position: sticky` inner container, so it stays pinned while the user scrolls through it.
-- Use Framer Motion `useScroll({ target, offset: ["start end", "end start"] })` + `useTransform` to drive:
-  - `pathLength` of the SVG path from 0 → 1 as scroll progresses.
-  - Each node's `opacity` / `scale` triggers as scroll passes its threshold (e.g. node 1 at 0.15, node 2 at 0.30, etc.).
-  - Each milestone caption fades and slides up as its node activates.
-- A small moving "tracer" dot follows the tip of the drawing path for extra life.
-
-## Content mapping
-
-Discover & Design (left arc):
-1. Brief — "Write the brief before opening tools."
+Linear left half:
+1. Brief — "Write the brief before opening any tools."
 2. Stakeholders — "Treat stakeholder management as the work."
 3. System map — "Map the system end-to-end first."
 
-Rapid Iteration (right loop):
-4. Ship small — "Smallest useful version, fast."
-5. AI leverage — "Remove the manual parts so judgement sharpens."
-6. Feedback — "Prototype in days. Feedback is the only honest tool."
+Looping right half:
+4. Ship small — "Smallest useful version, fast." (sits on the loop)
+5. Feedback — "Prototype in days. Feedback is the only honest tool." (opposite side of the loop)
 
-Each label is short (2–4 words). The longer sentence is the caption that appears only when active.
+## 3. Diagram redesign
 
-## Technical approach
+```text
+DISCOVER & DESIGN ──────────►   RAPID ITERATION
+                                    ╭─ Feedback ─╮
+ Brief → Stakeholders → System ─────┤  ↻ ↻ ↻    │
+                       map          ╰─── Ship ◄──╯
+```
 
-- Add a new component `ProcessJourney.tsx` (kept inside About.tsx or split as a sibling component file).
-- SVG: 1200x420 viewBox, single `<motion.path>` with `pathLength` driven by `useTransform`.
-- Nodes: array of `{ x, y, label, caption, threshold }`. Render each as a circle + label group with `motion.g` whose opacity is `useTransform(scrollYProgress, [t-0.05, t], [0, 1])`.
-- Replace lines 274–305 (the "How I work" block) with `<ProcessJourney />`.
-- Keep the `howIWork` data object as the source of truth for milestone copy, restructured into the 6-node array.
-- Mobile fallback: below `md`, switch to a vertical version (path drawn top-to-bottom, nodes stacked on the right) so it still works on phones. Same scroll behaviour.
-- Respect `prefers-reduced-motion`: skip the scroll-driven drawing and show the full path with all nodes visible.
-- Styling stays on-brand: indigo/purple stroke with a soft glow, white background, thin line weight, geometric Apple-minimal feel — not the Gartner blue or the cartoony double-diamond palette.
+- One seamless Bezier across the left for Brief → Stakeholders → System map.
+- Smooth tangent handoff into a circular loop on the right.
+- SVG `<marker>` arrowheads on each segment and one on the loop so direction is obvious.
+- Faint full path at 10% opacity from frame 0; gradient stroke draws over it.
 
-## Files to change
+## 4. Multi-lap animated feedback loop (the new bit)
 
-- `src/pages/About.tsx` — remove the existing "How I work" block, drop in the new component, restructure the data.
-- (Optional) `src/components/about/ProcessJourney.tsx` — new component if it grows past ~120 lines.
+This is the key change.
 
-No backend or schema changes.
+- The loop is a separate `<motion.circle>` (or circular path) layered on top of the base diagram.
+- Two visible elements spin around it as you scroll the second half:
+  - A **gradient arc** ("comet tail") of ~120° that rotates around the loop, leaving a fading trail.
+  - A **tracer dot** at the head of the arc.
+- Rotation is driven by `useTransform(scrollYProgress, [0.55, 0.98], [0, 1080])` — that's **3 full laps** across the iteration portion of the scroll. (Configurable; we'll start with 3, can dial to 2 if it feels too much.)
+- Each lap, the tracer passes through the Ship and Feedback nodes. We pulse those nodes (`scale 1 → 1.15 → 1`) every time the rotation crosses their angle, using a `motionValue.on("change")` listener — so visually you see "ship → feedback → ship → feedback → ship → feedback" as a real cycle.
+- A small lap counter appears under the loop ("Lap 1 / 3", "Lap 2 / 3"...) that ticks up — reinforces the "iterate, iterate, iterate" idea without text walls.
+- The whole loop subtly **breathes outward** with each lap (radius +2px on the pulse) to suggest the product getting better with each cycle.
+- After the final lap, the tracer arcs **off the right edge of the canvas** (translateX animates to +120% as scrollYProgress reaches 1.0) — the "ship it out into the world" exit moment you described.
+
+Reduced motion: show full path, both nodes, all 3 lap markers as static dots around the loop, no spinning.
+
+## 5. Text breathing room (the other key fix)
+
+Captions have been crashing into the line. Fix:
+
+- Each node's **label** (uppercase, ~11px, indigo) and **caption** (~12px, muted) render as **HTML overlays** absolutely positioned over the SVG using percentage coords, not as `<text>` inside SVG. Gives real wrapping, line-height, and crisp type.
+- Each text block:
+  - `max-width: 14ch`, line-height 1.35
+  - soft white backdrop: `rgba(255,255,255,0.92)`, `backdrop-blur: 4px`, `padding: 6px 10px`, `rounded-lg`, faint indigo border
+  - thin connector line (1px, 30% opacity) from the backdrop to its node so the association is obvious even with a gap
+- Layout rules:
+  - Minimum **64px** clear distance between any text block and the path.
+  - Captions alternate above/below the path so neighbours never collide.
+  - For the loop, Ship caption sits **outside-bottom-right** of the circle and Feedback caption sits **outside-top-left** — both well clear of the spinning arc.
+  - Minimum 24px gap between adjacent text blocks.
+
+## 6. Scroll choreography
+
+- Path drawing: `pathLength` 0 → 1 across `scrollYProgress` [0.05, 0.50] (left half + into loop).
+- Linear node thresholds: 0.12 (Brief), 0.22 (Stakeholders), 0.34 (System map).
+- Loop nodes appear at 0.50 (Ship) and 0.55 (Feedback).
+- Loop spinning: [0.55, 0.95] → 1080° (3 laps).
+- Exit animation: [0.95, 1.0] → tracer + arc translate off-canvas right, fade to 0.
+- Section labels fade in at the start of each half.
+
+## Files
+
+- `src/components/about/ProcessJourney.tsx` — full rewrite: drop AI leverage, add markers, HTML caption overlay system, multi-lap rotating arc + tracer + lap counter + exit animation.
+- `src/pages/About.tsx` — move `overflow-hidden` from `<main>` onto a hero-only wrapper so sticky works.
