@@ -249,15 +249,15 @@ const About = () => {
             <Reveal delay={0.15}>
               <div className="relative shrink-0">
                 <div
-                  className="absolute inset-0 rounded-3xl blur-2xl"
+                  className="absolute inset-0 blur-2xl"
                   style={{ background: "radial-gradient(circle, hsla(var(--indigo), 0.35), transparent 70%)" }}
                 />
                 <img
                   src={headshotSrc}
                   alt="Farquhar MacDougall"
-                  width={240}
-                  height={240}
-                  className="relative w-[180px] h-[180px] sm:w-[240px] sm:h-[240px] rounded-2xl object-cover"
+                  width={360}
+                  height={360}
+                  className="relative w-[270px] h-[270px] sm:w-[360px] sm:h-[360px] object-cover"
                   style={{
                     boxShadow:
                       "0 0 0 4px rgba(255,255,255,0.9), 0 0 0 5px hsla(var(--indigo), 0.35), 0 28px 56px hsla(var(--indigo), 0.22)",
