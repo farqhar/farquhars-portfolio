@@ -1,95 +1,62 @@
-# Fix the Work page folder experience
+## What's actually going on
 
-The current `FolderReveal` is broken in three ways: (1) the file tabs are absolutely positioned inside the folder body so they're hidden behind it, (2) the front cover sits on top of the body so it looks like one floating card, (3) a single 260vh sticky section creates a giant gap before the footer with nothing happening. We'll replace it with a clean, vertically pinned sequence — one folder per project — and end with a short CTA.
+The "folders" you see on the Work page are rendered by **`src/components/ProjectDeck.tsx`** — a hardcoded array of **5 projects** (CABER AIQ Programme, AIQ ROI Platform, Ascenda Health, Pain Point Discovery, Wollip Signatures). That's the new content from your Claude/Cursor edits.
 
-## What it will feel like
+The **Backend → Projects** admin reads from a different source: the `projects` table in the database, which still holds the **old 8-project seed** (CJC Digital Construction Landing Page, AI Workflow Survey System, etc.). That's why the CMS looks dated — it literally is.
 
-```text
-[ Hero — unchanged ]
-        ↓ scroll
-┌─────────────── Folder 01 (pinned) ─────────────┐
-│  Closed folder centered                        │
-│  → cover lifts → files fan out from inside     │
-│  → hover a file = it rises + previews          │
-│  → click a file = open case study              │
-└────────────────────────────────────────────────┘
-        ↓ scroll past the pin
-┌─────────────── Folder 02 (pinned) ─────────────┐
-│  Same animation, next project's files          │
-└────────────────────────────────────────────────┘
-        ↓ ... one per project ...
-[ Closing CTA — "See the full portfolio" + contact ]
-[ Footer ]
-```
+So there are two fixes:
+1. Make the CMS reflect the folder content.
+2. Swap the Work page CTA for the About-page style (Email me + LinkedIn).
 
-## How each folder behaves
+---
 
-Each folder is its own `<section>` with **height ≈ 150vh** and a child that's `sticky top-0 h-screen`. Inside that sticky stage:
+## 1. Sync backend content to the folder projects
 
-1. **Progress 0 → 0.35**: closed folder sits centered. Cover shows project number (01, 02…), title, "N files inside" label, brand chip. Subtle "scroll to open ↓" hint.
-2. **Progress 0.35 → 0.6**: cover rotates open (`rotateX: 0 → -110deg`, `transformOrigin: top center`, `transformPerspective: 1400`) and fades. Folder body shadow deepens.
-3. **Progress 0.55 → 0.95**: the project's `files[]` (sub-pieces) fan **upward out of the folder** as labeled tabs, staggered. Each tab shows `FILE 0X · <piece name>` and a tiny thumbnail strip. They settle in a stepped cascade above/inside the open folder body.
-4. **Hover a file tab**: it lifts ~24px, brightens, and the folder body cross-fades to that file's preview image + caption.
-5. **Click a file tab**: navigates to `/work/<project-slug>` (and later we can scroll to that file anchor inside the case study).
-6. **Progress 0.95 → 1**: gentle hold so the user sees the open state before the next folder pins in.
+I'll align the database + admin to the 5 ProjectDeck projects so editing in the CMS actually updates what's on the Work page.
 
-Folders with no `files[]` defined gracefully treat the project itself as the single "file" (so nothing breaks for unedited projects).
+**Approach:** make `ProjectDeck` data-driven from the database (instead of hardcoded), and reseed the `projects` table with the 5 new entries. The CMS already edits this table, so it will "just work" after.
 
-## Closing CTA
+Steps:
+- **Extend the `Project` type** (`src/data/projectsSeed.ts`) with the new fields ProjectDeck uses: `tagline`, `client`, `overview`, `stats` (array of `{value, label}`), `tags` (string[]), plus the visual fields `bgClass` and `mockType`. Existing fields (problem/process/outcome/honest/quotes/files) stay — they're still used by the case-study route and admin editor.
+- **Replace `projectsSeed`** with the 5 ProjectDeck projects, mapped into the extended schema.
+- **Migration** to add the new columns to `projects`: `tagline text`, `client text`, `overview text`, `stats jsonb default '[]'`, `tags jsonb default '[]'`, `bg_class text`, `mock_type text`.
+- **Reseed the database**: delete the 8 old rows and insert the 5 new ones with all the new field values.
+- **Update `useProjects.ts`** row mapper to read/write the new columns.
+- **Update `cms-save` edge function** to persist the new columns.
+- **Refactor `ProjectDeck.tsx`** to read its `PROJECTS` array from `useProjects()` instead of the hardcoded constant. Keep all the styles/animation untouched.
+- **Update the admin `ProjectEditor`** to expose the new fields (tagline, client, overview, stats list, tags list) so you can edit them. Existing problem/process/outcome/honest fields stay for the deeper case-study page.
+- **Update `WorkSection.tsx`** highlights so the four hero tiles reflect the new project realities (the current "4,743%", "147 hrs/wk", "100+", "$12M LOST" come from the old portfolio). I'll propose new defaults pulled from your new stats (e.g. "$12.7M inefficiency", "124 pain points", "40+ interviews", "v2 phased commercialisation") — you can edit them in the CMS after.
 
-A small section after the last folder, before the footer:
-- Eyebrow: "End of folder"
-- Headline: "Want the full picture?"
-- Two buttons: **See full portfolio** (primary, prioritized per brand rules) + **Get in touch**
-- Glass card, indigo accents, no extra socials.
+After this, the admin **Backend → Projects** list will show the 5 current folder projects, and edits will update the live folder cards immediately.
 
-This kills the dead gap before the footer.
+## 2. Replace the Work page CTA
 
-## Visual rules (matches existing brand)
+Currently the Work page closes with `WorkClosingCTA` ("See full portfolio" + "Get in touch" → /about).
 
-- Glass morphism body (60% white, 20px blur, soft indigo border).
-- Cover uses indigo→blue→purple gradient with the giant project number in `gradient-text-indigo`.
-- File tabs: indigo-tinted glass, active = solid indigo with white text + glow.
-- No skeuomorphic manila — keep the premium Apple-minimal aesthetic.
-- Respects `prefers-reduced-motion`: each folder renders fully open as a normal stacked layout, no sticky pin.
+Replace it so it matches the About page contact card:
+- Heading: "Let's talk."
+- Sub: "farqmac@me.com · Sydney, Australia"
+- Two buttons:
+  - **Email me →** (`mailto:farqmac@me.com`, gradient indigo fill)
+  - **LinkedIn** (`https://www.linkedin.com/in/farquharm/`, outline, opens new tab)
 
-## Mobile (<768px)
+I'll rewrite `WorkClosingCTA.tsx` to mirror the About contact-card markup/styles. Keeps the glass card + entry animation, just swaps the content and actions. Honors the project rule that LinkedIn is the only social link.
 
-Sticky scroll-jacking feels bad on touch. On mobile each folder becomes a tap-to-open card: tap the cover → it opens in place (no scroll-pin), files render as a vertical accordion list. Section height collapses to `auto` so there's no gap.
+---
 
-## Files to change
+## Files touched
 
-```text
-EDIT   src/components/work/FolderReveal.tsx
-       → Rewrite as <FolderSequence projects={...} /> that maps each
-         project to a <ProjectFolder /> sticky section.
-       → New <ProjectFolder /> handles its own useScroll/useTransform,
-         cover-lift, file fan-out, hover preview, click-through.
+- `src/data/projectsSeed.ts` — extended type + 5 new projects
+- `src/components/ProjectDeck.tsx` — read from `useProjects()` instead of constant
+- `src/hooks/useProjects.ts` — row mapper updated for new columns
+- `src/components/admin/ProjectEditor.tsx` — new editable fields
+- `src/components/admin/sections/WorkSection.tsx` — refreshed highlight defaults
+- `src/components/work/WorkClosingCTA.tsx` — Email + LinkedIn CTA
+- `supabase/functions/cms-save/index.ts` — persist new columns
+- DB migration: add columns to `projects`
+- DB data: delete old 8 rows, insert new 5 rows
 
-EDIT   src/pages/Work.tsx
-       → Mount <FolderSequence /> (renamed export) in place of <FolderReveal />.
-       → Add new <WorkClosingCTA /> section between the sequence and the
-         footer so there's no dead space.
+## Out of scope
 
-NEW    src/components/work/WorkClosingCTA.tsx
-       → Small glass CTA card: "See full portfolio" + "Get in touch".
-```
-
-No DB or admin changes. Uses existing `projects.files` jsonb (already in schema and admin editor). Uses existing `useProjects` hook.
-
-## Technical notes
-
-- Each `<ProjectFolder>` owns its own `sectionRef` and `useScroll({ target: sectionRef, offset: ["start start", "end end"] })` so pins chain naturally.
-- Section height: `clamp(900px, 150vh, 1400px)` to stay reasonable on tall monitors.
-- File tabs animate `y` from `0` (tucked into folder) to a negative offset like `-(index+1)*44 - 60` so they fan upward out of the folder mouth, with `opacity` 0→1 staggered across the fan-out window. `zIndex` increases with index so later tabs sit on top.
-- Hover state lives in the folder component (`activeFileIndex`); folder body has `<AnimatePresence mode="wait">` cross-fading the preview image.
-- Front cover uses `pointer-events-none` once `progress > 0.5` so it never blocks tab hover after opening.
-- The whole stage uses `transformStyle: preserve-3d` and a shared `perspective: 1600` on the sticky wrapper.
-- Reduced motion path: `useReducedMotion()` → render each folder as a plain stacked layout with the file list visible, no sticky pin (`height: auto`).
-- Mobile path: `useIsMobile()` (already in the project) → same as reduced-motion: tap to expand instead of scroll-pin.
-
-## What stays the same
-
-- The hero (eyebrow, headline, subhead, 4 highlight tiles) is untouched.
-- Routing (`/work/<slug>`), the case study page, and the admin editor are untouched.
-- The `files[]` field added in the previous step is what powers the in-folder fan — no schema changes.
+- Visual changes to the folder animation itself (you said it's right).
+- Case-study route (`/work/:slug`) layout — it'll still work; the new fields just give it more to display, but I won't redesign it unless you ask.

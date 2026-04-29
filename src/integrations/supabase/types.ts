@@ -49,55 +49,82 @@ export type Database = {
       }
       projects: {
         Row: {
+          bg_class: string
+          client: string
           cover: string
           created_at: string
           files: Json
           hero: string
+          hero_background: string
           honest: string
+          label: string
+          mock_type: string
           order: number
           outcome: string
           outcome_metric: string
+          overview: string
           problem: string
           process: string
           quotes: Json
           role: string
           slug: string
+          stats: Json
+          tagline: string
+          tags: Json
           timeline: string
           title: string
           updated_at: string
         }
         Insert: {
+          bg_class?: string
+          client?: string
           cover?: string
           created_at?: string
           files?: Json
           hero?: string
+          hero_background?: string
           honest?: string
+          label?: string
+          mock_type?: string
           order?: number
           outcome?: string
           outcome_metric?: string
+          overview?: string
           problem?: string
           process?: string
           quotes?: Json
           role?: string
           slug: string
+          stats?: Json
+          tagline?: string
+          tags?: Json
           timeline?: string
           title?: string
           updated_at?: string
         }
         Update: {
+          bg_class?: string
+          client?: string
           cover?: string
           created_at?: string
           files?: Json
           hero?: string
+          hero_background?: string
           honest?: string
+          label?: string
+          mock_type?: string
           order?: number
           outcome?: string
           outcome_metric?: string
+          overview?: string
           problem?: string
           process?: string
           quotes?: Json
           role?: string
           slug?: string
+          stats?: Json
+          tagline?: string
+          tags?: Json
           timeline?: string
           title?: string
           updated_at?: string
