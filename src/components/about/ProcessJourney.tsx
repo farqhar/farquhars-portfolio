@@ -301,9 +301,10 @@ const ProcessJourney = () => {
     [0.38, 0.46],
     [0, 1],
   );
-  const lapCounterOpacity = useTransform(
+  // Solid ring opacity — fade in once the loop has drawn.
+  const solidRingOpacity = useTransform(
     scrollYProgress,
-    [0.4, 0.48],
+    [0.36, 0.42],
     [0, 1],
   );
 
@@ -312,8 +313,8 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "500vh" }}>
-      <div className="sticky top-0 h-screen flex items-center justify-center">
+    <div ref={wrapperRef} className="relative" style={{ height: "420vh" }}>
+      <div className="sticky top-0 h-screen flex items-start justify-center pt-[6vh]">
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
           {/* SVG layer */}
           <motion.svg
