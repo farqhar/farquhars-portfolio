@@ -151,20 +151,12 @@ const ThenNow = () => {
         transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         className="relative"
       >
-        {/* Outer glow halo — sits behind the card so it's always visible */}
         <div
-          aria-hidden
-          className="absolute -inset-6 rounded-3xl pointer-events-none blur-2xl"
+          className="rounded-2xl p-6 sm:p-8 relative"
           style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(99, 102, 241, 0.55), rgba(139, 92, 246, 0.3) 50%, transparent 75%)",
-          }}
-        />
-        <div
-          className="glass rounded-2xl p-6 sm:p-8 relative"
-          style={{
-            boxShadow:
-              "0 10px 24px rgba(0,0,0,0.10), 0 25px 50px -10px rgba(99, 102, 241, 0.55), 0 0 0 1.5px rgba(99, 102, 241, 0.45)",
+            background: "#ffffff",
+            border: "1px solid rgba(15, 23, 42, 0.08)",
+            boxShadow: "0 10px 24px rgba(15, 23, 42, 0.12)",
           }}
         >
         <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
