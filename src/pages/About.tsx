@@ -150,7 +150,7 @@ const ThenNow = () => {
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         className="glass rounded-2xl p-6 sm:p-8"
-        style={{ boxShadow: "0 4px 6px rgba(0,0,0,0.04), 0 20px 50px hsla(var(--indigo), 0.10)" }}
+        style={{ boxShadow: "0 8px 16px rgba(0,0,0,0.06), 0 30px 80px hsla(var(--indigo), 0.35), 0 0 0 1px hsla(var(--indigo), 0.15)" }}
       >
         <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">Now</p>
         <h3 className="text-xl font-semibold gradient-text-indigo mb-3">{thenNow.now.title}</h3>
