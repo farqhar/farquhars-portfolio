@@ -275,12 +275,12 @@ const About = () => {
 
           {/* How I work */}
           <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
+            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">How I work</p>
           </Reveal>
         </div>
 
         {/* Pinned scroll chapter — full width so sticky pins reliably */}
-        <div className="relative mb-20">
+        <div className="relative -mt-16 sm:-mt-24 mb-10">
           <ProcessJourney />
         </div>
 
