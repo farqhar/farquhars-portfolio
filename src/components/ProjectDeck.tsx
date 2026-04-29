@@ -451,7 +451,7 @@ export default function ProjectDeck() {
         {/* Detail overlay */}
         <div className={`pd-overlay ${openProject ? "open" : ""}`}>
           {openProject && (
-            <div className="pd-detail-content">
+            <div className="pd-detail-wrap">
               <button
                 className="pd-back"
                 onClick={() => setOpenProject(null)}
@@ -469,48 +469,136 @@ export default function ProjectDeck() {
                 Back to projects
               </button>
 
-              <div className="pd-meta">
-                <span>{openProject.label}</span>
-                <span>{openProject.client}</span>
-                <span>{openProject.timeline}</span>
-              </div>
-
-              <h1 className="pd-title">{openProject.title}</h1>
-              <p className="pd-tagline">{openProject.tagline}</p>
-
-              <div
-                className="pd-hero"
-                style={{ background: openProject.heroBackground }}
-              />
-
-              <div className="pd-section">
-                <div className="pd-section-label">Role</div>
-                <h2>{openProject.role}</h2>
-                <p>{openProject.overview}</p>
-              </div>
-
-              <div className="pd-stats">
-                {openProject.stats.map((s, i) => (
-                  <div key={i}>
-                    <div className="pd-stat-value">{s.value}</div>
-                    <div className="pd-stat-label">{s.label}</div>
+              <div className="pd-detail-grid">
+                {/* LEFT: project info */}
+                <div className="pd-detail-left">
+                  <div className="pd-meta">
+                    <span>{openProject.label}</span>
+                    <span>{openProject.client}</span>
+                    <span>{openProject.timeline}</span>
                   </div>
-                ))}
-              </div>
 
-              <div className="pd-section">
-                <div className="pd-section-label">Capabilities</div>
-                <div className="pd-tags">
-                  {openProject.tags.map((t, i) => (
-                    <span key={i} className="pd-tag">
-                      {t}
-                    </span>
-                  ))}
+                  <h1 className="pd-title">{openProject.title}</h1>
+                  <p className="pd-tagline">{openProject.tagline}</p>
+
+                  <div className="pd-section">
+                    <div className="pd-section-label">Role</div>
+                    <h2>{openProject.role}</h2>
+                    <p>{openProject.overview}</p>
+                  </div>
+
+                  {openProject.stats.length > 0 && (
+                    <div className="pd-stats">
+                      {openProject.stats.map((s, i) => (
+                        <div key={i}>
+                          <div className="pd-stat-value">{s.value}</div>
+                          <div className="pd-stat-label">{s.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {openProject.tags.length > 0 && (
+                    <div className="pd-section">
+                      <div className="pd-section-label">Capabilities</div>
+                      <div className="pd-tags">
+                        {openProject.tags.map((t, i) => (
+                          <span key={i} className="pd-tag">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT: auto-scrolling gallery */}
+                <div className="pd-detail-right">
+                  {openProject.gallery.length > 0 ? (
+                    <div className="pd-marquee">
+                      <div className="pd-marquee-track">
+                        {[...openProject.gallery, ...openProject.gallery].map((img, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className="pd-marquee-item"
+                            onClick={() =>
+                              setLightboxIdx(i % openProject.gallery.length)
+                            }
+                            aria-label={img.alt || `Image ${(i % openProject.gallery.length) + 1}`}
+                          >
+                            <img
+                              src={img.url}
+                              alt={img.alt || ""}
+                              loading="lazy"
+                              draggable={false}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="pd-marquee-empty"
+                      style={{ background: openProject.heroBackground }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
           )}
         </div>
+
+        {/* Lightbox */}
+        {openProject && openProject.gallery.length > 0 && (
+          <div
+            className={`pd-lightbox ${lightboxIdx !== null ? "open" : ""}`}
+            onClick={() => setLightboxIdx(null)}
+          >
+            {lightboxIdx !== null && (
+              <>
+                <img
+                  src={openProject.gallery[lightboxIdx].url}
+                  alt={openProject.gallery[lightboxIdx].alt || ""}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {openProject.gallery.length > 1 && (
+                  <>
+                    <button
+                      className="pd-lb-btn pd-lb-prev"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const len = openProject.gallery.length;
+                        setLightboxIdx((i) => ((i ?? 0) - 1 + len) % len);
+                      }}
+                      aria-label="Previous image"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M10 3 L5 8 L10 13" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                    <button
+                      className="pd-lb-btn pd-lb-next"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const len = openProject.gallery.length;
+                        setLightboxIdx((i) => ((i ?? 0) + 1) % len);
+                      }}
+                      aria-label="Next image"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 3 L11 8 L6 13" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                  </>
+                )}
+                <button
+                  className="pd-lb-btn pd-lb-close"
+                  onClick={(e) => { e.stopPropagation(); setLightboxIdx(null); }}
+                  aria-label="Close"
+                >
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" width="16" height="16"><path d="M3 3 L13 13 M13 3 L3 13" strokeLinecap="round" /></svg>
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
         <button
           className={`pd-close ${openProject ? "visible" : ""}`}
