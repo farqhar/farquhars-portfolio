@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useProjects } from "@/hooks/useProjects";
+import type { Project as DbProject } from "@/data/projectsSeed";
 
 /**
  * ProjectDeck.tsx
@@ -32,123 +34,33 @@ type Project = {
   heroBackground: string;
 };
 
-const PROJECTS: Project[] = [
-  {
-    key: "caber",
-    label: "2025 · Strategy",
-    title: "CABER AIQ Programme",
-    tagline:
-      "Standing up an AI transformation programme inside a 200-person engineering and design firm — from discovery to delivery.",
-    role: "AI Programme Manager",
-    timeline: "12 months · ongoing",
-    client: "CABER Group",
-    overview:
-      "Built CABER's internal AI capability from a single discovery sprint into a structured operating model. Designed the request pipeline, sprint cadence, and stakeholder communications layer that AIQ runs on today.",
-    stats: [
-      { value: "40+", label: "Staff interviewed" },
-      { value: "124", label: "Pain points mapped" },
-      { value: "$12.7M", label: "Inefficiency identified" },
-    ],
-    tags: ["Programme Design", "Stakeholder Mgmt", "AI Strategy", "Operating Model"],
-    bgClass: "bg-1",
-    mockType: "dark",
-    heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #2B5BFF 100%)",
-  },
-  {
-    key: "aiqroi",
-    label: "2025 · AI + Product",
-    title: "AIQ ROI Platform",
-    tagline:
-      "A purpose-built intelligence dashboard linking identified pain points to deployed AI solutions and tracked financial return.",
-    role: "Product Lead · Designer · Builder",
-    timeline: "6 months · v1 shipped",
-    client: "CABER · Internal",
-    overview:
-      "Built in Lovable + Supabase with the Claude API powering the analysis layer. Solves the problem of every AI programme: proving the ROI is real, not theoretical.",
-    stats: [
-      { value: "4", label: "Live modules" },
-      { value: "12", label: "Solutions tracked" },
-      { value: "v2", label: "Phased commercialisation" },
-    ],
-    tags: ["Lovable", "Supabase", "Claude API", "Product Design"],
-    bgClass: "bg-2",
-    mockType: "light",
-    heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.15) 50%, rgba(123,91,255,0.1) 100%)",
-  },
-  {
-    key: "ascenda",
-    label: "2024 · Design",
-    title: "Ascenda Health",
-    tagline:
-      "A 24-slide investor pitch deck for a digital health platform raising seed capital.",
-    role: "Designer",
-    timeline: "3 weeks",
-    client: "Ascenda Health",
-    overview:
-      "Worked closely with the founding team to translate a complex clinical product into a narrative investors could move on. Visual system designed for repeated reuse across follow-up materials.",
-    stats: [
-      { value: "24", label: "Slides delivered" },
-      { value: "1", label: "Visual system" },
-      { value: "∞", label: "Reusable assets" },
-    ],
-    tags: ["Pitch Deck", "Brand System", "Investor Comms"],
-    bgClass: "bg-3",
-    mockType: "light",
-    heroBackground: "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
-  },
-  {
-    key: "painpoint",
-    label: "2024 · Data",
-    title: "Pain Point Discovery",
-    tagline:
-      "A board-ready audit quantifying $12.7M of annualised inefficiency across one engineering firm.",
-    role: "Programme Lead",
-    timeline: "4 months",
-    client: "CABER Group",
-    overview:
-      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and quantified annualised cost. Output: a board presentation that reframed AI from cost line to capital project.",
-    stats: [
-      { value: "40+", label: "Interviews" },
-      { value: "124", label: "Unique pain points" },
-      { value: "$12.7M", label: "Annualised cost" },
-    ],
-    tags: ["Discovery", "Quantification", "Stakeholder Research", "Board Reporting"],
-    bgClass: "bg-4",
-    mockType: "dark",
-    heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
-  },
-  {
-    key: "wollip",
-    label: "2024 · Brand",
-    title: "Wollip Signatures",
-    tagline:
-      "A SaaS platform that turns the most-seen brand surface in B2B — the email signature — into a controlled marketing channel.",
-    role: "Co-founder · Designer · Product",
-    timeline: "Ongoing",
-    client: "Wollip Digital & Design",
-    overview:
-      "Started as a service offering, productised into a self-serve platform. Animated HTML signatures with GIF fallbacks, brand-controlled rollout, click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIF generation.",
-    stats: [
-      { value: "100%", label: "On-brand rollout" },
-      { value: "~80", label: "Emails/day per user" },
-      { value: "1", label: "Source of truth" },
-    ],
-    tags: ["SaaS", "B2B", "Brand Tooling", "Founder"],
-    bgClass: "bg-5",
-    mockType: "light",
-    heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
-  },
-];
+const dbToCard = (p: DbProject): Project => ({
+  key: p.slug,
+  label: p.label || "",
+  title: p.title,
+  tagline: p.tagline || "",
+  role: p.role,
+  timeline: p.timeline,
+  client: p.client || "",
+  overview: p.overview || "",
+  stats: Array.isArray(p.stats) ? p.stats : [],
+  tags: Array.isArray(p.tags) ? p.tags : [],
+  bgClass: p.bgClass || "bg-1",
+  mockType: p.mockType === "dark" ? "dark" : "light",
+  heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
+});
 
 const VISIBLE_BEHIND = 3;
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export default function ProjectDeck() {
+  const { projects } = useProjects();
+  const PROJECTS: Project[] = useMemo(
+    () => [...projects].sort((a, b) => a.order - b.order).map(dbToCard),
+    [projects],
+  );
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -158,6 +70,7 @@ export default function ProjectDeck() {
 
   // Compute scroll progress and apply transforms
   useEffect(() => {
+    if (PROJECTS.length === 0) return;
     const computeProgress = () => {
       const el = scrollRef.current;
       if (!el) return 0;
@@ -169,7 +82,9 @@ export default function ProjectDeck() {
         Math.min(scrollableDistance, -rect.top)
       );
       const totalSteps = PROJECTS.length - 1;
-      return (scrolledIntoDeck / scrollableDistance) * totalSteps;
+      return totalSteps > 0
+        ? (scrolledIntoDeck / scrollableDistance) * totalSteps
+        : 0;
     };
 
     const layoutDeck = (progress: number) => {
@@ -271,7 +186,7 @@ export default function ProjectDeck() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [hasInteracted]);
+  }, [hasInteracted, PROJECTS.length]);
 
   // Lock body scroll when detail open
   useEffect(() => {
