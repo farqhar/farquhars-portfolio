@@ -208,16 +208,17 @@ const LoopNode = ({
             }
       }
     >
-      <circle cx={x} cy={y} r={22} fill={`${color}1A`} />
+      <circle cx={x} cy={y} r={24} fill={color} fillOpacity={0.08} />
       <circle
         cx={x}
         cy={y}
         r={11}
         fill="#ffffff"
         stroke={color}
-        strokeWidth={1.8}
+        strokeOpacity={0.6}
+        strokeWidth={1.2}
       />
-      <circle cx={x} cy={y} r={3.5} fill={color} />
+      <circle cx={x} cy={y} r={3} fill={color} />
     </motion.g>
   );
 };
