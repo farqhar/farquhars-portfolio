@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Project, ProjectFile } from "@/data/projectsSeed";
+import { Project, ProjectFile, ProjectStat } from "@/data/projectsSeed";
 import MediaField from "@/components/admin/fields/MediaField";
 import SubProjectsField from "@/components/admin/fields/SubProjectsField";
 
@@ -18,16 +18,39 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
   const [draft, setDraft] = useState<Project>({
     ...project,
     files: project.files ?? [],
+    stats: project.stats ?? [],
+    tags: project.tags ?? [],
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
+  const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
+  const [statsText, setStatsText] = useState(
+    (project.stats ?? []).map((s) => `${s.value} | ${s.label}`).join("\n"),
+  );
 
   const set = <K extends keyof Project>(key: K, value: Project[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
   const handleSave = () => {
+    const parsedStats: ProjectStat[] = statsText
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [value, ...rest] = line.split("|");
+        return { value: (value || "").trim(), label: rest.join("|").trim() };
+      })
+      .filter((s) => s.value || s.label);
+
+    const parsedTags = tagsText
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
     const cleaned: Project = {
       ...draft,
       quotes: quotesText.split("\n").map((q) => q.trim()).filter(Boolean),
+      stats: parsedStats,
+      tags: parsedTags,
     };
     onSave(cleaned);
   };
@@ -71,6 +94,14 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
           <label className={labelCls}>Role descriptor</label>
           <input className={inputCls} value={draft.role} onChange={(e) => set("role", e.target.value)} />
         </div>
+        <div>
+          <label className={labelCls}>Client</label>
+          <input className={inputCls} value={draft.client ?? ""} onChange={(e) => set("client", e.target.value)} />
+        </div>
+        <div>
+          <label className={labelCls}>Card label (e.g. "2025 · Strategy")</label>
+          <input className={inputCls} value={draft.label ?? ""} onChange={(e) => set("label", e.target.value)} />
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Timeline</label>
@@ -98,6 +129,43 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             folder={`projects/${draft.slug}/hero`}
             currentUrl={draft.hero}
             onSaved={(url) => set("hero", url)}
+          />
+        </div>
+
+        <div>
+          <label className={labelCls}>Tagline (folder card subhead)</label>
+          <textarea
+            className={inputCls}
+            rows={2}
+            value={draft.tagline ?? ""}
+            onChange={(e) => set("tagline", e.target.value)}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Overview (folder detail intro)</label>
+          <textarea
+            className={inputCls}
+            rows={3}
+            value={draft.overview ?? ""}
+            onChange={(e) => set("overview", e.target.value)}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Stats (one per line: value | label)</label>
+          <textarea
+            className={inputCls}
+            rows={4}
+            placeholder={"40+ | Staff interviewed\n124 | Pain points mapped"}
+            value={statsText}
+            onChange={(e) => setStatsText(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Tags (comma separated)</label>
+          <input
+            className={inputCls}
+            value={tagsText}
+            onChange={(e) => setTagsText(e.target.value)}
           />
         </div>
 
