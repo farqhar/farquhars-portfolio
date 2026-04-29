@@ -22,7 +22,6 @@ const howIWork = {
     intro: "Ship the smallest useful version, learn fast, and cut what isn't working.",
     points: [
       "Kill confused workflows instead of polishing them.",
-       "Use AI to remove the manual parts so judgement gets sharper.",
        "Prototype in days, feedback is the only honest design tool.",
     ],
   },
@@ -278,10 +277,14 @@ const About = () => {
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">How I work</p>
           </Reveal>
-          <div className="mb-20">
-            <ProcessJourney />
-          </div>
+        </div>
 
+        {/* Pinned scroll chapter — full width so sticky pins reliably */}
+        <div className="relative mb-20">
+          <ProcessJourney />
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           {/* Testimonials */}
           <Reveal>
             <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">What people say</p>
