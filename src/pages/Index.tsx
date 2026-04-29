@@ -1,6 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import TimelineCarousel from "@/components/TimelineCarousel";
-import ProjectDeck from "@/components/ProjectDeck";
+import ProjectCells from "@/components/ProjectCells";
 import CTASection from "@/components/CTASection";
 import StickyNav from "@/components/StickyNav";
 import FloatingCTA from "@/components/FloatingCTA";
@@ -12,7 +12,7 @@ const Index = () => {
       <FloatingCTA />
       <HeroSection />
       <TimelineCarousel />
-      <ProjectDeck />
+      <ProjectCells />
       <CTASection />
     </>
   );
