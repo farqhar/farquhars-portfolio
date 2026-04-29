@@ -313,7 +313,7 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "360vh" }}>
+    <div ref={wrapperRef} className="relative" style={{ height: "320vh" }}>
       <div className="sticky top-0 h-screen flex items-start justify-center pt-[4vh]">
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
           {/* SVG layer */}
