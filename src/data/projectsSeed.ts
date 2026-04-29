@@ -10,6 +10,11 @@ export type ProjectStat = {
   label: string;
 };
 
+export type GalleryImage = {
+  url: string;
+  alt?: string;
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -35,6 +40,7 @@ export type Project = {
   mockType?: "dark" | "light";
   heroBackground?: string;
   label?: string;
+  gallery?: GalleryImage[];
 };
 
 const placeholder = "/placeholder.svg";
