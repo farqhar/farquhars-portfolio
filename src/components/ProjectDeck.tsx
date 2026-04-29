@@ -68,6 +68,7 @@ export default function ProjectDeck() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const tickingRef = useRef(false);
 
   // Compute scroll progress and apply transforms
@@ -205,15 +206,26 @@ export default function ProjectDeck() {
   // Escape key closes detail
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && openProject) setOpenProject(null);
+      if (e.key === "Escape") {
+        if (lightboxIdx !== null) setLightboxIdx(null);
+        else if (openProject) setOpenProject(null);
+      }
+      if (lightboxIdx !== null && openProject) {
+        const len = openProject.gallery.length;
+        if (len > 0) {
+          if (e.key === "ArrowRight") setLightboxIdx((i) => ((i ?? 0) + 1) % len);
+          if (e.key === "ArrowLeft") setLightboxIdx((i) => ((i ?? 0) - 1 + len) % len);
+        }
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [openProject]);
+  }, [openProject, lightboxIdx]);
 
   const handleCardClick = (project: Project, i: number) => {
     if (i !== activeIdx) return;
     setOpenProject(project);
+    setLightboxIdx(null);
   };
 
   return (
