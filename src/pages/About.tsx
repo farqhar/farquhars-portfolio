@@ -269,13 +269,19 @@ const About = () => {
 
           {/* Then / Now */}
           <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Then / Now</p>
+            <div className="flex items-center gap-3 mb-5">
+              <span className="block h-px w-8 bg-gradient-to-r from-[hsl(var(--indigo))] to-[hsl(var(--purple))]" />
+              <p className="text-xs font-semibold tracking-[0.22em] uppercase text-card-title">Then / Now</p>
+            </div>
           </Reveal>
           <ThenNow />
 
           {/* Skills */}
           <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">Skills</p>
+            <div className="flex items-center gap-3 mb-5">
+              <span className="block h-px w-8 bg-gradient-to-r from-[hsl(var(--indigo))] to-[hsl(var(--purple))]" />
+              <p className="text-xs font-semibold tracking-[0.22em] uppercase text-card-title">Skills</p>
+            </div>
           </Reveal>
           <div className="space-y-5 mb-20">
             {Object.entries(skills).map(([group, items], gi) => (
@@ -300,19 +306,25 @@ const About = () => {
 
           {/* How I work */}
           <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">How I work</p>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="block h-px w-8 bg-gradient-to-r from-[hsl(var(--indigo))] to-[hsl(var(--purple))]" />
+              <p className="text-xs font-semibold tracking-[0.22em] uppercase text-card-title">How I work</p>
+            </div>
           </Reveal>
         </div>
 
         {/* Pinned scroll chapter — full width so sticky pins reliably */}
-        <div className="relative mb-2">
+        <div className="relative -mt-8 mb-0">
           <ProcessJourney />
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           {/* Testimonials */}
           <Reveal>
-            <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-5">What people say</p>
+            <div className="flex items-center gap-3 mb-5">
+              <span className="block h-px w-8 bg-gradient-to-r from-[hsl(var(--indigo))] to-[hsl(var(--purple))]" />
+              <p className="text-xs font-semibold tracking-[0.22em] uppercase text-card-title">What people say</p>
+            </div>
           </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-20 max-w-3xl mx-auto">
             {testimonials.map((t, i) => (

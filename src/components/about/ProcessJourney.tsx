@@ -17,7 +17,7 @@ const VB_H = 600;
 // Linear left half — gentle wave
 // Brief (130, 380) -> Stakeholders (320, 200) -> System map (560, 380) -> enter loop at (700, 320)
 const LEFT_PATH =
-  "M 80 380 C 180 380, 220 200, 320 200 S 460 380, 560 380 S 660 320, 720 320";
+  "M 80 380 C 180 380, 220 200, 320 200 S 460 380, 560 380 S 680 320, 710 320";
 
 // Loop circle (the iteration cycle)
 const LOOP_CX = 820;
@@ -239,7 +239,7 @@ const ProcessJourney = () => {
   const loopDrawLength = useTransform(scrollYProgress, [0.28, 0.38], [0, 1]);
 
   // Section labels
-  const labelDiscover = useTransform(scrollYProgress, [0.03, 0.1], [0, 1]);
+  const labelDiscover = useTransform(scrollYProgress, [0.11, 0.16], [0, 1]);
   const labelIterate = useTransform(scrollYProgress, [0.32, 0.42], [0, 1]);
 
   // Loop spin: 3 laps across the bulk of the scroll — held in the middle so the
@@ -313,8 +313,8 @@ const ProcessJourney = () => {
   const yPct = (y: number) => (y / VB_H) * 100;
 
   return (
-    <div ref={wrapperRef} className="relative" style={{ height: "420vh" }}>
-      <div className="sticky top-0 h-screen flex items-start justify-center pt-[6vh]">
+    <div ref={wrapperRef} className="relative" style={{ height: "360vh" }}>
+      <div className="sticky top-0 h-screen flex items-start justify-center pt-[4vh]">
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
           {/* SVG layer */}
           <motion.svg
