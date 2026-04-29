@@ -222,8 +222,10 @@ const About = () => {
 
   return (
     <PageTransition>
-      <main className="pt-28 sm:pt-32 pb-24 relative overflow-hidden">
-        <HeroOrb />
+      <main className="pt-28 sm:pt-32 pb-24 relative">
+        <div aria-hidden className="absolute inset-x-0 top-0 h-[900px] overflow-hidden pointer-events-none">
+          <HeroOrb />
+        </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           <Reveal>
