@@ -318,7 +318,7 @@ const About = () => {
           <ProcessJourney />
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 -mt-20">
           {/* Testimonials */}
           <Reveal>
             <div className="flex items-center gap-3 mb-5">
