@@ -14,10 +14,7 @@ const WorkClosingCTA = () => {
   const sub = get("contact", "sub", "farqmac@me.com · Sydney, Australia");
 
   return (
-    <section
-      ref={ref}
-      className="relative max-w-4xl mx-auto px-4 sm:px-6 pb-8 pt-4"
-    >
+    <section ref={ref} className="relative max-w-4xl mx-auto px-4 sm:px-6 pb-8 py-[32px] pt-[32px]">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
