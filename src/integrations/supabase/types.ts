@@ -54,6 +54,7 @@ export type Database = {
           cover: string
           created_at: string
           files: Json
+          gallery: Json
           hero: string
           hero_background: string
           honest: string
@@ -81,6 +82,7 @@ export type Database = {
           cover?: string
           created_at?: string
           files?: Json
+          gallery?: Json
           hero?: string
           hero_background?: string
           honest?: string
@@ -108,6 +110,7 @@ export type Database = {
           cover?: string
           created_at?: string
           files?: Json
+          gallery?: Json
           hero?: string
           hero_background?: string
           honest?: string

@@ -1,62 +1,77 @@
-## What's actually going on
+## Goal
 
-The "folders" you see on the Work page are rendered by **`src/components/ProjectDeck.tsx`** — a hardcoded array of **5 projects** (CABER AIQ Programme, AIQ ROI Platform, Ascenda Health, Pain Point Discovery, Wollip Signatures). That's the new content from your Claude/Cursor edits.
+Redesign the project detail overlay (the view that opens when you click into a portfolio project) so all key information sits at the top, side-by-side with an auto-scrolling image carousel — nothing important hidden at the bottom.
 
-The **Backend → Projects** admin reads from a different source: the `projects` table in the database, which still holds the **old 8-project seed** (CJC Digital Construction Landing Page, AI Workflow Survey System, etc.). That's why the CMS looks dated — it literally is.
+## New layout
 
-So there are two fixes:
-1. Make the CMS reflect the folder content.
-2. Swap the Work page CTA for the About-page style (Email me + LinkedIn).
+```text
+┌──────────────────────────── overlay ───────────────────────────┐
+│ ← Back to projects                                       [×]   │
+│                                                                │
+│ ┌──────────────────────────┬───────────────────────────────┐   │
+│ │ LEFT COLUMN (sticky)     │ RIGHT COLUMN                  │   │
+│ │                          │                               │   │
+│ │ LABEL · CLIENT · TIMELINE│  ┌─────┐ ┌─────┐ ┌─────┐      │   │
+│ │                          │  │ img │ │ img │ │ img │ →    │   │
+│ │ Project Title            │  └─────┘ └─────┘ └─────┘      │   │
+│ │ Tagline                  │  (auto-scrolls left,          │   │
+│ │                          │   pauses on hover)            │   │
+│ │ Role · Overview          │                               │   │
+│ │ [stat] [stat] [stat]     │                               │   │
+│ │ Tags                     │                               │   │
+│ └──────────────────────────┴───────────────────────────────┘   │
+│                                                                │
+│      ↓ on smaller scroll: marquee continues below info ↓       │
+└────────────────────────────────────────────────────────────────┘
+```
 
----
+- **Desktop (≥900px)**: 2 columns. Left column = ~46% width, holds title, meta, tagline, role, overview, stats, tags. Right column = ~54% width, holds the auto-scrolling image strip that runs full-height of the left column.
+- **The marquee** continues to flow underneath the left column (full-width band) so images can "scroll under" the text area visually as you move down.
+- **Mobile (<900px)**: stacks — info first, marquee strip below.
 
-## 1. Sync backend content to the folder projects
+## Auto-scrolling image strip
 
-I'll align the database + admin to the 5 ProjectDeck projects so editing in the CMS actually updates what's on the Work page.
+- Continuous left-drift marquee using a duplicated track (CSS `@keyframes` translateX from 0 to -50%).
+- Speed: ~40s per loop, configurable.
+- Hovering anywhere on the strip pauses the animation (`animation-play-state: paused`).
+- Each image is a fixed-height tile (~280px tall on desktop, ~200px on mobile) with rounded corners and a soft shadow; widths vary by image aspect ratio.
+- Click an image → opens a lightbox (full-screen view, click backdrop or × to close).
+- Graceful empty state: if a project has no gallery images, the right column falls back to the existing `heroBackground` gradient block so the layout doesn't collapse.
 
-**Approach:** make `ProjectDeck` data-driven from the database (instead of hardcoded), and reseed the `projects` table with the 5 new entries. The CMS already edits this table, so it will "just work" after.
+## CMS gallery field
 
-Steps:
-- **Extend the `Project` type** (`src/data/projectsSeed.ts`) with the new fields ProjectDeck uses: `tagline`, `client`, `overview`, `stats` (array of `{value, label}`), `tags` (string[]), plus the visual fields `bgClass` and `mockType`. Existing fields (problem/process/outcome/honest/quotes/files) stay — they're still used by the case-study route and admin editor.
-- **Replace `projectsSeed`** with the 5 ProjectDeck projects, mapped into the extended schema.
-- **Migration** to add the new columns to `projects`: `tagline text`, `client text`, `overview text`, `stats jsonb default '[]'`, `tags jsonb default '[]'`, `bg_class text`, `mock_type text`.
-- **Reseed the database**: delete the 8 old rows and insert the 5 new ones with all the new field values.
-- **Update `useProjects.ts`** row mapper to read/write the new columns.
-- **Update `cms-save` edge function** to persist the new columns.
-- **Refactor `ProjectDeck.tsx`** to read its `PROJECTS` array from `useProjects()` instead of the hardcoded constant. Keep all the styles/animation untouched.
-- **Update the admin `ProjectEditor`** to expose the new fields (tagline, client, overview, stats list, tags list) so you can edit them. Existing problem/process/outcome/honest fields stay for the deeper case-study page.
-- **Update `WorkSection.tsx`** highlights so the four hero tiles reflect the new project realities (the current "4,743%", "147 hrs/wk", "100+", "$12M LOST" come from the old portfolio). I'll propose new defaults pulled from your new stats (e.g. "$12.7M inefficiency", "124 pain points", "40+ interviews", "v2 phased commercialisation") — you can edit them in the CMS after.
+Add a **Gallery images** field to each project in the admin (`ProjectEditor.tsx`):
 
-After this, the admin **Backend → Projects** list will show the 5 current folder projects, and edits will update the live folder cards immediately.
+- Multi-image uploader using the existing `cms-upload` edge function and `site-media` bucket.
+- Drag-to-reorder, delete per image, optional alt text per image.
+- Stored as `gallery` jsonb column on `projects` table: `[{ url, alt }, ...]`.
 
-## 2. Replace the Work page CTA
+## Technical changes
 
-Currently the Work page closes with `WorkClosingCTA` ("See full portfolio" + "Get in touch" → /about).
+**Database**
+- Migration: add `gallery jsonb NOT NULL DEFAULT '[]'` to `public.projects`.
 
-Replace it so it matches the About page contact card:
-- Heading: "Let's talk."
-- Sub: "farqmac@me.com · Sydney, Australia"
-- Two buttons:
-  - **Email me →** (`mailto:farqmac@me.com`, gradient indigo fill)
-  - **LinkedIn** (`https://www.linkedin.com/in/farquharm/`, outline, opens new tab)
+**Types & data layer**
+- `src/data/projectsSeed.ts` — add `gallery?: { url: string; alt?: string }[]` to the `Project` type.
+- `src/hooks/useProjects.ts` — map `gallery` from row to project.
+- `supabase/functions/cms-save/index.ts` — accept and persist `gallery` on upsert.
 
-I'll rewrite `WorkClosingCTA.tsx` to mirror the About contact-card markup/styles. Keeps the glass card + entry animation, just swaps the content and actions. Honors the project rule that LinkedIn is the only social link.
+**Detail overlay (`src/components/ProjectDeck.tsx`)**
+- Replace the single-column `.pd-detail-content` block (lines 400–459) with a new two-column layout: `.pd-detail-grid` containing `.pd-detail-left` (sticky) and `.pd-detail-right` (marquee).
+- Add `.pd-marquee` + `.pd-marquee-track` styles with the keyframe animation and `:hover { animation-play-state: paused }`.
+- Move stats and tags into the left column so nothing critical is below the fold.
+- Add lightbox state (`lightboxIdx`) + simple full-screen image viewer with prev/next + Esc-to-close.
+- Mobile breakpoint stacks the grid.
 
----
+**Admin (`src/components/admin/ProjectEditor.tsx`)**
+- Add a "Gallery images" section using a small multi-upload UI (reuse `MediaField` pattern; allow multiple). Persist to project's `gallery` field via the existing save flow.
 
 ## Files touched
 
-- `src/data/projectsSeed.ts` — extended type + 5 new projects
-- `src/components/ProjectDeck.tsx` — read from `useProjects()` instead of constant
-- `src/hooks/useProjects.ts` — row mapper updated for new columns
-- `src/components/admin/ProjectEditor.tsx` — new editable fields
-- `src/components/admin/sections/WorkSection.tsx` — refreshed highlight defaults
-- `src/components/work/WorkClosingCTA.tsx` — Email + LinkedIn CTA
-- `supabase/functions/cms-save/index.ts` — persist new columns
-- DB migration: add columns to `projects`
-- DB data: delete old 8 rows, insert new 5 rows
+- New: supabase migration adding `gallery` column.
+- Edited: `src/components/ProjectDeck.tsx`, `src/data/projectsSeed.ts`, `src/hooks/useProjects.ts`, `src/components/admin/ProjectEditor.tsx`, `supabase/functions/cms-save/index.ts`.
 
 ## Out of scope
 
-- Visual changes to the folder animation itself (you said it's right).
-- Case-study route (`/work/:slug`) layout — it'll still work; the new fields just give it more to display, but I won't redesign it unless you ask.
+- No changes to the deck animation itself, the Work hero, or the closing CTA.
+- No changes to other pages.
