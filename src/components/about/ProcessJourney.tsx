@@ -379,7 +379,7 @@ const ProcessJourney = () => {
               fill="none"
               stroke="url(#loop-stroke)"
               strokeWidth={2.5}
-              transform={`rotate(-90 ${LOOP_CX} ${LOOP_CY})`}
+              transform={`rotate(180 ${LOOP_CX} ${LOOP_CY})`}
               style={
                 reduced
                   ? { pathLength: 1 }
