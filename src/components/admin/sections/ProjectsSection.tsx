@@ -20,8 +20,9 @@ const blankProject = (order: number): Project => ({
 });
 
 const ProjectsSection = () => {
-  const { projects, save, add, remove, reorder } = useProjects();
+  const { projects, save, add, remove, reorder, reset } = useProjects();
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [reseeding, setReseeding] = useState(false);
 
   if (editingSlug) {
     const project = projects.find((p) => p.slug === editingSlug);
@@ -54,16 +55,29 @@ const ProjectsSection = () => {
           <h2 className="text-base font-semibold text-gray-900">Projects</h2>
           <p className="text-xs text-gray-500">{projects.length} total</p>
         </div>
-        <button
-          onClick={() => {
-            const p = blankProject(projects.length);
-            add(p);
-            setEditingSlug(p.slug);
-          }}
-          className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-md hover:bg-gray-800"
-        >
-          + Add
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              if (!confirm("Replace all projects in the database with the current code seed? This cannot be undone.")) return;
+              setReseeding(true);
+              try { await reset(); } finally { setReseeding(false); }
+            }}
+            disabled={reseeding}
+            className="border border-gray-300 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-md hover:bg-gray-50 disabled:opacity-50"
+          >
+            {reseeding ? "Reseeding…" : "Reseed from code"}
+          </button>
+          <button
+            onClick={() => {
+              const p = blankProject(projects.length);
+              add(p);
+              setEditingSlug(p.slug);
+            }}
+            className="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-md hover:bg-gray-800"
+          >
+            + Add
+          </button>
+        </div>
       </div>
 
       <ul className="border border-gray-200 rounded-lg divide-y divide-gray-200">
