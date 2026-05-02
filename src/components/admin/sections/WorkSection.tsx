@@ -1,12 +1,57 @@
 import TextField from "@/components/admin/fields/TextField";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import SectionHeader from "@/components/admin/sections/SectionHeader";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Save, Check } from "lucide-react";
+import { useDirtyCount } from "@/lib/cmsDirty";
+import { saveAllDirty } from "@/lib/cmsApi";
 
 const WorkSection = () => {
   const { get } = useSiteContent("work");
+  const count = useDirtyCount();
+  const [saving, setSaving] = useState(false);
+  const hasChanges = count > 0;
+
+  const handleSave = async () => {
+    if (!hasChanges || saving) return;
+    setSaving(true);
+    try {
+      await saveAllDirty();
+      toast.success(`Saved ${count} change${count === 1 ? "" : "s"} ✓`);
+    } catch (e) {
+      toast.error("Save failed", { description: (e as Error).message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div>
       <SectionHeader title="Work (full portfolio)" description="Hero copy and the four highlight tiles." />
+
+      {/* Prominent inline save action — always visible at top of editor */}
+      <button
+        onClick={handleSave}
+        disabled={!hasChanges || saving}
+        className={`w-full mb-5 inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-3 rounded-lg transition-colors shadow-sm ${
+          hasChanges
+            ? "bg-indigo-600 text-white hover:bg-indigo-700"
+            : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
+        } disabled:opacity-100`}
+      >
+        {hasChanges ? (
+          <>
+            <Save className="w-4 h-4" />
+            {saving ? "Saving…" : `Save Work page changes (${count})`}
+          </>
+        ) : (
+          <>
+            <Check className="w-4 h-4" />
+            No unsaved changes
+          </>
+        )}
+      </button>
 
       <Section title="Hero">
         <TextField label="Eyebrow" page="work" section="hero" fieldKey="eyebrow" fallback={get("hero", "eyebrow", "I bridge design and AI operations")} />
@@ -27,6 +72,29 @@ const WorkSection = () => {
       <p className="text-[11px] text-gray-500 italic">
         Per-project content (covers, hero images, problem/process/outcome) is edited under <strong>Projects</strong>.
       </p>
+
+      {/* Bottom save action — repeats at the end of the form for long scrolls */}
+      <button
+        onClick={handleSave}
+        disabled={!hasChanges || saving}
+        className={`w-full mt-6 inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-3 rounded-lg transition-colors shadow-sm ${
+          hasChanges
+            ? "bg-indigo-600 text-white hover:bg-indigo-700"
+            : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
+        } disabled:opacity-100`}
+      >
+        {hasChanges ? (
+          <>
+            <Save className="w-4 h-4" />
+            {saving ? "Saving…" : `Save Work page changes (${count})`}
+          </>
+        ) : (
+          <>
+            <Check className="w-4 h-4" />
+            All saved
+          </>
+        )}
+      </button>
     </div>
   );
 };
