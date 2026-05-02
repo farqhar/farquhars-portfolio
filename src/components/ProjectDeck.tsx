@@ -26,6 +26,8 @@ type Project = {
   role: string;
   timeline: string;
   client: string;
+  problem: string;
+  process: string;
   overview: string;
   stats: { value: string; label: string }[];
   tags: string[];
@@ -43,6 +45,8 @@ const dbToCard = (p: DbProject): Project => ({
   role: p.role,
   timeline: p.timeline,
   client: p.client || "",
+  problem: p.problem || "",
+  process: p.process || "",
   overview: p.overview || "",
   stats: Array.isArray(p.stats) ? p.stats : [],
   tags: Array.isArray(p.tags) ? p.tags : [],
@@ -480,6 +484,20 @@ export default function ProjectDeck() {
 
                   <h1 className="pd-title">{openProject.title}</h1>
                   <p className="pd-tagline">{openProject.tagline}</p>
+
+                  {openProject.problem && (
+                    <div className="pd-section">
+                      <div className="pd-section-label">The Problem</div>
+                      <p>{openProject.problem}</p>
+                    </div>
+                  )}
+
+                  {openProject.process && (
+                    <div className="pd-section">
+                      <div className="pd-section-label">The Solution</div>
+                      <p>{openProject.process}</p>
+                    </div>
+                  )}
 
                   <div className="pd-section">
                     <div className="pd-section-label">Role</div>
