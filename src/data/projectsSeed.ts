@@ -13,6 +13,7 @@ export type ProjectStat = {
 export type GalleryImage = {
   url: string;
   alt?: string;
+  type?: "image" | "video";
 };
 
 export type Project = {

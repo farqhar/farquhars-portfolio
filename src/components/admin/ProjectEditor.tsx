@@ -45,8 +45,9 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
       for (const file of files) {
         const ext = file.name.split(".").pop() || "bin";
         const path = `projects/${draft.slug}/gallery/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-        const url = await uploadMedia(file, path, "image");
-        uploaded.push({ url, alt: "" });
+        const kind = file.type.startsWith("video/") ? "video" : "image";
+        const url = await uploadMedia(file, path, kind);
+        uploaded.push({ url, alt: "", type: kind });
       }
       set("gallery", [...gallery, ...uploaded]);
       toast.success(`Added ${uploaded.length} image${uploaded.length === 1 ? "" : "s"}`);
@@ -165,14 +166,16 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <MediaField
-            label="Cover image"
+            label="Cover image / video"
             folder={`projects/${draft.slug}/cover`}
+            kind="any"
             currentUrl={draft.cover}
             onSaved={(url) => set("cover", url)}
           />
           <MediaField
-            label="Hero image"
+            label="Hero image / video"
             folder={`projects/${draft.slug}/hero`}
+            kind="any"
             currentUrl={draft.hero}
             onSaved={(url) => set("hero", url)}
           />
@@ -222,7 +225,7 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
               {galleryUploading ? "Uploading…" : "Add images"}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
                 className="hidden"
                 onChange={handleGalleryFiles}
@@ -242,7 +245,11 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
                   className="flex items-center gap-3 border border-gray-200 rounded-md p-2 bg-white"
                 >
                   <div className="w-14 h-14 rounded overflow-hidden bg-gray-100 shrink-0">
-                    <img src={g.url} alt={g.alt || ""} className="w-full h-full object-cover" />
+                    {g.type === "video" || /\.(mp4|webm|mov)(\?|$)/i.test(g.url) ? (
+                      <video src={g.url} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <img src={g.url} alt={g.alt || ""} className="w-full h-full object-cover" />
+                    )}
                   </div>
                   <input
                     className={inputCls + " flex-1"}

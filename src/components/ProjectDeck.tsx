@@ -67,6 +67,8 @@ const VISIBLE_BEHIND = 3;
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+const isVideoUrl = (url: string) => /\.(mp4|webm|mov)(\?|$)/i.test(url);
+
 export default function ProjectDeck() {
   const { projects } = useProjects();
   const PROJECTS: Project[] = useMemo(
@@ -404,12 +406,20 @@ export default function ProjectDeck() {
                 >
                   <div className={`pd-card-bg pd-${project.bgClass}`}>
                     {hasImage(project.cover) ? (
-                      <img
-                        src={project.cover}
-                        alt={project.title}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                        draggable={false}
-                      />
+                      isVideoUrl(project.cover) ? (
+                        <video
+                          src={project.cover}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          autoPlay muted loop playsInline
+                        />
+                      ) : (
+                        <img
+                          src={project.cover}
+                          alt={project.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          draggable={false}
+                        />
+                      )
                     ) : (
                       <div
                         className={`pd-mock ${
@@ -559,28 +569,54 @@ export default function ProjectDeck() {
                             onClick={() =>
                               setLightboxIdx(i % openProject.gallery.length)
                             }
-                            aria-label={img.alt || `Image ${(i % openProject.gallery.length) + 1}`}
+                            aria-label={img.alt || `Item ${(i % openProject.gallery.length) + 1}`}
                           >
-                            <img
-                              src={img.url}
-                              alt={img.alt || ""}
-                              loading="lazy"
-                              draggable={false}
-                            />
+                            {img.type === "video" || isVideoUrl(img.url) ? (
+                              <video
+                                src={img.url}
+                                autoPlay muted loop playsInline
+                                draggable={false}
+                              />
+                            ) : (
+                              <img
+                                src={img.url}
+                                alt={img.alt || ""}
+                                loading="lazy"
+                                draggable={false}
+                              />
+                            )}
                           </button>
                         ))}
                       </div>
                     </div>
                   ) : hasImage(openProject.hero) ? (
-                    <div
-                      className="pd-marquee-empty"
-                      style={{ backgroundImage: `url(${openProject.hero})`, backgroundSize: "cover", backgroundPosition: "center" }}
-                    />
+                    isVideoUrl(openProject.hero) ? (
+                      <video
+                        src={openProject.hero}
+                        className="pd-marquee-empty"
+                        style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                        autoPlay muted loop playsInline
+                      />
+                    ) : (
+                      <div
+                        className="pd-marquee-empty"
+                        style={{ backgroundImage: `url(${openProject.hero})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                      />
+                    )
                   ) : hasImage(openProject.cover) ? (
-                    <div
-                      className="pd-marquee-empty"
-                      style={{ backgroundImage: `url(${openProject.cover})`, backgroundSize: "cover", backgroundPosition: "center" }}
-                    />
+                    isVideoUrl(openProject.cover) ? (
+                      <video
+                        src={openProject.cover}
+                        className="pd-marquee-empty"
+                        style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                        autoPlay muted loop playsInline
+                      />
+                    ) : (
+                      <div
+                        className="pd-marquee-empty"
+                        style={{ backgroundImage: `url(${openProject.cover})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                      />
+                    )
                   ) : (
                     <div
                       className="pd-marquee-empty"
@@ -601,11 +637,21 @@ export default function ProjectDeck() {
           >
             {lightboxIdx !== null && (
               <>
-                <img
-                  src={openProject.gallery[lightboxIdx].url}
-                  alt={openProject.gallery[lightboxIdx].alt || ""}
-                  onClick={(e) => e.stopPropagation()}
-                />
+                {openProject.gallery[lightboxIdx].type === "video" || isVideoUrl(openProject.gallery[lightboxIdx].url) ? (
+                  <video
+                    src={openProject.gallery[lightboxIdx].url}
+                    controls
+                    autoPlay
+                    playsInline
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <img
+                    src={openProject.gallery[lightboxIdx].url}
+                    alt={openProject.gallery[lightboxIdx].alt || ""}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
                 {openProject.gallery.length > 1 && (
                   <>
                     <button
