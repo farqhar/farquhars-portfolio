@@ -4,6 +4,7 @@ import FontField from "@/components/admin/fields/FontField";
 import NumberField from "@/components/admin/fields/NumberField";
 import { DEFAULT_THEME, getTheme, type ThemeRow } from "@/lib/theme";
 import { cmsDirty, makeThemeId, useDirtyValue } from "@/lib/cmsDirty";
+import SectionHeader from "@/components/admin/sections/SectionHeader";
 
 type HeadKey = "h1" | "h2" | "h3";
 
@@ -40,8 +41,7 @@ const ThemeSection = () => {
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">Theme</h2>
-      <p className="text-xs text-gray-500 mb-4">Colors, typography, and heading scale apply site-wide.</p>
+      <SectionHeader title="Theme" description="Colors, typography, and heading scale apply site-wide." />
 
       <Section title="Colors">
         <ColorField label="Background" themeKey="colors_json" prop="background" current={theme.colors_json as Record<string, string>} />

@@ -3,6 +3,7 @@ import MediaField from "@/components/admin/fields/MediaField";
 import ListField from "@/components/admin/fields/ListField";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+import SectionHeader from "@/components/admin/sections/SectionHeader";
 
 type Testimonial = { quote: string; name: string; role: string; avatar?: string };
 
@@ -17,8 +18,7 @@ const AboutSection = () => {
   const { value: hs } = useSiteSetting<{ url: string }>("headshot_url");
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">About page</h2>
-      <p className="text-xs text-gray-500 mb-4">Edits appear in the live preview on the right.</p>
+      <SectionHeader title="About page" description="Edits appear in the live preview on the right." />
 
       <Section title="Headshot">
         <MediaField

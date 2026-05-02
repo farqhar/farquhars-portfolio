@@ -1,12 +1,12 @@
 import TextField from "@/components/admin/fields/TextField";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import SectionHeader from "@/components/admin/sections/SectionHeader";
 
 const WorkSection = () => {
   const { get } = useSiteContent("work");
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">Work (full portfolio)</h2>
-      <p className="text-xs text-gray-500 mb-4">Hero copy and the four highlight tiles.</p>
+      <SectionHeader title="Work (full portfolio)" description="Hero copy and the four highlight tiles." />
 
       <Section title="Hero">
         <TextField label="Eyebrow" page="work" section="hero" fieldKey="eyebrow" fallback={get("hero", "eyebrow", "I bridge design and AI operations")} />
