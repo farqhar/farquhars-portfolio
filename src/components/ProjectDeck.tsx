@@ -596,14 +596,11 @@ export default function ProjectDeck() {
                       <div
                         className="pd-marquee-empty"
                         style={{
+                          backgroundColor: fit === "contain" ? "#F5F2ED" : undefined,
                           backgroundImage: `url(${heroSrc})`,
                           backgroundSize: fit,
                           backgroundPosition: "center",
                           backgroundRepeat: "no-repeat",
-                          backgroundColor: fit === "contain" ? "#F5F2ED" : undefined,
-                          background: fit === "contain"
-                            ? `${containerBg}, url(${heroSrc}) center / contain no-repeat`
-                            : undefined,
                         }}
                       />
                     );
