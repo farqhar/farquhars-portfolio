@@ -344,7 +344,7 @@ const About = () => {
                     {t.avatar && (
                       <img src={t.avatar} alt="" className="w-7 h-7 rounded-full object-cover" />
                     )}
-                    <p className="text-[11px] tracking-wider uppercase text-muted-foreground">
+                    <p className="text-[11px] tracking-wider uppercase text-muted-foreground whitespace-pre-line">
                       {t.name} <span className="opacity-60">· {t.role}</span>
                     </p>
                   </div>
