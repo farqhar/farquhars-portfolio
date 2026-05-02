@@ -30,29 +30,6 @@ const WorkSection = () => {
     <div>
       <SectionHeader title="Work (full portfolio)" description="Hero copy and the four highlight tiles." />
 
-      {/* Prominent inline save action — always visible at top of editor */}
-      <button
-        onClick={handleSave}
-        disabled={!hasChanges || saving}
-        className={`w-full mb-5 inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-3 rounded-lg transition-colors shadow-sm ${
-          hasChanges
-            ? "bg-indigo-600 text-white hover:bg-indigo-700"
-            : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
-        } disabled:opacity-100`}
-      >
-        {hasChanges ? (
-          <>
-            <Save className="w-4 h-4" />
-            {saving ? "Saving…" : `Save Work page changes (${count})`}
-          </>
-        ) : (
-          <>
-            <Check className="w-4 h-4" />
-            No unsaved changes
-          </>
-        )}
-      </button>
-
       <Section title="Hero">
         <TextField label="Eyebrow" page="work" section="hero" fieldKey="eyebrow" fallback={get("hero", "eyebrow", "I bridge design and AI operations")} />
         <TextField label="Subhead" page="work" section="hero" fieldKey="subhead" fallback={get("hero", "subhead", "Eight projects. Real outcomes. Here's what I actually built — and what each one cost to make.")} multiline />
