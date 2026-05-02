@@ -28,6 +28,7 @@ type Row = {
   hero_background?: string;
   label?: string;
   gallery?: unknown;
+  hero_fit?: string;
 };
 
 const rowToProject = (r: Row): Project => ({
@@ -55,6 +56,7 @@ const rowToProject = (r: Row): Project => ({
   heroBackground: r.hero_background ?? "",
   label: r.label ?? "",
   gallery: Array.isArray(r.gallery) ? (r.gallery as Project["gallery"]) : [],
+  heroFit: r.hero_fit === "contain" ? "contain" : "cover",
 });
 
 async function fetchAll(): Promise<Project[]> {

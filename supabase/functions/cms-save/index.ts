@@ -162,6 +162,7 @@ Deno.serve(async (req) => {
           hero_background: v.heroBackground ?? v.hero_background ?? "",
           label: v.label ?? "",
           gallery: v.gallery ?? [],
+          hero_fit: (v.heroFit ?? v.hero_fit) === "contain" ? "contain" : "cover",
         };
         const { error } = await admin
           .from("projects")
