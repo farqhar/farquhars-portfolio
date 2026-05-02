@@ -237,7 +237,7 @@ export default function ProjectDeck() {
         .pd-root { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; -webkit-user-select: none; color: #0A0A0A; }
         .pd-root * { box-sizing: border-box; }
 
-        .pd-scroll { position: relative; width: 100%; height: 500vh; background: #FAFAF9; }
+        .pd-scroll { position: relative; width: 100%; height: 700vh; background: #FAFAF9; }
         .pd-pin { position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
 
         .pd-glow { position: absolute; top: 50%; left: 50%; width: 800px; height: 800px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(43,91,255,0.04) 0%, rgba(123,91,255,0.02) 40%, transparent 70%); pointer-events: none; z-index: 0; }

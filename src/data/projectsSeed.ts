@@ -47,177 +47,247 @@ const placeholder = "/placeholder.svg";
 
 export const projectsSeed: Project[] = [
   {
-    slug: "caber-aiq-programme",
-    title: "CABER AIQ Programme",
-    role: "AI Programme Manager",
-    timeline: "12 months · ongoing",
-    outcomeMetric: "$12.7M inefficiency identified",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "A 200-person engineering and design firm wanted AI capability but had no operating model, no pipeline, and no shared evidence of where AI would actually pay off.",
-    process:
-      "Stood up the programme from a single discovery sprint: ran 40+ stakeholder interviews, built the request pipeline, designed the sprint cadence, and put a stakeholder communications layer around it.",
-    outcome:
-      "AIQ now runs on a structured operating model with 124 documented pain points and a board-credible inefficiency number to prioritise against.",
-    honest:
-      "The programme design mattered more than any single tool. People needed a way to ask, not another dashboard to check.",
-    quotes: [],
-    order: 0,
-    tagline:
-      "Standing up an AI transformation programme inside a 200-person engineering and design firm — from discovery to delivery.",
-    client: "CABER Group",
-    overview:
-      "Built CABER's internal AI capability from a single discovery sprint into a structured operating model. Designed the request pipeline, sprint cadence, and stakeholder communications layer that AIQ runs on today.",
-    stats: [
-      { value: "40+", label: "Staff interviewed" },
-      { value: "124", label: "Pain points mapped" },
-      { value: "$12.7M", label: "Inefficiency identified" },
-    ],
-    tags: ["Programme Design", "Stakeholder Mgmt", "AI Strategy", "Operating Model"],
-    bgClass: "bg-1",
-    mockType: "dark",
-    heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #2B5BFF 100%)",
-    label: "2025 · Strategy",
-  },
-  {
-    slug: "aiq-roi-platform",
-    title: "AIQ ROI Platform",
-    role: "Product Lead · Designer · Builder",
-    timeline: "6 months · v1 shipped",
-    outcomeMetric: "4 live modules",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "Every AI programme dies on the same question — what's the actual ROI? Without a system to link pain points to deployed solutions to dollars, every pilot becomes a debate.",
-    process:
-      "Designed and built the platform end-to-end on Lovable + Supabase, with the Claude API powering the analysis layer. Four live modules covering intake, prioritisation, deployment, and ROI tracking.",
-    outcome:
-      "Live across the AIQ programme, tracking 12 deployed solutions. Phased commercialisation as v2.",
-    honest:
-      "It's tempting to over-build the dashboard. The hard part was getting the input data clean enough to mean anything.",
-    quotes: [],
-    order: 1,
-    tagline:
-      "A purpose-built intelligence dashboard linking identified pain points to deployed AI solutions and tracked financial return.",
-    client: "CABER · Internal",
-    overview:
-      "Built in Lovable + Supabase with the Claude API powering the analysis layer. Solves the problem of every AI programme: proving the ROI is real, not theoretical.",
-    stats: [
-      { value: "4", label: "Live modules" },
-      { value: "12", label: "Solutions tracked" },
-      { value: "v2", label: "Phased commercialisation" },
-    ],
-    tags: ["Lovable", "Supabase", "Claude API", "Product Design"],
-    bgClass: "bg-2",
-    mockType: "light",
-    heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.15) 50%, rgba(123,91,255,0.1) 100%)",
-    label: "2025 · AI + Product",
-  },
-  {
-    slug: "ascenda-health",
-    title: "Ascenda Health",
-    role: "Designer",
-    timeline: "3 weeks",
-    outcomeMetric: "24 slides delivered",
-    cover: placeholder,
-    hero: placeholder,
-    problem:
-      "A clinical digital-health product was raising seed capital and needed a deck investors could move on inside one read.",
-    process:
-      "Worked with the founding team to translate the clinical model into a narrative arc, then built a visual system designed to be reused across follow-up materials.",
-    outcome:
-      "Deck delivered in three weeks, with a system that survived into investor follow-ups and product collateral.",
-    honest:
-      "The trap on pitch decks is over-designing the slide and under-designing the story. I cut three slides on the last pass.",
-    quotes: [],
-    order: 2,
-    tagline:
-      "A 24-slide investor pitch deck for a digital health platform raising seed capital.",
-    client: "Ascenda Health",
-    overview:
-      "Worked closely with the founding team to translate a complex clinical product into a narrative investors could move on. Visual system designed for repeated reuse across follow-up materials.",
-    stats: [
-      { value: "24", label: "Slides delivered" },
-      { value: "1", label: "Visual system" },
-      { value: "∞", label: "Reusable assets" },
-    ],
-    tags: ["Pitch Deck", "Brand System", "Investor Comms"],
-    bgClass: "bg-3",
-    mockType: "light",
-    heroBackground: "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
-    label: "2024 · Design",
-  },
-  {
     slug: "pain-point-discovery",
     title: "Pain Point Discovery",
     role: "Programme Lead",
-    timeline: "4 months",
-    outcomeMetric: "$12.7M annualised cost",
+    timeline: "4 Months",
+    outcomeMetric: "$12.7M Annualised Cost",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "Leadership knew there was waste in the system but couldn't put a number on it. Without quantification, AI stayed a cost line, not a capital project.",
+      "There was no structured view of where time and money were being lost across the firm. Anecdotes were driving AI strategy.",
     process:
-      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and built the model that turned them into an annualised cost.",
+      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and quantified annualised cost. Output: a board presentation that reframed AI from cost line to capital project. The discovery became the foundation for the entire AIQ programme.",
     outcome:
-      "A board presentation that reframed AI from cost line to capital project, with $12.7M of annualised inefficiency on the table.",
+      "A board-ready audit quantifying $12.7M of annualised inefficiency across one engineering firm. 40+ interviews. 124 unique pain points identified.",
     honest:
-      "Quantification is half methodology, half courage. People will give you the number — you have to be willing to write it down.",
+      "The methodology was only half the work. Getting senior stakeholders to speak candidly about inefficiency in their own teams was the harder problem.",
     quotes: [],
-    order: 3,
+    order: 0,
+    label: "2024 · Data",
     tagline:
       "A board-ready audit quantifying $12.7M of annualised inefficiency across one engineering firm.",
-    client: "CABER Group",
+    client: "Global Engineering Firm",
     overview:
-      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and quantified annualised cost. Output: a board presentation that reframed AI from cost line to capital project.",
+      "Designed the interview methodology, ran 40+ stakeholder sessions, extracted 124 unique pain points, and quantified annualised cost. Output: a board presentation that reframed AI from cost line to capital project. The discovery became the foundation for the entire AIQ programme.",
     stats: [
       { value: "40+", label: "Interviews" },
-      { value: "124", label: "Unique pain points" },
-      { value: "$12.7M", label: "Annualised cost" },
+      { value: "124", label: "Unique Pain Points" },
+      { value: "$12.7M", label: "Annualised Cost" },
     ],
     tags: ["Discovery", "Quantification", "Stakeholder Research", "Board Reporting"],
     bgClass: "bg-4",
     mockType: "dark",
     heroBackground:
       "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
-    label: "2024 · Data",
+  },
+  {
+    slug: "aiq-roi-platform",
+    title: "AIQ ROI Platform",
+    role: "Product Lead · Designer · Builder",
+    timeline: "6 Months",
+    outcomeMetric: "4 Live Modules · 12 Solutions Tracked",
+    cover: placeholder,
+    hero: placeholder,
+    problem:
+      "Every AI programme faces the same problem: leadership wants to know if it's working, and there's no single place to see it.",
+    process:
+      "Built in Lovable + Supabase with the Claude API as the analysis layer and AI agents handling data processing across modules. Designed to function as a lead generation tool — allowing businesses outside the organisation to see exactly how AI integration could map to their own operations and where the financial return sits.",
+    outcome:
+      "4 live modules tracking 12 solutions. V2 scoped for commercialisation. Solves the core problem of every AI programme: proving the ROI is real, not theoretical.",
+    honest:
+      "Building the dashboard was straightforward. Convincing people to trust the numbers it showed was the real work.",
+    quotes: [],
+    order: 1,
+    label: "2025 · AI + Product",
+    tagline:
+      "A purpose-built intelligence dashboard linking identified pain points to deployed AI solutions — built to prove ROI and position AI adoption as a commercial decision, not a cost.",
+    client: "Internal",
+    overview:
+      "Built in Lovable + Supabase with the Claude API as the analysis layer and AI agents handling data processing across modules. Solves the core problem of every AI programme: proving the ROI is real, not theoretical. Designed to function as a lead generation tool — allowing businesses outside the organisation to see exactly how AI integration could map to their own operations and where the financial return sits. V2 scoped for commercialisation.",
+    stats: [
+      { value: "4", label: "Live Modules" },
+      { value: "12", label: "Solutions Tracked" },
+      { value: "v2", label: "Phased Commercialisation" },
+    ],
+    tags: ["Lovable", "Supabase", "Claude API", "AI Agents", "Product Design"],
+    bgClass: "bg-2",
+    mockType: "light",
+    heroBackground:
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.15) 50%, rgba(123,91,255,0.1) 100%)",
+  },
+  {
+    slug: "cv-generation-tool",
+    title: "CV Generation Tool",
+    role: "Contributor · Template Designer",
+    timeline: "Ongoing",
+    outcomeMetric: "60+ Hrs Saved Weekly",
+    cover: placeholder,
+    hero: placeholder,
+    problem:
+      "Engineering firms bidding on major infrastructure projects were spending 60+ hours a week manually assembling tailored CVs for tender submissions.",
+    process:
+      "Contributed to the build of an AI-powered CV generation tool for a 200-person engineering firm. Responsible for designing the output templates — ensuring the automated tool produced client-ready, on-brand documents suitable for major infrastructure tender submissions. Tool built by the AIQ technical lead.",
+    outcome:
+      "60+ hours saved weekly across a 200-person firm. V1 shipped and in active use on multi-million dollar tender submissions.",
+    honest:
+      "Template design sounds simple. Getting output that holds up under scrutiny from engineering directors on high-value tenders is a different problem.",
+    quotes: [],
+    order: 2,
+    label: "2025 · AI + Automation",
+    tagline:
+      "Contributed to reducing a 60+ hour manual process to minutes for engineering firms bidding on major infrastructure.",
+    client: "Global Engineering Firm",
+    overview:
+      "Contributed to the build of an AI-powered CV generation tool for a 200-person engineering firm. Responsible for designing the output templates — ensuring the automated tool produced client-ready, on-brand documents suitable for major infrastructure tender submissions. Tool built by the AIQ technical lead.",
+    stats: [
+      { value: "60+", label: "Hrs Saved Weekly" },
+      { value: "Multi-million", label: "Dollar Tenders" },
+      { value: "V1", label: "Shipped" },
+    ],
+    tags: ["Template Design", "Workflow Mapping", "Process Design"],
+    bgClass: "bg-3",
+    mockType: "light",
+    heroBackground: "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
+  },
+  {
+    slug: "digital-construction-page",
+    title: "Digital Construction Page",
+    role: "Creative Director · Strategist",
+    timeline: "3 Months",
+    outcomeMetric: "4,743% Engagement Increase",
+    cover: placeholder,
+    hero: placeholder,
+    problem:
+      "The Digital Construction practice had no way to communicate what it actually did. The existing page collapsed three service lines into one paragraph.",
+    process:
+      "Led creative direction for a Digital Construction landing page — translated dense technical capability into clear, client-facing visual storytelling. Measured a 4,743% increase in average engagement time across two three-month comparison periods.",
+    outcome:
+      "Average session time increased from 27 seconds to 23 minutes. Became the most visited services page on the site, accounting for 64.8% of site traffic — directly supporting sales and tender positioning.",
+    honest:
+      "The hardest part was internal. Getting five stakeholders to agree on what the firm actually did, in plain language, took longer than building the page.",
+    quotes: [],
+    order: 3,
+    label: "2024 · Design + Data",
+    tagline:
+      "Translating complex engineering capability into a page that people actually read.",
+    client: "Global Engineering Firm",
+    overview:
+      "Led creative direction for a Digital Construction landing page — translated dense technical capability into clear, client-facing visual storytelling. Measured a 4,743% increase in average engagement time across two three-month comparison periods. Became the most visited services page on the site, directly supporting sales and tender positioning.",
+    stats: [
+      { value: "4,743%", label: "Engagement Increase" },
+      { value: "27s → 23min", label: "Session Time" },
+      { value: "64.8%", label: "of Site Traffic" },
+    ],
+    tags: ["Visual Storytelling", "Stakeholder Management", "Web Design", "Analytics"],
+    bgClass: "bg-5",
+    mockType: "light",
+    heroBackground:
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
+  },
+  {
+    slug: "brand-touchpoint-system",
+    title: "Brand Touchpoint System",
+    role: "Systems Designer · Strategist",
+    timeline: "Ongoing",
+    outcomeMetric: "10+ Brands Audited",
+    cover: placeholder,
+    hero: placeholder,
+    problem:
+      "No one could say who owned what across a 10+ brand engineering group. Outdated or misaligned assets created compliance risk and missed commercial opportunities.",
+    process:
+      "Initiated and delivered a comprehensive audit of internal and external brand touchpoints across a multi-brand engineering group. Designed an ownership framework assigning accountability to specific roles with defined update cadence.",
+    outcome:
+      "Full portfolio coverage across 10+ brands. Evolved into a cross-sell enabler by improving visibility of capabilities across brands, making it easier for clients to see the full breadth of the firm's offer.",
+    honest:
+      "Naming an owner is easy. Getting them to accept accountability for it — and maintain it — is the actual project.",
+    quotes: [],
+    order: 4,
+    label: "2023 · Systems",
+    tagline:
+      "A governance framework that turned a scattered asset library into a cross-sell engine — built for consistency, compliance, and commercial positioning across 10+ brands.",
+    client: "Global Engineering Firm",
+    overview:
+      "Initiated and delivered a comprehensive audit of internal and external brand touchpoints across a multi-brand engineering group. The problem wasn't just visual inconsistency — outdated or misaligned assets created compliance risk and missed commercial opportunities. Designed an ownership framework assigning accountability to specific roles with defined update cadence. Evolved into a cross-sell enabler by improving visibility of capabilities across brands, making it easier for clients to see the full breadth of the firm's offer.",
+    stats: [
+      { value: "10+", label: "Brands Audited" },
+      { value: "Full", label: "Portfolio Coverage" },
+      { value: "Cross-sell", label: "Enabled" },
+    ],
+    tags: ["Systems Design", "Brand Governance", "Asset Management", "Stakeholder Mapping"],
+    bgClass: "bg-1",
+    mockType: "dark",
+    heroBackground:
+      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #2B5BFF 100%)",
   },
   {
     slug: "wollip-signatures",
     title: "Wollip Signatures",
     role: "Co-founder · Designer · Product",
     timeline: "Ongoing",
-    outcomeMetric: "1 source of truth",
+    outcomeMetric: "100% On-brand Rollout",
     cover: placeholder,
     hero: placeholder,
     problem:
-      "The most-seen brand surface in B2B is the email signature, and it's also the most ungoverned. Every company I worked with had the same drift problem.",
+      "Managing email signature consistency across 10+ brands manually wasn't scalable — and no SaaS solved it without enterprise pricing or an IT project.",
     process:
-      "Productised the service into a self-serve platform: animated HTML signatures with GIF fallbacks, brand-controlled rollout, and click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIFs.",
+      "Started as a service offering, productised into a self-serve platform. Animated HTML signatures with GIF fallbacks, brand-controlled rollout, click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIF generation.",
     outcome:
-      "Live with paying customers in private beta, with a central-deploy / local-edit model that holds across Outlook, Gmail, and Apple Mail.",
+      "100% on-brand rollout with a single source of truth. ~80 emails per day per user running through a controlled brand channel. Wollip is the productised answer to a problem found in the field.",
     honest:
-      "I keep wanting to add features. The product gets better when I delete them.",
+      "The origin was a client need. The hardest part was productising something that had always been a bespoke service — and resisting the urge to over-engineer it.",
     quotes: [],
-    order: 4,
+    order: 5,
+    label: "2024 · Brand + Product",
     tagline:
       "A SaaS platform that turns the most-seen brand surface in B2B — the email signature — into a controlled marketing channel.",
-    client: "Wollip Digital & Design",
+    client: "Wollip",
     overview:
-      "Started as a service offering, productised into a self-serve platform. Animated HTML signatures with GIF fallbacks, brand-controlled rollout, click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIF generation.",
+      "Started as a service offering, productised into a self-serve platform. Animated HTML signatures with GIF fallbacks, brand-controlled rollout, click tracking. Built on Lovable + Supabase with a Puppeteer render worker for GIF generation. The origin was a client need — managing signature consistency across 10+ brands manually wasn't scalable. Wollip is the productised answer.",
     stats: [
-      { value: "100%", label: "On-brand rollout" },
-      { value: "~80", label: "Emails/day per user" },
-      { value: "1", label: "Source of truth" },
+      { value: "100%", label: "On-brand Rollout" },
+      { value: "~80", label: "Emails/Day Per User" },
+      { value: "1", label: "Source of Truth" },
     ],
-    tags: ["SaaS", "B2B", "Brand Tooling", "Founder"],
-    bgClass: "bg-5",
+    tags: ["Lovable", "Supabase", "Product Design", "Brand Systems"],
+    bgClass: "bg-2",
     mockType: "light",
     heroBackground:
       "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
-    label: "2024 · Brand",
+  },
+  {
+    slug: "analogue-to-algorithm",
+    title: "Analogue to Algorithm",
+    role: "Designer · Systems Thinker · Author",
+    timeline: "6 Months",
+    outcomeMetric: "100 Photographs · 1 Data Pipeline",
+    cover: placeholder,
+    hero: placeholder,
+    problem:
+      "The project started as a question: what happens when you remove human intuition from layout decisions and replace it with structured data extracted from the work itself?",
+    process:
+      "Built a pipeline that extracted brightness values from 100 film photographs and used that structured data to determine layout, spacing, and sequencing across a printed book and digital experience.",
+    outcome:
+      "A printed book and digital experience where every layout decision is driven by data — not intuition. The same algorithmic logic that underpins workflow design and AI implementation work.",
+    honest:
+      "The most surprising outcome was how much the process revealed about the photographs themselves. Data as a lens changes what you see.",
+    quotes: [],
+    order: 6,
+    label: "2023 · Systems + Editorial",
+    tagline:
+      "A system that processes 100 film photographs through a brightness data pipeline and uses the output to drive every layout decision in a printed book.",
+    client: "University",
+    overview:
+      "Built a pipeline that extracted brightness values from 100 film photographs and used that structured data to determine layout, spacing, and sequencing across a printed book and digital experience. The project is less about photography and more about what happens when you apply algorithmic logic to analogue material — the same thinking that underpins workflow design and AI implementation work.",
+    stats: [
+      { value: "100", label: "Photographs" },
+      { value: "1", label: "Data Pipeline" },
+      { value: "Book + Digital", label: "Experience" },
+    ],
+    tags: ["Systems Design", "Editorial", "Data-driven Design", "Photography"],
+    bgClass: "bg-4",
+    mockType: "dark",
+    heroBackground:
+      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
   },
 ];
