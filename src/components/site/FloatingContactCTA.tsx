@@ -20,7 +20,7 @@ const FloatingContactCTA = () => {
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.97 }}
-      className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 inline-flex items-center gap-2 glass rounded-full pl-4 pr-5 py-3 text-xs sm:text-sm font-medium shadow-lg hover:bg-white/80 transition-colors"
+      className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[300] inline-flex items-center gap-2 glass rounded-full pl-4 pr-5 py-3 text-xs sm:text-sm font-medium shadow-lg hover:bg-white/80 transition-colors"
       style={{
         color: "hsl(var(--indigo))",
         animation: "pulse-glow 3s ease-in-out infinite",
