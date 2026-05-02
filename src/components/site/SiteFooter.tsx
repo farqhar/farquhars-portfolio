@@ -13,9 +13,9 @@ const SiteFooter = () => {
           <p className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
             Farquhar MacDougall
           </p>
-          <p className="text-sm text-card-desc max-w-xs leading-relaxed">
-            Bridging design and AI operations. I make complicated things make sense.
-          </p>
+           <p className="text-sm text-card-desc max-w-xs leading-relaxed whitespace-pre-line">
+             Bridging design and AI operations.{"\n"}I make complicated things make sense.
+           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[11px] tracking-[0.18em] uppercase">
