@@ -558,39 +558,9 @@ export default function ProjectDeck() {
                 </div>
 
                 {/* RIGHT: auto-scrolling gallery */}
+                {/* RIGHT: hero image / video */}
                 <div className="pd-detail-right">
-                  {openProject.gallery.length > 0 ? (
-                    <div className="pd-marquee">
-                      <div className="pd-marquee-track">
-                        {[...openProject.gallery, ...openProject.gallery].map((img, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            className="pd-marquee-item"
-                            onClick={() =>
-                              setLightboxIdx(i % openProject.gallery.length)
-                            }
-                            aria-label={img.alt || `Item ${(i % openProject.gallery.length) + 1}`}
-                          >
-                            {img.type === "video" || isVideoUrl(img.url) ? (
-                              <video
-                                src={img.url}
-                                autoPlay muted loop playsInline
-                                draggable={false}
-                              />
-                            ) : (
-                              <img
-                                src={img.url}
-                                alt={img.alt || ""}
-                                loading="lazy"
-                                draggable={false}
-                              />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : hasImage(openProject.hero) ? (
+                  {hasImage(openProject.hero) ? (
                     isVideoUrl(openProject.hero) ? (
                       <video
                         src={openProject.hero}
@@ -626,6 +596,42 @@ export default function ProjectDeck() {
                   )}
                 </div>
               </div>
+
+              {/* Full-width auto-scrolling supporting gallery */}
+              {openProject.gallery.length > 0 && (
+                <div className="pd-marquee-fullwidth">
+                  <div className="pd-marquee">
+                    <div className="pd-marquee-track">
+                      {[...openProject.gallery, ...openProject.gallery].map((img, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className="pd-marquee-item"
+                          onClick={() =>
+                            setLightboxIdx(i % openProject.gallery.length)
+                          }
+                          aria-label={img.alt || `Item ${(i % openProject.gallery.length) + 1}`}
+                        >
+                          {img.type === "video" || isVideoUrl(img.url) ? (
+                            <video
+                              src={img.url}
+                              autoPlay muted loop playsInline
+                              draggable={false}
+                            />
+                          ) : (
+                            <img
+                              src={img.url}
+                              alt={img.alt || ""}
+                              loading="lazy"
+                              draggable={false}
+                            />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
