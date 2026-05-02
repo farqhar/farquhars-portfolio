@@ -72,7 +72,7 @@ const Work = () => {
 
   return (
     <PageTransition>
-      <main className="pt-24 pb-24 sm:pb-[118px] sm:pt-[118px]">
+       <main className="pt-24 pb-24 sm:pt-[118px] sm:pb-[20px]">
         {/* Hero wrapper — overflow-hidden here only to clip the ambient orbs,
             kept separate so position:sticky inside ProjectDeck is not broken */}
         <div className="relative overflow-hidden">
