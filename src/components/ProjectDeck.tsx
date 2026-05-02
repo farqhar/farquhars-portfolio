@@ -26,6 +26,8 @@ type Project = {
   role: string;
   timeline: string;
   client: string;
+  cover: string;
+  hero: string;
   problem: string;
   process: string;
   overview: string;
@@ -37,6 +39,9 @@ type Project = {
   gallery: GalleryImage[];
 };
 
+const PLACEHOLDER = "/placeholder.svg";
+const hasImage = (url: string) => !!url && url !== PLACEHOLDER;
+
 const dbToCard = (p: DbProject): Project => ({
   key: p.slug,
   label: p.label || "",
@@ -45,6 +50,8 @@ const dbToCard = (p: DbProject): Project => ({
   role: p.role,
   timeline: p.timeline,
   client: p.client || "",
+  cover: p.cover || "",
+  hero: p.hero || "",
   problem: p.problem || "",
   process: p.process || "",
   overview: p.overview || "",
@@ -396,18 +403,27 @@ export default function ProjectDeck() {
                   onClick={() => handleCardClick(project, i)}
                 >
                   <div className={`pd-card-bg pd-${project.bgClass}`}>
-                    <div
-                      className={`pd-mock ${
-                        project.mockType === "dark"
-                          ? "pd-mock-dark"
-                          : "pd-mock-light"
-                      }`}
-                    >
-                      <div className="pd-bar pd-bar-short" />
-                      <div className="pd-bar pd-bar-med" />
-                      <div className="pd-bar pd-bar-full" />
-                      <div className="pd-block" />
-                    </div>
+                    {hasImage(project.cover) ? (
+                      <img
+                        src={project.cover}
+                        alt={project.title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        draggable={false}
+                      />
+                    ) : (
+                      <div
+                        className={`pd-mock ${
+                          project.mockType === "dark"
+                            ? "pd-mock-dark"
+                            : "pd-mock-light"
+                        }`}
+                      >
+                        <div className="pd-bar pd-bar-short" />
+                        <div className="pd-bar pd-bar-med" />
+                        <div className="pd-bar pd-bar-full" />
+                        <div className="pd-block" />
+                      </div>
+                    )}
                   </div>
                   <div className="pd-card-info">
                     <div className="pd-card-label">
@@ -555,6 +571,16 @@ export default function ProjectDeck() {
                         ))}
                       </div>
                     </div>
+                  ) : hasImage(openProject.hero) ? (
+                    <div
+                      className="pd-marquee-empty"
+                      style={{ backgroundImage: `url(${openProject.hero})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                    />
+                  ) : hasImage(openProject.cover) ? (
+                    <div
+                      className="pd-marquee-empty"
+                      style={{ backgroundImage: `url(${openProject.cover})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                    />
                   ) : (
                     <div
                       className="pd-marquee-empty"
