@@ -33,32 +33,31 @@ const SectionHeader = ({ title, description }: Props) => {
   };
 
   return (
-    <div className="mb-4">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="min-w-0">
-          <h2 className="text-base font-semibold text-gray-900">{title}</h2>
-          {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
-        </div>
+    <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="min-w-0">
+        <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+        {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
       </div>
       <button
         onClick={handleSave}
         disabled={!hasChanges || saving}
-        className={`w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors shadow-sm ${
+        style={hasChanges ? { backgroundColor: "hsl(239 84% 67%)", color: "#ffffff" } : undefined}
+        className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-sm ${
           hasChanges
-            ? "bg-indigo-600 text-white hover:bg-indigo-700"
+            ? "hover:brightness-110"
             : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
-        } disabled:opacity-100`}
+        } disabled:cursor-not-allowed`}
         aria-label={hasChanges ? `Save ${count} changes` : "All changes saved"}
       >
         {hasChanges ? (
           <>
-            <Save className="w-4 h-4" />
-            {saving ? "Saving…" : `Save changes (${count})`}
+            <Save className="w-3.5 h-3.5" />
+            {saving ? "Saving…" : `Save (${count})`}
           </>
         ) : (
           <>
-            <Check className="w-4 h-4" />
-            No unsaved changes
+            <Check className="w-3.5 h-3.5" />
+            Saved
           </>
         )}
       </button>
