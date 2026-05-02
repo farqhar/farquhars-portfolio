@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { Check, Save } from "lucide-react";
 import { cmsDirty, useDirtyCount } from "@/lib/cmsDirty";
 import { saveAllDirty } from "@/lib/cmsApi";
 
@@ -28,38 +29,54 @@ const SaveBar = () => {
     toast("Discarded unsaved changes");
   };
 
-  const disabled = count === 0;
+  const hasChanges = count > 0;
 
   return (
     <div
-      className={`px-4 py-3 border-t flex items-center justify-between gap-2 transition-colors ${
-        disabled ? "bg-gray-50 border-gray-200" : "bg-amber-50 border-amber-200"
+      className={`px-4 py-3 border-t-2 flex items-center justify-between gap-2 transition-colors shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.08)] ${
+        hasChanges ? "bg-amber-50 border-amber-300" : "bg-white border-gray-200"
       }`}
     >
       <p className="text-xs text-gray-700">
-        {disabled ? (
-          <span className="text-gray-400">No unsaved changes</span>
-        ) : (
+        {hasChanges ? (
           <>
             <span className="font-semibold text-amber-700">{count}</span>{" "}
             unsaved {count === 1 ? "change" : "changes"}
           </>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-emerald-700">
+            <Check className="w-3 h-3" /> All changes saved
+          </span>
         )}
       </p>
       <div className="flex items-center gap-2">
         <button
           onClick={handleDiscard}
-          disabled={disabled}
+          disabled={!hasChanges}
           className="text-xs px-2.5 py-1.5 rounded-md text-gray-700 hover:bg-white disabled:opacity-40 disabled:hover:bg-transparent"
         >
           Discard
         </button>
         <button
           onClick={handleSave}
-          disabled={disabled || saving}
-          className="text-xs font-semibold px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40"
+          disabled={!hasChanges || saving}
+          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors ${
+            hasChanges
+              ? "bg-indigo-600 text-white hover:bg-indigo-700"
+              : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
+          } disabled:opacity-100`}
         >
-          {saving ? "Saving…" : "Save"}
+          {hasChanges ? (
+            <>
+              <Save className="w-3.5 h-3.5" />
+              {saving ? "Saving…" : `Save (${count})`}
+            </>
+          ) : (
+            <>
+              <Check className="w-3.5 h-3.5" />
+              Saved
+            </>
+          )}
         </button>
       </div>
     </div>
