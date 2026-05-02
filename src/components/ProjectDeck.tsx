@@ -37,6 +37,7 @@ type Project = {
   mockType: "dark" | "light";
   heroBackground: string;
   gallery: GalleryImage[];
+  heroFit: "cover" | "contain";
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -61,6 +62,7 @@ const dbToCard = (p: DbProject): Project => ({
   mockType: p.mockType === "dark" ? "dark" : "light",
   heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
   gallery: Array.isArray(p.gallery) ? p.gallery : [],
+  heroFit: p.heroFit === "contain" ? "contain" : "cover",
 });
 
 const VISIBLE_BEHIND = 3;
