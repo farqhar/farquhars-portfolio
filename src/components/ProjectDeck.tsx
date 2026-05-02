@@ -335,10 +335,10 @@ export default function ProjectDeck() {
         .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
 
         /* Two-column detail layout */
-        .pd-detail-wrap { max-width: 1320px; margin: 0 auto; padding: 80px 32px 120px; transform: translateY(20px); opacity: 0; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s; }
+        .pd-detail-wrap { max-width: 1320px; margin: 0 auto; padding: 80px 32px 120px; transform: translateY(20px); opacity: 0; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s; display: flex; flex-direction: column; gap: 56px; }
         .pd-overlay.open .pd-detail-wrap { transform: translateY(0); opacity: 1; }
         .pd-detail-grid { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 56px; align-items: start; }
-        .pd-detail-left { min-width: 0; position: sticky; top: 80px; }
+        .pd-detail-left { min-width: 0; }
         .pd-detail-right { min-width: 0; }
         .pd-detail-left .pd-title { font-size: clamp(36px, 4.6vw, 60px); margin-bottom: 20px; }
         .pd-detail-left .pd-tagline { margin-bottom: 40px; }
@@ -356,6 +356,7 @@ export default function ProjectDeck() {
         .pd-marquee-item:hover { transform: translateY(-4px); }
         .pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
         .pd-marquee-empty { width: 100%; aspect-ratio: 4/5; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); }
+        .pd-marquee-fullwidth { width: 100%; }
 
         /* Lightbox */
         .pd-lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.92); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 32px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -382,7 +383,7 @@ export default function ProjectDeck() {
           .pd-detail-grid { grid-template-columns: 1fr; gap: 40px; }
           .pd-detail-left { position: static; }
           .pd-detail-wrap { padding: 64px 20px 80px; }
-          .pd-marquee-item { height: 220px; }
+          .pd-marquee-item { height: 200px; }
         }
       `}</style>
 
