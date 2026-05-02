@@ -23,6 +23,7 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
     stats: project.stats ?? [],
     tags: project.tags ?? [],
     gallery: project.gallery ?? [],
+    heroFit: project.heroFit ?? "cover",
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
   const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
@@ -179,6 +180,38 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             currentUrl={draft.hero}
             onSaved={(url) => set("hero", url)}
           />
+        </div>
+
+        <div>
+          <label className={labelCls}>Hero display</label>
+          <div className="inline-flex rounded-md border border-gray-300 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => set("heroFit", "cover")}
+              className={`text-xs px-3 py-1.5 ${
+                (draft.heroFit ?? "cover") === "cover"
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Fill (crop)
+            </button>
+            <button
+              type="button"
+              onClick={() => set("heroFit", "contain")}
+              className={`text-xs px-3 py-1.5 border-l border-gray-300 ${
+                draft.heroFit === "contain"
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Fit (whole image)
+            </button>
+          </div>
+          <p className="text-[11px] text-gray-500 mt-1">
+            <strong>Fill</strong> crops to fill the box (best for portrait).{" "}
+            <strong>Fit</strong> shows the whole image with soft letterboxing (best for landscape/square).
+          </p>
         </div>
 
         <div>

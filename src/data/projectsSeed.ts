@@ -42,6 +42,7 @@ export type Project = {
   heroBackground?: string;
   label?: string;
   gallery?: GalleryImage[];
+  heroFit?: "cover" | "contain";
 };
 
 const placeholder = "/placeholder.svg";

@@ -37,6 +37,7 @@ type Project = {
   mockType: "dark" | "light";
   heroBackground: string;
   gallery: GalleryImage[];
+  heroFit: "cover" | "contain";
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -61,6 +62,7 @@ const dbToCard = (p: DbProject): Project => ({
   mockType: p.mockType === "dark" ? "dark" : "light",
   heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
   gallery: Array.isArray(p.gallery) ? p.gallery : [],
+  heroFit: p.heroFit === "contain" ? "contain" : "cover",
 });
 
 const VISIBLE_BEHIND = 3;
@@ -560,40 +562,49 @@ export default function ProjectDeck() {
                 {/* RIGHT: auto-scrolling gallery */}
                 {/* RIGHT: hero image / video */}
                 <div className="pd-detail-right">
-                  {hasImage(openProject.hero) ? (
-                    isVideoUrl(openProject.hero) ? (
-                      <video
-                        src={openProject.hero}
-                        className="pd-marquee-empty"
-                        style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                        autoPlay muted loop playsInline
-                      />
-                    ) : (
+                  {(() => {
+                    const fit = openProject.heroFit === "contain" ? "contain" : "cover";
+                    const heroSrc = hasImage(openProject.hero)
+                      ? openProject.hero
+                      : hasImage(openProject.cover)
+                        ? openProject.cover
+                        : "";
+                    if (!heroSrc) {
+                      return (
+                        <div
+                          className="pd-marquee-empty"
+                          style={{ background: openProject.heroBackground }}
+                        />
+                      );
+                    }
+                    const containerBg =
+                      fit === "contain"
+                        ? "linear-gradient(135deg, #F5F2ED 0%, #ECE7DF 100%)"
+                        : "transparent";
+                    if (isVideoUrl(heroSrc)) {
+                      return (
+                        <div className="pd-marquee-empty" style={{ background: containerBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <video
+                            src={heroSrc}
+                            style={{ objectFit: fit, width: "100%", height: "100%" }}
+                            autoPlay muted loop playsInline
+                          />
+                        </div>
+                      );
+                    }
+                    return (
                       <div
                         className="pd-marquee-empty"
-                        style={{ backgroundImage: `url(${openProject.hero})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                        style={{
+                          backgroundColor: fit === "contain" ? "#F5F2ED" : undefined,
+                          backgroundImage: `url(${heroSrc})`,
+                          backgroundSize: fit,
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
+                        }}
                       />
-                    )
-                  ) : hasImage(openProject.cover) ? (
-                    isVideoUrl(openProject.cover) ? (
-                      <video
-                        src={openProject.cover}
-                        className="pd-marquee-empty"
-                        style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                        autoPlay muted loop playsInline
-                      />
-                    ) : (
-                      <div
-                        className="pd-marquee-empty"
-                        style={{ backgroundImage: `url(${openProject.cover})`, backgroundSize: "cover", backgroundPosition: "center" }}
-                      />
-                    )
-                  ) : (
-                    <div
-                      className="pd-marquee-empty"
-                      style={{ background: openProject.heroBackground }}
-                    />
-                  )}
+                    );
+                  })()}
                 </div>
               </div>
 
