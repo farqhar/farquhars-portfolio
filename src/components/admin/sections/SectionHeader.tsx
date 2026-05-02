@@ -41,11 +41,12 @@ const SectionHeader = ({ title, description }: Props) => {
       <button
         onClick={handleSave}
         disabled={!hasChanges || saving}
-        className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors ${
+        style={hasChanges ? { backgroundColor: "hsl(239 84% 67%)", color: "#ffffff" } : undefined}
+        className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors shadow-sm ${
           hasChanges
-            ? "bg-indigo-600 text-white hover:bg-indigo-700"
+            ? "hover:brightness-110"
             : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
-        } disabled:opacity-100`}
+        } disabled:cursor-not-allowed`}
         aria-label={hasChanges ? `Save ${count} changes` : "All changes saved"}
       >
         {hasChanges ? (

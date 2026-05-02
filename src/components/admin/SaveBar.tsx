@@ -33,23 +33,23 @@ const SaveBar = () => {
 
   return (
     <div
-      className={`px-4 py-3 border-t-2 flex items-center justify-between gap-2 transition-colors shadow-[0_-4px_12px_-6px_rgba(0,0,0,0.08)] ${
-        hasChanges ? "bg-amber-50 border-amber-300" : "bg-white border-gray-200"
+      className={`px-4 py-3 border-t-2 flex flex-col gap-2 transition-colors shadow-[0_-6px_16px_-8px_rgba(0,0,0,0.12)] ${
+        hasChanges ? "bg-amber-50 border-amber-400" : "bg-white border-gray-200"
       }`}
     >
-      <p className="text-xs text-gray-700">
-        {hasChanges ? (
-          <>
-            <span className="font-semibold text-amber-700">{count}</span>{" "}
-            unsaved {count === 1 ? "change" : "changes"}
-          </>
-        ) : (
-          <span className="inline-flex items-center gap-1 text-emerald-700">
-            <Check className="w-3 h-3" /> All changes saved
-          </span>
-        )}
-      </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-gray-700">
+          {hasChanges ? (
+            <>
+              <span className="font-semibold text-amber-700">{count}</span>{" "}
+              unsaved {count === 1 ? "change" : "changes"}
+            </>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-emerald-700">
+              <Check className="w-3 h-3" /> All changes saved
+            </span>
+          )}
+        </p>
         <button
           onClick={handleDiscard}
           disabled={!hasChanges}
@@ -57,28 +57,33 @@ const SaveBar = () => {
         >
           Discard
         </button>
-        <button
-          onClick={handleSave}
-          disabled={!hasChanges || saving}
-          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors ${
-            hasChanges
-              ? "bg-indigo-600 text-white hover:bg-indigo-700"
-              : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
-          } disabled:opacity-100`}
-        >
-          {hasChanges ? (
-            <>
-              <Save className="w-3.5 h-3.5" />
-              {saving ? "Saving…" : `Save (${count})`}
-            </>
-          ) : (
-            <>
-              <Check className="w-3.5 h-3.5" />
-              Saved
-            </>
-          )}
-        </button>
       </div>
+      <button
+        onClick={handleSave}
+        disabled={!hasChanges || saving}
+        style={
+          hasChanges
+            ? { backgroundColor: "hsl(239 84% 67%)", color: "#ffffff" }
+            : undefined
+        }
+        className={`w-full inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-md transition-colors shadow-sm ${
+          hasChanges
+            ? "hover:brightness-110"
+            : "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
+        } disabled:cursor-not-allowed`}
+      >
+        {hasChanges ? (
+          <>
+            <Save className="w-4 h-4" />
+            {saving ? "Saving…" : `Save changes (${count})`}
+          </>
+        ) : (
+          <>
+            <Check className="w-4 h-4" />
+            All changes saved
+          </>
+        )}
+      </button>
     </div>
   );
 };
