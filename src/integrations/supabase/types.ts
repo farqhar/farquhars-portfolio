@@ -57,6 +57,7 @@ export type Database = {
           gallery: Json
           hero: string
           hero_background: string
+          hero_fit: string
           honest: string
           label: string
           mock_type: string
@@ -85,6 +86,7 @@ export type Database = {
           gallery?: Json
           hero?: string
           hero_background?: string
+          hero_fit?: string
           honest?: string
           label?: string
           mock_type?: string
@@ -113,6 +115,7 @@ export type Database = {
           gallery?: Json
           hero?: string
           hero_background?: string
+          hero_fit?: string
           honest?: string
           label?: string
           mock_type?: string
