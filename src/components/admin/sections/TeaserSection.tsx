@@ -1,13 +1,13 @@
 import TextField from "@/components/admin/fields/TextField";
 import MediaField from "@/components/admin/fields/MediaField";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import SectionHeader from "@/components/admin/sections/SectionHeader";
 
 const TeaserSection = () => {
   const { get } = useSiteContent("teaser");
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">Teaser (Home)</h2>
-      <p className="text-xs text-gray-500 mb-4">Edits appear in the live preview on the right.</p>
+      <SectionHeader title="Teaser (Home)" description="Edits appear in the live preview on the right." />
 
       <Section title="Hero">
         <TextField label="Phase 1 — Name line" page="teaser" section="hero" fieldKey="phase0" fallback={get("hero", "phase0", "My name is Farquhar.")} />

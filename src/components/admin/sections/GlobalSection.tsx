@@ -2,14 +2,14 @@ import MediaField from "@/components/admin/fields/MediaField";
 import TextField from "@/components/admin/fields/TextField";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useSiteSetting } from "@/hooks/useSiteSettings";
+import SectionHeader from "@/components/admin/sections/SectionHeader";
 
 const GlobalSection = () => {
   const { get } = useSiteContent("global");
   const { value: hs } = useSiteSetting<{ url: string }>("headshot_url");
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-1">Global / Identity</h2>
-      <p className="text-xs text-gray-500 mb-4">Applies site-wide.</p>
+      <SectionHeader title="Global / Identity" description="Applies site-wide." />
 
       <Section title="Identity">
         <MediaField
