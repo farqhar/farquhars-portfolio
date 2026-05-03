@@ -29,6 +29,8 @@ type Row = {
   label?: string;
   gallery?: unknown;
   hero_fit?: string;
+  gallery_default_width?: number;
+  hero_auto_size?: boolean;
 };
 
 const rowToProject = (r: Row): Project => ({
@@ -57,6 +59,9 @@ const rowToProject = (r: Row): Project => ({
   label: r.label ?? "",
   gallery: Array.isArray(r.gallery) ? (r.gallery as Project["gallery"]) : [],
   heroFit: r.hero_fit === "contain" ? "contain" : "cover",
+  galleryDefaultWidth:
+    typeof r.gallery_default_width === "number" ? r.gallery_default_width : 100,
+  heroAutoSize: r.hero_auto_size === true,
 });
 
 async function fetchAll(): Promise<Project[]> {

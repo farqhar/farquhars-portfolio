@@ -14,6 +14,8 @@ export type GalleryImage = {
   url: string;
   alt?: string;
   type?: "image" | "video";
+  /** Per-image size override as percentage (25–100). Inherits project default when omitted. */
+  widthPct?: number;
 };
 
 export type Project = {
@@ -43,6 +45,10 @@ export type Project = {
   label?: string;
   gallery?: GalleryImage[];
   heroFit?: "cover" | "contain";
+  /** Default carousel display size as percentage (25–100). */
+  galleryDefaultWidth?: number;
+  /** When true, hero frame shrinks/grows to the image's natural aspect ratio. */
+  heroAutoSize?: boolean;
 };
 
 const placeholder = "/placeholder.svg";

@@ -24,6 +24,9 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
     tags: project.tags ?? [],
     gallery: project.gallery ?? [],
     heroFit: project.heroFit ?? "cover",
+    galleryDefaultWidth:
+      typeof project.galleryDefaultWidth === "number" ? project.galleryDefaultWidth : 100,
+    heroAutoSize: project.heroAutoSize === true,
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
   const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
@@ -63,6 +66,15 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
   const updateGalleryAlt = (i: number, alt: string) => {
     const next = [...gallery];
     next[i] = { ...next[i], alt };
+    set("gallery", next);
+  };
+
+  const updateGalleryWidth = (i: number, widthPct: number | undefined) => {
+    const next = [...gallery];
+    const item = { ...next[i] };
+    if (widthPct === undefined) delete item.widthPct;
+    else item.widthPct = Math.max(25, Math.min(100, Math.round(widthPct)));
+    next[i] = item;
     set("gallery", next);
   };
 
@@ -215,6 +227,37 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
         </div>
 
         <div>
+          <label className={labelCls}>Hero frame</label>
+          <div className="inline-flex rounded-md border border-gray-300 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => set("heroAutoSize", false)}
+              className={`text-xs px-3 py-1.5 ${
+                !draft.heroAutoSize
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Fixed frame
+            </button>
+            <button
+              type="button"
+              onClick={() => set("heroAutoSize", true)}
+              className={`text-xs px-3 py-1.5 border-l border-gray-300 ${
+                draft.heroAutoSize
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Auto-size to image
+            </button>
+          </div>
+          <p className="text-[11px] text-gray-500 mt-1">
+            <strong>Auto-size</strong> removes the coloured bars by shaping the frame to the image's natural aspect ratio. Layout shifts between projects.
+          </p>
+        </div>
+
+        <div>
           <label className={labelCls}>Tagline (folder card subhead)</label>
           <textarea
             className={inputCls}
@@ -266,6 +309,22 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
               />
             </label>
           </div>
+          <div className="mb-3 flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-md p-2">
+            <label className="text-[11px] text-gray-700 shrink-0">Default size</label>
+            <input
+              type="range"
+              min={25}
+              max={100}
+              step={5}
+              value={draft.galleryDefaultWidth ?? 100}
+              onChange={(e) => set("galleryDefaultWidth", parseInt(e.target.value, 10))}
+              className="flex-1 accent-gray-900"
+            />
+            <span className="text-[11px] text-gray-600 w-10 text-right">{draft.galleryDefaultWidth ?? 100}%</span>
+          </div>
+          <p className="text-[11px] text-gray-500 italic mb-2">
+            Lower % = smaller display in the carousel. Useful for tall/skinny images like email signatures. Each image can override below.
+          </p>
           {gallery.length === 0 ? (
             <p className="text-[11px] text-gray-500 italic">
               No images yet. The right column will fall back to the hero gradient.
@@ -275,8 +334,9 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
               {gallery.map((g, i) => (
                 <li
                   key={`${g.url}-${i}`}
-                  className="flex items-center gap-3 border border-gray-200 rounded-md p-2 bg-white"
+                  className="border border-gray-200 rounded-md p-2 bg-white"
                 >
+                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded overflow-hidden bg-gray-100 shrink-0">
                     {g.type === "video" || /\.(mp4|webm|mov)(\?|$)/i.test(g.url) ? (
                       <video src={g.url} className="w-full h-full object-cover" muted />
@@ -317,6 +377,31 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
                       Remove
                     </button>
                   </div>
+                 </div>
+                 <div className="mt-2 flex items-center gap-3 pl-[68px]">
+                   <label className="text-[11px] text-gray-600 shrink-0">Size</label>
+                   <input
+                     type="range"
+                     min={25}
+                     max={100}
+                     step={5}
+                     value={g.widthPct ?? draft.galleryDefaultWidth ?? 100}
+                     onChange={(e) => updateGalleryWidth(i, parseInt(e.target.value, 10))}
+                     className="flex-1 accent-gray-900"
+                   />
+                   <span className="text-[11px] text-gray-600 w-10 text-right">
+                     {g.widthPct ?? draft.galleryDefaultWidth ?? 100}%
+                   </span>
+                   {typeof g.widthPct === "number" && (
+                     <button
+                       type="button"
+                       onClick={() => updateGalleryWidth(i, undefined)}
+                       className="text-[10px] px-1.5 py-0.5 text-gray-600 border border-gray-200 rounded hover:bg-gray-50 shrink-0"
+                     >
+                       Use default
+                     </button>
+                   )}
+                 </div>
                 </li>
               ))}
             </ul>
