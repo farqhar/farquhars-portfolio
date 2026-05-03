@@ -640,10 +640,10 @@ export default function ProjectDeck() {
                         const projDefault = openProject.galleryDefaultWidth ?? 100;
                         const pctRaw = typeof img.widthPct === "number" ? img.widthPct : projDefault;
                         const pct = Math.max(25, Math.min(100, pctRaw));
-                        const itemStyle = {
-                          ["--item-h" as string]: `${Math.round(320 * (pct / 100))}px`,
-                          ["--item-h-mobile" as string]: `${Math.round(200 * (pct / 100))}px`,
-                        } as React.CSSProperties;
+                        const itemStyle: Record<string, string> = {
+                          "--item-h": `${Math.round(320 * (pct / 100))}px`,
+                          "--item-h-mobile": `${Math.round(200 * (pct / 100))}px`,
+                        };
                         return (
                         <button
                           key={i}
