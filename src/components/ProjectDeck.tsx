@@ -636,11 +636,20 @@ export default function ProjectDeck() {
                 <div className="pd-marquee-fullwidth">
                   <div className="pd-marquee">
                     <div className="pd-marquee-track">
-                      {[...openProject.gallery, ...openProject.gallery].map((img, i) => (
+                      {[...openProject.gallery, ...openProject.gallery].map((img, i) => {
+                        const projDefault = openProject.galleryDefaultWidth ?? 100;
+                        const pctRaw = typeof img.widthPct === "number" ? img.widthPct : projDefault;
+                        const pct = Math.max(25, Math.min(100, pctRaw));
+                        const itemStyle = {
+                          ["--item-h" as string]: `${Math.round(320 * (pct / 100))}px`,
+                          ["--item-h-mobile" as string]: `${Math.round(200 * (pct / 100))}px`,
+                        } as React.CSSProperties;
+                        return (
                         <button
                           key={i}
                           type="button"
                           className="pd-marquee-item"
+                          style={itemStyle}
                           onClick={() =>
                             setLightboxIdx(i % openProject.gallery.length)
                           }
@@ -661,7 +670,8 @@ export default function ProjectDeck() {
                             />
                           )}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
