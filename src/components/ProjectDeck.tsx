@@ -674,6 +674,12 @@ export default function ProjectDeck() {
                               autoPlay muted loop playsInline
                               draggable={false}
                             />
+                          ) : isPdfUrl(img.url) ? (
+                            <div className="pd-pdf-thumb" style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <Document file={img.url} loading={<span style={{ fontSize: 10, color: "#888" }}>PDF…</span>} error={<span style={{ fontSize: 10, color: "#888" }}>PDF</span>}>
+                                <Page pageNumber={1} height={typeof window !== "undefined" && window.innerWidth < 640 ? 200 : 320} renderAnnotationLayer={false} renderTextLayer={false} />
+                              </Document>
+                            </div>
                           ) : (
                             <img
                               src={img.url}
