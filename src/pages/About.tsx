@@ -255,9 +255,9 @@ const About = () => {
                 <img
                   src={headshotSrc}
                   alt="Farquhar MacDougall"
-                  width={450}
-                  height={450}
-                  className="relative w-[340px] h-[340px] sm:w-[450px] sm:h-[450px] object-cover"
+                  width={383}
+                  height={383}
+                  className="relative w-[290px] h-[290px] sm:w-[383px] sm:h-[383px] object-cover"
                   style={{
                     boxShadow:
                       "0 0 0 4px rgba(255,255,255,0.9), 0 0 0 5px hsla(var(--indigo), 0.35), 0 28px 56px hsla(var(--indigo), 0.22)",
