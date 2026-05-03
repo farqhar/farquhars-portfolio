@@ -754,6 +754,15 @@ export default function ProjectDeck() {
                         >Next page ›</button>
                       </div>
                     )}
+                    <a
+                      href={openProject.gallery[lightboxIdx].url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: "#fff", opacity: 0.7, fontSize: 12, textDecoration: "underline", fontFamily: "ui-sans-serif, system-ui" }}
+                    >
+                      Open PDF in new tab
+                    </a>
                   </div>
                 ) : (
                   <img
