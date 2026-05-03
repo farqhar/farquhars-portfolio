@@ -335,7 +335,7 @@ export default function ProjectDeck() {
         .pd-section p { font-size: 17px; line-height: 1.6; color: #1A1A1A; margin-bottom: 16px; max-width: 640px; letter-spacing: -0.01em; }
 
         .pd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 32px; padding: 40px 0; border-top: 0.5px solid rgba(0,0,0,0.12); border-bottom: 0.5px solid rgba(0,0,0,0.12); margin: 64px 0; }
-        .pd-stat-value { font-size: clamp(36px, 5vw, 56px); font-weight: 600; letter-spacing: -0.03em; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; line-height: 1; margin-bottom: 8px; }
+        .pd-stat-value { font-size: clamp(28px, 3.6vw, 44px); font-weight: 600; letter-spacing: -0.03em; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; line-height: 1.05; margin-bottom: 8px; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
         .pd-stat-label { font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 500; }
 
         .pd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; }
@@ -350,8 +350,8 @@ export default function ProjectDeck() {
         .pd-detail-left .pd-title { font-size: clamp(36px, 4.6vw, 60px); margin-bottom: 20px; }
         .pd-detail-left .pd-tagline { margin-bottom: 40px; }
         .pd-detail-left .pd-section { margin-bottom: 40px; }
-        .pd-detail-left .pd-stats { margin: 40px 0; padding: 28px 0; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-        .pd-detail-left .pd-stat-value { font-size: clamp(28px, 3.4vw, 40px); }
+        .pd-detail-left .pd-stats { margin: 40px 0; padding: 28px 0; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+        .pd-detail-left .pd-stat-value { font-size: clamp(22px, 2.6vw, 32px); }
         .pd-detail-left .pd-tags { margin-top: 28px; }
 
         /* Auto-scroll marquee */
