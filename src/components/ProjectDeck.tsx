@@ -361,7 +361,8 @@ export default function ProjectDeck() {
         @keyframes pd-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         .pd-marquee-item { flex: 0 0 auto; height: var(--item-h, 320px); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); background: #F0EDE8; cursor: zoom-in; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); align-self: center; }
         .pd-marquee-item:hover { transform: translateY(-4px); }
-        .pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
+        .pd-marquee-item img,
+        .pd-marquee-item video { display: block; height: 100%; width: auto; object-fit: cover; }
         .pd-marquee-empty { width: 100%; aspect-ratio: 4/5; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); }
         .pd-marquee-fullwidth { width: 100%; }
 
