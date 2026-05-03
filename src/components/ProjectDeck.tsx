@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
 
@@ -649,7 +649,7 @@ export default function ProjectDeck() {
                           key={i}
                           type="button"
                           className="pd-marquee-item"
-                          style={itemStyle}
+                          style={itemStyle as React.CSSProperties}
                           onClick={() =>
                             setLightboxIdx(i % openProject.gallery.length)
                           }
