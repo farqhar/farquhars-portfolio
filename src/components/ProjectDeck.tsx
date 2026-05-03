@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+// Configure pdf.js worker (Vite-friendly URL import).
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
 /**
  * ProjectDeck.tsx
@@ -75,6 +84,7 @@ const VISIBLE_BEHIND = 3;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const isVideoUrl = (url: string) => /\.(mp4|webm|mov)(\?|$)/i.test(url);
+const isPdfUrl = (url: string) => /\.pdf(\?|$)/i.test(url);
 
 export default function ProjectDeck() {
   const { projects } = useProjects();
@@ -89,7 +99,15 @@ export default function ProjectDeck() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [pdfPage, setPdfPage] = useState(1);
+  const [pdfTotal, setPdfTotal] = useState(0);
   const tickingRef = useRef(false);
+
+  // Reset PDF paging whenever the lightbox target changes.
+  useEffect(() => {
+    setPdfPage(1);
+    setPdfTotal(0);
+  }, [lightboxIdx, openProject?.key]);
 
   // Compute scroll progress and apply transforms
   useEffect(() => {
@@ -662,6 +680,12 @@ export default function ProjectDeck() {
                               autoPlay muted loop playsInline
                               draggable={false}
                             />
+                          ) : isPdfUrl(img.url) ? (
+                            <div className="pd-pdf-thumb" style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <Document file={img.url} loading={<span style={{ fontSize: 10, color: "#888" }}>PDF…</span>} error={<span style={{ fontSize: 10, color: "#888" }}>PDF</span>}>
+                                <Page pageNumber={1} height={typeof window !== "undefined" && window.innerWidth < 640 ? 200 : 320} renderAnnotationLayer={false} renderTextLayer={false} />
+                              </Document>
+                            </div>
                           ) : (
                             <img
                               src={img.url}
@@ -697,6 +721,42 @@ export default function ProjectDeck() {
                     playsInline
                     onClick={(e) => e.stopPropagation()}
                   />
+                ) : isPdfUrl(openProject.gallery[lightboxIdx].url) ? (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, maxHeight: "90vh" }}
+                  >
+                    <div style={{ background: "#fff", borderRadius: 8, overflow: "auto", maxHeight: "78vh", boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
+                      <Document
+                        file={openProject.gallery[lightboxIdx].url}
+                        onLoadSuccess={({ numPages }) => { setPdfTotal(numPages); }}
+                        loading={<div style={{ padding: 40, color: "#888" }}>Loading PDF…</div>}
+                        error={<div style={{ padding: 40, color: "#c00" }}>Failed to load PDF</div>}
+                      >
+                        <Page
+                          pageNumber={pdfPage}
+                          height={Math.round(window.innerHeight * 0.78)}
+                          renderAnnotationLayer={false}
+                          renderTextLayer={false}
+                        />
+                      </Document>
+                    </div>
+                    {pdfTotal > 1 && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#fff", fontFamily: "ui-sans-serif, system-ui", fontSize: 13 }}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.max(1, p - 1)); }}
+                          disabled={pdfPage <= 1}
+                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage <= 1 ? "not-allowed" : "pointer", opacity: pdfPage <= 1 ? 0.4 : 1 }}
+                        >‹ Prev page</button>
+                        <span>Page {pdfPage} / {pdfTotal}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.min(pdfTotal, p + 1)); }}
+                          disabled={pdfPage >= pdfTotal}
+                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage >= pdfTotal ? "not-allowed" : "pointer", opacity: pdfPage >= pdfTotal ? 0.4 : 1 }}
+                        >Next page ›</button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <img
                     src={openProject.gallery[lightboxIdx].url}
