@@ -109,7 +109,8 @@ const SubProjectsField = ({ slug, value, onChange }: Props) => {
             />
 
             <MediaField
-              label="Image"
+              label="Image or PDF"
+              kind="file"
               folder={`projects/${slug}/files`}
               currentUrl={f.image}
               onSaved={(url) => update(i, { image: url })}
