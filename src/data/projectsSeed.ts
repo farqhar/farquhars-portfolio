@@ -49,6 +49,10 @@ export type Project = {
   galleryDefaultWidth?: number;
   /** When true, hero frame shrinks/grows to the image's natural aspect ratio. */
   heroAutoSize?: boolean;
+  /** Optional second hero image, rendered directly underneath the first. Omit to render nothing. */
+  hero2?: string;
+  hero2Fit?: "cover" | "contain";
+  hero2AutoSize?: boolean;
 };
 
 const placeholder = "/placeholder.svg";

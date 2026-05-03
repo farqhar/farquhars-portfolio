@@ -81,6 +81,9 @@ type Project = {
   heroFit: "cover" | "contain";
   galleryDefaultWidth: number;
   heroAutoSize: boolean;
+  hero2: string;
+  hero2Fit: "cover" | "contain";
+  hero2AutoSize: boolean;
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -109,6 +112,9 @@ const dbToCard = (p: DbProject): Project => ({
   galleryDefaultWidth:
     typeof p.galleryDefaultWidth === "number" ? p.galleryDefaultWidth : 100,
   heroAutoSize: p.heroAutoSize === true,
+  hero2: p.hero2 || "",
+  hero2Fit: p.hero2Fit === "contain" ? "contain" : "cover",
+  hero2AutoSize: p.hero2AutoSize === true,
 });
 
 const VISIBLE_BEHIND = 3;
@@ -610,66 +616,83 @@ export default function ProjectDeck() {
 
                 <div className="pd-detail-right">
                   {(() => {
-                    const fit = openProject.heroFit === "contain" ? "contain" : "cover";
-                    const auto = openProject.heroAutoSize === true;
+                    const renderHero = (
+                      src: string,
+                      fit: "cover" | "contain",
+                      auto: boolean,
+                    ) => {
+                      if (auto) {
+                        if (isVideoUrl(src)) {
+                          return (
+                            <video
+                              src={src}
+                              style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
+                              autoPlay muted loop playsInline
+                            />
+                          );
+                        }
+                        return (
+                          <img
+                            src={src}
+                            alt={openProject.title}
+                            style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
+                          />
+                        );
+                      }
+                      const containerBg =
+                        fit === "contain"
+                          ? "linear-gradient(135deg, #F5F2ED 0%, #ECE7DF 100%)"
+                          : "transparent";
+                      if (isVideoUrl(src)) {
+                        return (
+                          <div className="pd-marquee-empty" style={{ background: containerBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <video
+                              src={src}
+                              style={{ objectFit: fit, width: "100%", height: "100%" }}
+                              autoPlay muted loop playsInline
+                            />
+                          </div>
+                        );
+                      }
+                      return (
+                        <div
+                          className="pd-marquee-empty"
+                          style={{
+                            backgroundColor: fit === "contain" ? "#F5F2ED" : undefined,
+                            backgroundImage: `url(${src})`,
+                            backgroundSize: fit,
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                          }}
+                        />
+                      );
+                    };
+
                     const heroSrc = hasImage(openProject.hero)
                       ? openProject.hero
                       : hasImage(openProject.cover)
                         ? openProject.cover
                         : "";
-                    if (!heroSrc) {
-                      return (
-                        <div
-                          className="pd-marquee-empty"
-                          style={{ background: openProject.heroBackground }}
-                        />
-                      );
-                    }
-                    if (auto) {
-                      // Auto-size: frame conforms to image's natural aspect ratio.
-                      if (isVideoUrl(heroSrc)) {
-                        return (
-                          <video
-                            src={heroSrc}
-                            style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
-                            autoPlay muted loop playsInline
+                    const hero2Src = hasImage(openProject.hero2) ? openProject.hero2 : "";
+
+                    const heroEl = heroSrc
+                      ? renderHero(heroSrc, openProject.heroFit, openProject.heroAutoSize)
+                      : (
+                          <div
+                            className="pd-marquee-empty"
+                            style={{ background: openProject.heroBackground }}
                           />
                         );
-                      }
-                      return (
-                        <img
-                          src={heroSrc}
-                          alt={openProject.title}
-                          style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
-                        />
-                      );
-                    }
-                    const containerBg =
-                      fit === "contain"
-                        ? "linear-gradient(135deg, #F5F2ED 0%, #ECE7DF 100%)"
-                        : "transparent";
-                    if (isVideoUrl(heroSrc)) {
-                      return (
-                        <div className="pd-marquee-empty" style={{ background: containerBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <video
-                            src={heroSrc}
-                            style={{ objectFit: fit, width: "100%", height: "100%" }}
-                            autoPlay muted loop playsInline
-                          />
-                        </div>
-                      );
-                    }
+
+                    if (!hero2Src) return heroEl;
+
                     return (
-                      <div
-                        className="pd-marquee-empty"
-                        style={{
-                          backgroundColor: fit === "contain" ? "#F5F2ED" : undefined,
-                          backgroundImage: `url(${heroSrc})`,
-                          backgroundSize: fit,
-                          backgroundPosition: "center",
-                          backgroundRepeat: "no-repeat",
-                        }}
-                      />
+                      <>
+                        {heroEl}
+                        <div style={{ marginTop: 24 }}>
+                          {renderHero(hero2Src, openProject.hero2Fit, openProject.hero2AutoSize)}
+                        </div>
+                      </>
                     );
                   })()}
                 </div>
