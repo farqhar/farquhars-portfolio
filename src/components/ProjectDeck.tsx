@@ -103,6 +103,12 @@ export default function ProjectDeck() {
   const [pdfTotal, setPdfTotal] = useState(0);
   const tickingRef = useRef(false);
 
+  // Reset PDF paging whenever the lightbox target changes.
+  useEffect(() => {
+    setPdfPage(1);
+    setPdfTotal(0);
+  }, [lightboxIdx, openProject?.key]);
+
   // Compute scroll progress and apply transforms
   useEffect(() => {
     if (PROJECTS.length === 0) return;
