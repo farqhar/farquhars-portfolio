@@ -99,7 +99,7 @@ export async function saveAllDirty(): Promise<void> {
 }
 
 /** Upload a file to site-media via the admin edge function. Returns public URL. */
-export async function uploadMedia(file: File, path: string, kind: "image" | "video" | "any" = "image") {
+export async function uploadMedia(file: File, path: string, kind: "image" | "video" | "any" | "file" = "image") {
   const password = cmsSession.get();
   if (!password) throw new Error("Not signed in");
 
