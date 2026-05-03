@@ -564,11 +564,10 @@ export default function ProjectDeck() {
                   )}
                 </div>
 
-                {/* RIGHT: auto-scrolling gallery */}
-                {/* RIGHT: hero image / video */}
                 <div className="pd-detail-right">
                   {(() => {
                     const fit = openProject.heroFit === "contain" ? "contain" : "cover";
+                    const auto = openProject.heroAutoSize === true;
                     const heroSrc = hasImage(openProject.hero)
                       ? openProject.hero
                       : hasImage(openProject.cover)
@@ -579,6 +578,25 @@ export default function ProjectDeck() {
                         <div
                           className="pd-marquee-empty"
                           style={{ background: openProject.heroBackground }}
+                        />
+                      );
+                    }
+                    if (auto) {
+                      // Auto-size: frame conforms to image's natural aspect ratio.
+                      if (isVideoUrl(heroSrc)) {
+                        return (
+                          <video
+                            src={heroSrc}
+                            style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
+                            autoPlay muted loop playsInline
+                          />
+                        );
+                      }
+                      return (
+                        <img
+                          src={heroSrc}
+                          alt={openProject.title}
+                          style={{ width: "100%", height: "auto", display: "block", borderRadius: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08)" }}
                         />
                       );
                     }
