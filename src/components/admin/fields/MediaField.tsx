@@ -18,7 +18,7 @@ type Props = {
 };
 
 const accept = (kind: Props["kind"]) =>
-  kind === "video" ? "video/*" : kind === "file" ? "application/pdf,image/*,video/*" : kind === "any" ? "image/*,video/*,application/pdf" : "image/*";
+  kind === "video" ? "video/*" : kind === "file" ? "application/pdf,.pdf,image/*,video/*" : kind === "any" ? "image/*,video/*,application/pdf,.pdf" : "image/*";
 
 const MediaField = ({
   label,
