@@ -81,6 +81,9 @@ type Project = {
   heroFit: "cover" | "contain";
   galleryDefaultWidth: number;
   heroAutoSize: boolean;
+  hero2: string;
+  hero2Fit: "cover" | "contain";
+  hero2AutoSize: boolean;
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -109,6 +112,9 @@ const dbToCard = (p: DbProject): Project => ({
   galleryDefaultWidth:
     typeof p.galleryDefaultWidth === "number" ? p.galleryDefaultWidth : 100,
   heroAutoSize: p.heroAutoSize === true,
+  hero2: p.hero2 || "",
+  hero2Fit: p.hero2Fit === "contain" ? "contain" : "cover",
+  hero2AutoSize: p.hero2AutoSize === true,
 });
 
 const VISIBLE_BEHIND = 3;
