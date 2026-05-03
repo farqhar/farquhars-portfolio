@@ -370,7 +370,7 @@ export default function ProjectDeck() {
         /* Lightbox */
         .pd-lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.92); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 32px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .pd-lightbox.open { opacity: 1; pointer-events: all; }
-        .pd-lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+        .pd-lightbox img, .pd-lightbox video { max-width: 92vw; max-height: 88vh; width: auto; height: auto; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
         .pd-lb-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: background 0.2s; }
         .pd-lb-btn:hover { background: rgba(255,255,255,0.22); }
         .pd-lb-prev { left: 24px; } .pd-lb-next { right: 24px; }
@@ -706,11 +706,11 @@ export default function ProjectDeck() {
                 ) : isPdfUrl(openProject.gallery[lightboxIdx].url) ? (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "min(90vw, 900px)", maxHeight: "90vh" }}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "min(90vw, 960px)", maxHeight: "90vh" }}
                   >
                     <iframe
-                      src={openProject.gallery[lightboxIdx].url}
-                      style={{ width: "100%", height: "80vh", border: "none", borderRadius: 8, boxShadow: "0 12px 40px rgba(0,0,0,0.3)", background: "#fff" }}
+                      src={`https://docs.google.com/viewer?url=${encodeURIComponent(openProject.gallery[lightboxIdx].url)}&embedded=true`}
+                      style={{ width: "100%", height: "82vh", border: "none", borderRadius: 8, boxShadow: "0 12px 40px rgba(0,0,0,0.3)", background: "#fff" }}
                       title="PDF viewer"
                     />
                   </div>
