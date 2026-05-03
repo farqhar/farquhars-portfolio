@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+// Configure pdf.js worker (Vite-friendly URL import).
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
 /**
  * ProjectDeck.tsx
@@ -75,6 +84,7 @@ const VISIBLE_BEHIND = 3;
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const isVideoUrl = (url: string) => /\.(mp4|webm|mov)(\?|$)/i.test(url);
+const isPdfUrl = (url: string) => /\.pdf(\?|$)/i.test(url);
 
 export default function ProjectDeck() {
   const { projects } = useProjects();
@@ -89,6 +99,8 @@ export default function ProjectDeck() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [pdfPage, setPdfPage] = useState(1);
+  const [pdfTotal, setPdfTotal] = useState(0);
   const tickingRef = useRef(false);
 
   // Compute scroll progress and apply transforms
