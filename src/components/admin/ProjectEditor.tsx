@@ -301,7 +301,7 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
               {galleryUploading ? "Uploading…" : "Add images"}
               <input
                 type="file"
-                accept="image/*,video/*"
+                accept="image/*,video/*,application/pdf"
                 multiple
                 className="hidden"
                 onChange={handleGalleryFiles}

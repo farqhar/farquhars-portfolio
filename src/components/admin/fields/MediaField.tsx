@@ -11,14 +11,14 @@ type Props = {
   /** When set, value is saved to site_settings under this key as { url }. */
   settingKey?: string;
   currentUrl: string;
-  kind?: "image" | "video" | "any";
+  kind?: "image" | "video" | "file" | "any";
   /** Storage subfolder, e.g. "teaser/hero" */
   folder: string;
   onSaved?: (url: string) => void;
 };
 
 const accept = (kind: Props["kind"]) =>
-  kind === "video" ? "video/*" : kind === "any" ? "image/*,video/*" : "image/*";
+  kind === "video" ? "video/*" : kind === "file" ? "application/pdf,image/*,video/*" : kind === "any" ? "image/*,video/*,application/pdf" : "image/*";
 
 const MediaField = ({
   label,
@@ -63,6 +63,7 @@ const MediaField = ({
   };
 
   const isVideo = preview && /\.(mp4|webm|mov)(\?|$)/i.test(preview);
+  const isPdf = preview && /\.pdf(\?|$)/i.test(preview);
 
   return (
     <div className="mb-4">
@@ -74,6 +75,8 @@ const MediaField = ({
           {preview ? (
             isVideo ? (
               <video src={preview} className="w-full h-full object-cover" muted />
+            ) : isPdf ? (
+              <a href={preview} target="_blank" rel="noreferrer" className="text-[10px] font-mono text-gray-700 underline">PDF</a>
             ) : (
               <img src={preview} alt="" className="w-full h-full object-cover" />
             )
