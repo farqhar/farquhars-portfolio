@@ -163,6 +163,13 @@ Deno.serve(async (req) => {
           label: v.label ?? "",
           gallery: v.gallery ?? [],
           hero_fit: (v.heroFit ?? v.hero_fit) === "contain" ? "contain" : "cover",
+          gallery_default_width: (() => {
+            const raw = (v.galleryDefaultWidth ?? v.gallery_default_width);
+            const n = typeof raw === "number" ? raw : Number(raw);
+            if (!Number.isFinite(n)) return 100;
+            return Math.max(25, Math.min(100, Math.round(n)));
+          })(),
+          hero_auto_size: (v.heroAutoSize ?? v.hero_auto_size) === true,
         };
         const { error } = await admin
           .from("projects")
