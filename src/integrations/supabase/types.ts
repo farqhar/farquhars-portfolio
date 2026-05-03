@@ -55,7 +55,9 @@ export type Database = {
           created_at: string
           files: Json
           gallery: Json
+          gallery_default_width: number
           hero: string
+          hero_auto_size: boolean
           hero_background: string
           hero_fit: string
           honest: string
@@ -84,7 +86,9 @@ export type Database = {
           created_at?: string
           files?: Json
           gallery?: Json
+          gallery_default_width?: number
           hero?: string
+          hero_auto_size?: boolean
           hero_background?: string
           hero_fit?: string
           honest?: string
@@ -113,7 +117,9 @@ export type Database = {
           created_at?: string
           files?: Json
           gallery?: Json
+          gallery_default_width?: number
           hero?: string
+          hero_auto_size?: boolean
           hero_background?: string
           hero_fit?: string
           honest?: string
