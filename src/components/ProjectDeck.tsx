@@ -359,7 +359,7 @@ export default function ProjectDeck() {
         .pd-marquee:hover .pd-marquee-track { animation-play-state: paused; }
         .pd-marquee-track { display: flex; gap: 20px; width: max-content; animation: pd-marquee 50s linear infinite; will-change: transform; }
         @keyframes pd-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .pd-marquee-item { flex: 0 0 auto; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); background: #F0EDE8; cursor: zoom-in; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+        .pd-marquee-item { flex: 0 0 auto; height: var(--item-h, 320px); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); background: #F0EDE8; cursor: zoom-in; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); align-self: center; }
         .pd-marquee-item:hover { transform: translateY(-4px); }
         .pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
         .pd-marquee-empty { width: 100%; aspect-ratio: 4/5; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 32px rgba(0,0,0,0.08); }
@@ -390,7 +390,7 @@ export default function ProjectDeck() {
           .pd-detail-grid { grid-template-columns: 1fr; gap: 40px; }
           .pd-detail-left { position: static; }
           .pd-detail-wrap { padding: 64px 20px 80px; }
-          .pd-marquee-item { height: 200px; }
+          .pd-marquee-item { height: var(--item-h-mobile, 200px); }
         }
       `}</style>
 
