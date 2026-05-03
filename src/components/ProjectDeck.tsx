@@ -1,13 +1,47 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
+import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // Configure pdf.js worker (Vite-friendly URL import).
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+(pdfjsLib as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = pdfWorker;
+
+/** Render the first page of a PDF onto a canvas as a thumbnail. */
+function PdfThumb({ url }: { url: string }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        const page = await pdf.getPage(1);
+        const base = page.getViewport({ scale: 1 });
+        const targetW = 480;
+        const scale = targetW / base.width;
+        const v = page.getViewport({ scale });
+        const canvas = ref.current;
+        if (!canvas || cancelled) return;
+        canvas.width = v.width;
+        canvas.height = v.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        await page.render({ canvasContext: ctx, viewport: v, canvas }).promise;
+      } catch {
+        /* swallow — thumbnail is best-effort */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+  return (
+    <canvas
+      ref={ref}
+      style={{ width: "100%", height: "100%", objectFit: "contain", background: "#fff", display: "block" }}
+    />
+  );
+}
 
 /**
  * ProjectDeck.tsx
