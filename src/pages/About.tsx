@@ -234,7 +234,7 @@ const About = () => {
           <NowCard status={status} />
 
           {/* Hero with headshot */}
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-start mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 sm:gap-10 items-end mb-20">
             <div>
               <Reveal delay={0.1}>
                 <h1 className="text-4xl sm:text-6xl font-semibold leading-[1.05] mb-6 max-w-3xl">
@@ -255,9 +255,9 @@ const About = () => {
                 <img
                   src={headshotSrc}
                   alt="Farquhar MacDougall"
-                  width={360}
-                  height={360}
-                  className="relative w-[270px] h-[270px] sm:w-[360px] sm:h-[360px] object-cover"
+                  width={450}
+                  height={450}
+                  className="relative w-[340px] h-[340px] sm:w-[450px] sm:h-[450px] object-cover"
                   style={{
                     boxShadow:
                       "0 0 0 4px rgba(255,255,255,0.9), 0 0 0 5px hsla(var(--indigo), 0.35), 0 28px 56px hsla(var(--indigo), 0.22)",
