@@ -1,70 +1,84 @@
-## Goal
+## Problem
 
-Make uploaded PDFs first-class gallery items in the project carousel:
-- Show a real PDF preview tile in the marquee (not a broken `<img>`).
-- Open it in the existing lightbox and let the user **scroll/page through every PDF page**.
+Two issues with PDFs in the project carousel:
 
-## Why it's broken now
+1. **PDFs fail to load entirely.** Both the marquee tile and the lightbox show no rendered page. Cause: `pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url)` does not produce a valid asset URL through Vite at runtime — the worker never starts, so every `<Document>` silently stays in the loading/error state. With react-pdf 10 + pdfjs-dist 5, this is a known Vite gotcha.
 
-`ProjectDeck.tsx` only knows two media types: image and video (`isVideoUrl`). Any PDF URL falls into the `<img>` branch, so the browser tries to load a `.pdf` as an image and renders nothing.
+2. **No preview thumbnail in the marquee.** Even once the worker works, the current `pd-pdf-thumb` uses a fixed `aspectRatio: 1/1.414` wrapper that ignores the carousel's `--item-h` size variable, so PDFs don't scale with the size slider like images/videos do.
 
-## Approach
+## Fix
 
-Use `react-pdf` (which wraps `pdfjs-dist`) — the standard, well-maintained way to render PDFs in React. Lightweight, no server needed.
+### 1. Worker — use Vite's `?url` import
 
-### 1. Detect PDFs
-Add a helper next to `isVideoUrl`:
+In `src/components/ProjectDeck.tsx`, replace the `new URL(...)` call with Vite's explicit URL import (this is the pattern react-pdf documents for Vite):
+
 ```ts
-const isPdfUrl = (url: string) => /\.pdf(\?|$)/i.test(url);
-```
-
-### 2. Marquee tile (thumbnail)
-When the gallery item is a PDF, render `<Document><Page pageNumber={1} /></Document>` sized to the existing `--item-h` slot. Same size-slider behaviour as images/videos — no schema or CMS change needed.
-
-### 3. Lightbox (paged viewer)
-When a PDF is opened in the lightbox, replace the single `<img>`/`<video>` with a paged PDF viewer:
-
-```text
-┌──────────────────────────────────┐
-│  [‹ prev page]  Page 3 / 12  [next page ›]  │
-│                                  │
-│        ┌────────────────┐        │
-│        │   PDF page 3   │        │
-│        │   (rendered)   │        │
-│        └────────────────┘        │
-└──────────────────────────────────┘
-```
-
-- Internal page state: `pdfPage`, total via `onLoadSuccess`.
-- Reuses the existing lightbox chrome; the existing left/right arrows still move between **gallery items**.
-- New small in-lightbox controls (or just mouse-wheel / arrow keys when a PDF is open) move between **pages of the current PDF**.
-- Resets `pdfPage` to 1 when switching gallery items.
-
-### 4. Worker setup
-`react-pdf` needs the pdf.js worker. Configure once at module top:
-```ts
-import { pdfjs } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 ```
 
-This works out-of-the-box with Vite (no public-folder copy needed).
+This guarantees a real, hashed asset URL in both dev and prod builds.
 
-### 5. Storage / CORS
-PDFs already upload to the public `site-media` bucket and are served from the Supabase CDN, which sends permissive CORS — pdf.js will fetch them fine. No backend change required.
+### 2. Marquee — first-page preview that respects `--item-h`
+
+Rewrite the PDF branch in the marquee tile so the first page renders as a real thumbnail and fills the same slot as images/videos:
+
+```tsx
+) : isPdfUrl(img.url) ? (
+  <div
+    className="pd-pdf-thumb"
+    style={{
+      height: "100%",
+      aspectRatio: "1 / 1.414",
+      background: "#fff",
+      overflow: "hidden",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      pointerEvents: "none", // clicks go to the parent button
+    }}
+  >
+    <Document
+      file={img.url}
+      loading={<span style={{ fontSize: 10, color: "#888" }}>PDF…</span>}
+      error={<span style={{ fontSize: 10, color: "#c00" }}>PDF failed</span>}
+    >
+      {/* height in CSS pixels — pdf.js needs a numeric height, not %.
+          Read the live --item-h from the surrounding gallery. */}
+      <Page
+        pageNumber={1}
+        height={itemPxH}        // computed from gallery ref
+        renderAnnotationLayer={false}
+        renderTextLayer={false}
+      />
+    </Document>
+  </div>
+)
+```
+
+Add a small `useLayoutEffect` near the gallery that reads the computed `--item-h` (already set in CSS) into a state value (`itemPxH`) and updates it on resize / size-slider change. Re-using the existing slider value is cheaper — it's already in component state — so we just convert the slider's vh-based size into pixels (`Math.round(window.innerHeight * sizePct / 100)`).
+
+### 3. Lightbox — add a small fallback link
+
+Below the existing pager, add an "Open PDF in new tab" link so even if rendering fails (corrupt file, very large doc) the user has an escape hatch:
+
+```tsx
+<a href={url} target="_blank" rel="noreferrer" style={{ color: "#fff", opacity: 0.7, fontSize: 12, textDecoration: "underline" }}>
+  Open PDF in new tab
+</a>
+```
 
 ## Files to edit
 
-- `src/components/ProjectDeck.tsx` — add `isPdfUrl`, PDF branch in marquee item, paged PDF viewer in lightbox, page-state reset on item switch.
-- `package.json` — add `react-pdf` (brings in `pdfjs-dist`).
+- `src/components/ProjectDeck.tsx` — worker import, marquee PDF tile (first-page preview that respects size slider), lightbox fallback link.
 
-No DB / edge-function / CMS changes.
+No package, schema, edge-function or CMS changes.
 
 ## Out of scope
 
-- Multi-page **inline** scrolling inside the small marquee tile (only first page shown as preview — full doc is in the lightbox).
-- PDF text-selection / search UI (page render only, which is what you asked for).
+- Caching rendered thumbnails (re-renders on every mount; fine for the small number of PDFs in a portfolio).
+- Multi-page scroll inside the marquee tile.

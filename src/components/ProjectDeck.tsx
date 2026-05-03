@@ -4,12 +4,10 @@ import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // Configure pdf.js worker (Vite-friendly URL import).
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 /**
  * ProjectDeck.tsx
@@ -756,6 +754,15 @@ export default function ProjectDeck() {
                         >Next page ›</button>
                       </div>
                     )}
+                    <a
+                      href={openProject.gallery[lightboxIdx].url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: "#fff", opacity: 0.7, fontSize: 12, textDecoration: "underline", fontFamily: "ui-sans-serif, system-ui" }}
+                    >
+                      Open PDF in new tab
+                    </a>
                   </div>
                 ) : (
                   <img
