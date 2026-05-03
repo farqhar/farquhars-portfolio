@@ -38,6 +38,8 @@ type Project = {
   heroBackground: string;
   gallery: GalleryImage[];
   heroFit: "cover" | "contain";
+  galleryDefaultWidth: number;
+  heroAutoSize: boolean;
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -63,6 +65,9 @@ const dbToCard = (p: DbProject): Project => ({
   heroBackground: p.heroBackground || "linear-gradient(135deg, #FAFAF9 0%, #F0EDE8 100%)",
   gallery: Array.isArray(p.gallery) ? p.gallery : [],
   heroFit: p.heroFit === "contain" ? "contain" : "cover",
+  galleryDefaultWidth:
+    typeof p.galleryDefaultWidth === "number" ? p.galleryDefaultWidth : 100,
+  heroAutoSize: p.heroAutoSize === true,
 });
 
 const VISIBLE_BEHIND = 3;
