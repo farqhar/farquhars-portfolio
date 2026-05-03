@@ -1,13 +1,47 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
+import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // Configure pdf.js worker (Vite-friendly URL import).
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+(pdfjsLib as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = pdfWorker;
+
+/** Render the first page of a PDF onto a canvas as a thumbnail. */
+function PdfThumb({ url }: { url: string }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        const page = await pdf.getPage(1);
+        const base = page.getViewport({ scale: 1 });
+        const targetW = 480;
+        const scale = targetW / base.width;
+        const v = page.getViewport({ scale });
+        const canvas = ref.current;
+        if (!canvas || cancelled) return;
+        canvas.width = v.width;
+        canvas.height = v.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        await page.render({ canvasContext: ctx, viewport: v, canvas }).promise;
+      } catch {
+        /* swallow — thumbnail is best-effort */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+  return (
+    <canvas
+      ref={ref}
+      style={{ width: "100%", height: "100%", objectFit: "contain", background: "#fff", display: "block" }}
+    />
+  );
+}
 
 /**
  * ProjectDeck.tsx
@@ -97,15 +131,7 @@ export default function ProjectDeck() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  const [pdfPage, setPdfPage] = useState(1);
-  const [pdfTotal, setPdfTotal] = useState(0);
   const tickingRef = useRef(false);
-
-  // Reset PDF paging whenever the lightbox target changes.
-  useEffect(() => {
-    setPdfPage(1);
-    setPdfTotal(0);
-  }, [lightboxIdx, openProject?.key]);
 
   // Compute scroll progress and apply transforms
   useEffect(() => {
@@ -386,6 +412,7 @@ export default function ProjectDeck() {
         .pd-lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.92); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 32px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .pd-lightbox.open { opacity: 1; pointer-events: all; }
         .pd-lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+        .pd-lightbox video { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); background: #000; }
         .pd-lb-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: background 0.2s; }
         .pd-lb-btn:hover { background: rgba(255,255,255,0.22); }
         .pd-lb-prev { left: 24px; } .pd-lb-next { right: 24px; }
@@ -679,10 +706,8 @@ export default function ProjectDeck() {
                               draggable={false}
                             />
                           ) : isPdfUrl(img.url) ? (
-                            <div className="pd-pdf-thumb" style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <Document file={img.url} loading={<span style={{ fontSize: 10, color: "#888" }}>PDF…</span>} error={<span style={{ fontSize: 10, color: "#888" }}>PDF</span>}>
-                                <Page pageNumber={1} height={typeof window !== "undefined" && window.innerWidth < 640 ? 200 : 320} renderAnnotationLayer={false} renderTextLayer={false} />
-                              </Document>
+                            <div className="pd-pdf-thumb" style={{ height: "100%", width: "100%", aspectRatio: "1 / 1.414", background: "#fff", overflow: "hidden" }}>
+                              <PdfThumb url={img.url} />
                             </div>
                           ) : (
                             <img
@@ -720,50 +745,12 @@ export default function ProjectDeck() {
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : isPdfUrl(openProject.gallery[lightboxIdx].url) ? (
-                  <div
+                  <iframe
+                    src={openProject.gallery[lightboxIdx].url}
+                    title="PDF preview"
                     onClick={(e) => e.stopPropagation()}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, maxHeight: "90vh" }}
-                  >
-                    <div style={{ background: "#fff", borderRadius: 8, overflow: "auto", maxHeight: "78vh", boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
-                      <Document
-                        file={openProject.gallery[lightboxIdx].url}
-                        onLoadSuccess={({ numPages }) => { setPdfTotal(numPages); }}
-                        loading={<div style={{ padding: 40, color: "#888" }}>Loading PDF…</div>}
-                        error={<div style={{ padding: 40, color: "#c00" }}>Failed to load PDF</div>}
-                      >
-                        <Page
-                          pageNumber={pdfPage}
-                          height={Math.round(window.innerHeight * 0.78)}
-                          renderAnnotationLayer={false}
-                          renderTextLayer={false}
-                        />
-                      </Document>
-                    </div>
-                    {pdfTotal > 1 && (
-                      <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#fff", fontFamily: "ui-sans-serif, system-ui", fontSize: 13 }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.max(1, p - 1)); }}
-                          disabled={pdfPage <= 1}
-                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage <= 1 ? "not-allowed" : "pointer", opacity: pdfPage <= 1 ? 0.4 : 1 }}
-                        >‹ Prev page</button>
-                        <span>Page {pdfPage} / {pdfTotal}</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.min(pdfTotal, p + 1)); }}
-                          disabled={pdfPage >= pdfTotal}
-                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage >= pdfTotal ? "not-allowed" : "pointer", opacity: pdfPage >= pdfTotal ? 0.4 : 1 }}
-                        >Next page ›</button>
-                      </div>
-                    )}
-                    <a
-                      href={openProject.gallery[lightboxIdx].url}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ color: "#fff", opacity: 0.7, fontSize: 12, textDecoration: "underline", fontFamily: "ui-sans-serif, system-ui" }}
-                    >
-                      Open PDF in new tab
-                    </a>
-                  </div>
+                    style={{ width: "92vw", height: "92vh", border: "none", borderRadius: 12, background: "#fff", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+                  />
                 ) : (
                   <img
                     src={openProject.gallery[lightboxIdx].url}
