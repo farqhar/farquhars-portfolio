@@ -1,30 +1,70 @@
-## Problem
+## Goal
 
-The carousel size slider works for image gallery items but not for **videos** (e.g. the CV Generation Tool project, whose gallery is two `.mov` files at `widthPct: 25`).
+Make uploaded PDFs first-class gallery items in the project carousel:
+- Show a real PDF preview tile in the marquee (not a broken `<img>`).
+- Open it in the existing lightbox and let the user **scroll/page through every PDF page**.
 
-### Root cause
+## Why it's broken now
 
-In `src/components/ProjectDeck.tsx`, the marquee items use a CSS variable `--item-h` driven by the project's `galleryDefaultWidth` / per-image `widthPct`:
+`ProjectDeck.tsx` only knows two media types: image and video (`isVideoUrl`). Any PDF URL falls into the `<img>` branch, so the browser tries to load a `.pdf` as an image and renders nothing.
 
-```css
-.pd-marquee-item { height: var(--item-h, 320px); ... }
-.pd-marquee-item img { display: block; height: 100%; width: auto; object-fit: cover; }
+## Approach
+
+Use `react-pdf` (which wraps `pdfjs-dist`) — the standard, well-maintained way to render PDFs in React. Lightweight, no server needed.
+
+### 1. Detect PDFs
+Add a helper next to `isVideoUrl`:
+```ts
+const isPdfUrl = (url: string) => /\.pdf(\?|$)/i.test(url);
 ```
 
-There's a rule for `img` but **no equivalent rule for `video`**. So `<video>` elements render at their intrinsic resolution and ignore the container height — making them look "huge" regardless of the size override.
+### 2. Marquee tile (thumbnail)
+When the gallery item is a PDF, render `<Document><Page pageNumber={1} /></Document>` sized to the existing `--item-h` slot. Same size-slider behaviour as images/videos — no schema or CMS change needed.
 
-## Fix
+### 3. Lightbox (paged viewer)
+When a PDF is opened in the lightbox, replace the single `<img>`/`<video>` with a paged PDF viewer:
 
-One-line CSS addition in `ProjectDeck.tsx`, mirroring the `img` rule:
-
-```css
-.pd-marquee-item video { display: block; height: 100%; width: auto; object-fit: cover; }
+```text
+┌──────────────────────────────────┐
+│  [‹ prev page]  Page 3 / 12  [next page ›]  │
+│                                  │
+│        ┌────────────────┐        │
+│        │   PDF page 3   │        │
+│        │   (rendered)   │        │
+│        └────────────────┘        │
+└──────────────────────────────────┘
 ```
 
-That's it — no schema, no data, no admin changes. The existing `widthPct: 25` value already in the database for the CV Generation Tool will then take effect.
+- Internal page state: `pdfPage`, total via `onLoadSuccess`.
+- Reuses the existing lightbox chrome; the existing left/right arrows still move between **gallery items**.
+- New small in-lightbox controls (or just mouse-wheel / arrow keys when a PDF is open) move between **pages of the current PDF**.
+- Resets `pdfPage` to 1 when switching gallery items.
 
-## Verification
+### 4. Worker setup
+`react-pdf` needs the pdf.js worker. Configure once at module top:
+```ts
+import { pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
+```
 
-After the change, on the CV Generation Tool case study:
-- Both `.mov` items should render at ~25% of the default marquee height (≈80px desktop / ≈50px mobile).
-- Adjusting the slider in the admin (project default or per-image override) should resize videos live, identical to image behaviour.
+This works out-of-the-box with Vite (no public-folder copy needed).
+
+### 5. Storage / CORS
+PDFs already upload to the public `site-media` bucket and are served from the Supabase CDN, which sends permissive CORS — pdf.js will fetch them fine. No backend change required.
+
+## Files to edit
+
+- `src/components/ProjectDeck.tsx` — add `isPdfUrl`, PDF branch in marquee item, paged PDF viewer in lightbox, page-state reset on item switch.
+- `package.json` — add `react-pdf` (brings in `pdfjs-dist`).
+
+No DB / edge-function / CMS changes.
+
+## Out of scope
+
+- Multi-page **inline** scrolling inside the small marquee tile (only first page shown as preview — full doc is in the lightbox).
+- PDF text-selection / search UI (page render only, which is what you asked for).
