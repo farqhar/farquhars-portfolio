@@ -715,6 +715,42 @@ export default function ProjectDeck() {
                     playsInline
                     onClick={(e) => e.stopPropagation()}
                   />
+                ) : isPdfUrl(openProject.gallery[lightboxIdx].url) ? (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, maxHeight: "90vh" }}
+                  >
+                    <div style={{ background: "#fff", borderRadius: 8, overflow: "auto", maxHeight: "78vh", boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
+                      <Document
+                        file={openProject.gallery[lightboxIdx].url}
+                        onLoadSuccess={({ numPages }) => { setPdfTotal(numPages); }}
+                        loading={<div style={{ padding: 40, color: "#888" }}>Loading PDF…</div>}
+                        error={<div style={{ padding: 40, color: "#c00" }}>Failed to load PDF</div>}
+                      >
+                        <Page
+                          pageNumber={pdfPage}
+                          height={Math.round(window.innerHeight * 0.78)}
+                          renderAnnotationLayer={false}
+                          renderTextLayer={false}
+                        />
+                      </Document>
+                    </div>
+                    {pdfTotal > 1 && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#fff", fontFamily: "ui-sans-serif, system-ui", fontSize: 13 }}>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.max(1, p - 1)); }}
+                          disabled={pdfPage <= 1}
+                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage <= 1 ? "not-allowed" : "pointer", opacity: pdfPage <= 1 ? 0.4 : 1 }}
+                        >‹ Prev page</button>
+                        <span>Page {pdfPage} / {pdfTotal}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.min(pdfTotal, p + 1)); }}
+                          disabled={pdfPage >= pdfTotal}
+                          style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage >= pdfTotal ? "not-allowed" : "pointer", opacity: pdfPage >= pdfTotal ? 0.4 : 1 }}
+                        >Next page ›</button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <img
                     src={openProject.gallery[lightboxIdx].url}
