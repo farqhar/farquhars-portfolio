@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useProjects } from "@/hooks/useProjects";
 import type { Project as DbProject, GalleryImage } from "@/data/projectsSeed";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+// CDN worker whose version matches react-pdf's bundled pdfjs — avoids version mismatch errors.
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 /**
  * ProjectDeck.tsx
@@ -90,7 +96,17 @@ export default function ProjectDeck() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [openProject, setOpenProject] = useState<Project | null>(null);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [pdfPage, setPdfPage] = useState(1);
+  const [pdfTotal, setPdfTotal] = useState(0);
+  const [pdfFailed, setPdfFailed] = useState(false);
   const tickingRef = useRef(false);
+
+  // Reset PDF viewer state whenever the lightbox target changes.
+  useEffect(() => {
+    setPdfPage(1);
+    setPdfTotal(0);
+    setPdfFailed(false);
+  }, [lightboxIdx, openProject?.key]);
 
   // Compute scroll progress and apply transforms
   useEffect(() => {
@@ -664,10 +680,7 @@ export default function ProjectDeck() {
                               draggable={false}
                             />
                           ) : isPdfUrl(img.url) ? (
-                            <div style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#f5f5f3", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4 }}>
-                              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
-                              <span style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", color: "#888", letterSpacing: "0.08em", textTransform: "uppercase" }}>PDF</span>
-                            </div>
+                            <PdfThumb url={img.url} />
                           ) : (
                             <img
                               src={img.url}
@@ -702,23 +715,66 @@ export default function ProjectDeck() {
                     autoPlay
                     playsInline
                     onClick={(e) => e.stopPropagation()}
+                    style={{ maxWidth: "92vw", maxHeight: "88vh", width: "auto", height: "auto", borderRadius: 12, boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
                   />
                 ) : isPdfUrl(openProject.gallery[lightboxIdx].url) ? (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "min(90vw, 960px)", maxHeight: "90vh" }}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "min(90vw, 860px)", maxHeight: "90vh" }}
                   >
-                    <iframe
-                      src={`https://docs.google.com/viewer?url=${encodeURIComponent(openProject.gallery[lightboxIdx].url)}&embedded=true`}
-                      style={{ width: "100%", height: "82vh", border: "none", borderRadius: 8, boxShadow: "0 12px 40px rgba(0,0,0,0.3)", background: "#fff" }}
-                      title="PDF viewer"
-                    />
+                    {pdfFailed ? (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: 40 }}>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <a
+                          href={openProject.gallery[lightboxIdx].url}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ padding: "10px 24px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", fontSize: 13, fontFamily: "ui-sans-serif, system-ui", textDecoration: "none", cursor: "pointer" }}
+                        >
+                          Open PDF in new tab
+                        </a>
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ background: "#fff", borderRadius: 8, overflow: "auto", maxHeight: "78vh", boxShadow: "0 12px 40px rgba(0,0,0,0.3)" }}>
+                          <Document
+                            file={openProject.gallery[lightboxIdx].url}
+                            onLoadSuccess={({ numPages }) => setPdfTotal(numPages)}
+                            onLoadError={() => setPdfFailed(true)}
+                            loading={<div style={{ padding: 48, color: "#888", fontFamily: "ui-sans-serif, system-ui", fontSize: 14 }}>Loading PDF…</div>}
+                          >
+                            <Page
+                              pageNumber={pdfPage}
+                              height={Math.round(window.innerHeight * 0.78)}
+                              renderAnnotationLayer={false}
+                              renderTextLayer={false}
+                            />
+                          </Document>
+                        </div>
+                        {pdfTotal > 1 && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#fff", fontFamily: "ui-sans-serif, system-ui", fontSize: 13 }}>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.max(1, p - 1)); }}
+                              disabled={pdfPage <= 1}
+                              style={{ padding: "6px 14px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage <= 1 ? "not-allowed" : "pointer", opacity: pdfPage <= 1 ? 0.4 : 1 }}
+                            >‹ Prev</button>
+                            <span>Page {pdfPage} / {pdfTotal}</span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setPdfPage((p) => Math.min(pdfTotal, p + 1)); }}
+                              disabled={pdfPage >= pdfTotal}
+                              style={{ padding: "6px 14px", borderRadius: 999, background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", cursor: pdfPage >= pdfTotal ? "not-allowed" : "pointer", opacity: pdfPage >= pdfTotal ? 0.4 : 1 }}
+                            >Next ›</button>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 ) : (
                   <img
                     src={openProject.gallery[lightboxIdx].url}
                     alt={openProject.gallery[lightboxIdx].alt || ""}
                     onClick={(e) => e.stopPropagation()}
+                    style={{ maxWidth: "92vw", maxHeight: "88vh", width: "auto", height: "auto", borderRadius: 12, boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
                   />
                 )}
                 {openProject.gallery.length > 1 && (
@@ -777,5 +833,24 @@ export default function ProjectDeck() {
         </button>
       </div>
     </>
+  );
+}
+
+function PdfThumb({ url }: { url: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#f5f5f3", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, border: "1px solid rgba(0,0,0,0.08)", borderRadius: 4 }}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+        <span style={{ fontSize: 9, fontFamily: "ui-monospace, monospace", color: "#888", letterSpacing: "0.08em", textTransform: "uppercase" }}>PDF</span>
+      </div>
+    );
+  }
+  return (
+    <div style={{ height: "100%", width: "auto", aspectRatio: "1 / 1.414", background: "#fff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Document file={url} loading={null} onLoadError={() => setFailed(true)}>
+        <Page pageNumber={1} height={320} renderAnnotationLayer={false} renderTextLayer={false} />
+      </Document>
+    </div>
   );
 }
