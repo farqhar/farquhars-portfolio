@@ -577,6 +577,18 @@ export default function ProjectDeck() {
                   <h1 className="pd-title">{openProject.title}</h1>
                   <p className="pd-tagline">{openProject.tagline}</p>
 
+                  {openProject.experienceUrl && (
+                    <a
+                      className="pd-experience"
+                      href={openProject.experienceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {openProject.experienceLabel || "View the live experience"}
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  )}
+
                   {openProject.problem && (
                     <div className="pd-section">
                       <div className="pd-section-label">The Problem</div>
