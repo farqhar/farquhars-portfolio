@@ -475,6 +475,7 @@ img{display:block;max-width:100%}
 <div id="viz-tooltip"></div>
 <div id="grid-type-popup"></div>
 
+<script src="components/assets-manifest.js"></script>
 <script src="components/data.js"></script>
 <script src="components/viz.js"></script>
 <script src="assets/sat_positions.js"></script>
@@ -994,10 +995,10 @@ function onBarClick(e){const idx=parseInt(e.currentTarget.getAttribute('data-idx
 const GTP = document.getElementById('grid-type-popup');
 const GRID_BASE = `assets/grids/`;
 const GRID_SVGS = {
-  rule_of_thirds: `<img src="${GRID_BASE}grids-rule-of-thirds.png" style="display:block;width:100%;margin-bottom:10px" alt="rule of thirds">`,
-  golden_ratio:   `<img src="${GRID_BASE}grids-golden-ratio.png"        style="display:block;width:100%;margin-bottom:10px" alt="golden ratio">`,
-  diagonal:       `<img src="${GRID_BASE}grids-diagonal.png"               style="display:block;width:100%;margin-bottom:10px" alt="diagonal">`,
-  centre_axis:    `<img src="${GRID_BASE}grids-centre-axis.png"       style="display:block;width:100%;margin-bottom:10px" alt="centre axis">`
+  rule_of_thirds: `<img src="${GRID_BASE}grids-rule-of-thirds.svg" style="display:block;width:100%;margin-bottom:10px" alt="rule of thirds">`,
+  golden_ratio:   `<img src="${GRID_BASE}grids-golden-ratio.svg"        style="display:block;width:100%;margin-bottom:10px" alt="golden ratio">`,
+  diagonal:       `<img src="${GRID_BASE}grids-diagonal.svg"               style="display:block;width:100%;margin-bottom:10px" alt="diagonal">`,
+  centre_axis:    `<img src="${GRID_BASE}grids-centre-axis.svg"       style="display:block;width:100%;margin-bottom:10px" alt="centre axis">`
 };
 const GRID_DESC = {
   rule_of_thirds: 'lines at 1/3 intervals · subject near intersection points',
