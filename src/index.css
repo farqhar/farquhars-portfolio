@@ -145,21 +145,33 @@
   }
 
   .gradient-indigo {
-    background: linear-gradient(135deg, hsl(0 0% 4%), hsl(127 14% 40%), hsl(127 14% 54%));
+    background: linear-gradient(135deg, hsl(127 16% 30%), hsl(127 14% 40%), hsl(127 14% 54%));
   }
 
   .gradient-text-indigo {
-    background: linear-gradient(135deg, hsl(0 0% 4%), hsl(127 14% 40%), hsl(127 14% 54%));
+    background: linear-gradient(135deg, hsl(127 16% 30%), hsl(127 14% 42%), hsl(127 14% 54%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-purple {
-    background: linear-gradient(135deg, hsl(127 14% 54%), hsl(127 16% 44%), hsl(0 0% 4%));
+    background: linear-gradient(135deg, hsl(127 14% 54%), hsl(127 14% 42%), hsl(127 16% 30%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Light-on-dark variant: for use over the ink hero surface */
+  .gradient-text-onlight {
+    background: linear-gradient(135deg, hsl(0 0% 100%), hsl(127 20% 78%), hsl(127 14% 54%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-onlight {
+    background: linear-gradient(90deg, hsl(0 0% 100%), hsl(127 14% 54%));
   }
 
   .noise-overlay {

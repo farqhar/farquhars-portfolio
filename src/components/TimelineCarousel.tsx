@@ -157,8 +157,8 @@ const DualBars = () => (
             className="h-full rounded-full"
             style={{
               background: row.label === "WORK"
-                ? "linear-gradient(90deg, hsl(var(--blue)), hsl(var(--indigo)))"
-                : "linear-gradient(90deg, hsl(var(--purple)), #a855f7)",
+                ? "linear-gradient(90deg, hsl(0 0% 20%), hsl(var(--sage)))"
+                : "linear-gradient(90deg, hsl(127 16% 30%), hsl(var(--sage)))",
               animation: `${row.anim} 4.5s ease-in-out infinite`,
             }}
           />

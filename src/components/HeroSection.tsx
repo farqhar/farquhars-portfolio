@@ -142,7 +142,7 @@ const HeroSection = () => {
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: 1, delay: 1.0, ease: "easeOut" }}
-                className="w-[60%] h-px my-4 sm:my-6 origin-left gradient-indigo"
+                className="w-[60%] h-px my-4 sm:my-6 origin-left gradient-onlight"
               />
 
               {/* Gradient subtitle - fixed clipping */}
@@ -150,7 +150,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.4 }}
-                className="text-2xl sm:text-4xl md:text-5xl font-semibold gradient-text-indigo pb-2 overflow-visible"
+                className="text-2xl sm:text-4xl md:text-5xl font-semibold gradient-text-onlight pb-2 overflow-visible"
               >
                 {subhead}
               </motion.p>
