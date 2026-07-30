@@ -130,7 +130,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-2",
     mockType: "light",
     heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.15) 50%, rgba(123,91,255,0.1) 100%)",
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(122,155,126,0.16) 50%, rgba(10,10,10,0.06) 100%)",
   },
   {
     slug: "cv-generation-tool",
@@ -199,7 +199,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-5",
     mockType: "light",
     heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(122,155,126,0.10) 100%)",
   },
   {
     slug: "brand-touchpoint-system",
@@ -269,7 +269,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-2",
     mockType: "light",
     heroBackground:
-      "linear-gradient(135deg, #FAFAF9 0%, rgba(43,91,255,0.08) 100%)",
+      "linear-gradient(135deg, #FAFAF9 0%, rgba(122,155,126,0.10) 100%)",
   },
   {
     slug: "analogue-to-algorithm",

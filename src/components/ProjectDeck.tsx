@@ -187,7 +187,7 @@ export default function ProjectDeck() {
           }deg) scale(${1 - 0.08 * eased})`;
           opacity = 1 - eased;
           zIndex = 100;
-          shadow = `0 ${8 - 8 * eased}px ${24 - 24 * eased}px rgba(43,91,255,${
+          shadow = `0 ${8 - 8 * eased}px ${24 - 24 * eased}px rgba(10,10,10,${
             0.1 - 0.1 * eased
           }), 0 ${32 - 32 * eased}px ${80 - 80 * eased}px rgba(0,0,0,${
             0.14 - 0.14 * eased
@@ -198,7 +198,7 @@ export default function ProjectDeck() {
           opacity = 1;
           zIndex = 100;
           shadow =
-            "0 8px 24px rgba(43,91,255,0.10), 0 32px 80px rgba(0,0,0,0.14)";
+            "0 8px 24px rgba(10,10,10,0.10), 0 32px 80px rgba(0,0,0,0.14)";
           pointerEvents = "auto";
         } else if (rel <= VISIBLE_BEHIND) {
           const depth = rel;
@@ -312,7 +312,7 @@ export default function ProjectDeck() {
         .pd-scroll { position: relative; width: 100%; height: 700vh; background: #FAFAF9; }
         .pd-pin { position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
 
-        .pd-glow { position: absolute; top: 50%; left: 50%; width: 800px; height: 800px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(43,91,255,0.04) 0%, rgba(123,91,255,0.02) 40%, transparent 70%); pointer-events: none; z-index: 0; }
+        .pd-glow { position: absolute; top: 50%; left: 50%; width: 800px; height: 800px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(122,155,126,0.05) 0%, rgba(10,10,10,0.02) 40%, transparent 70%); pointer-events: none; z-index: 0; }
 
         .pd-header { position: absolute; top: 40px; left: 48px; right: 48px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
         .pd-folder-name { font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; font-weight: 500; display: flex; align-items: center; gap: 10px; }
@@ -329,15 +329,15 @@ export default function ProjectDeck() {
         .pd-card-sub { font-size: 15px; color: #86868B; margin-top: 6px; letter-spacing: -0.01em; }
 
         .pd-bg-1 { background: #0A0A0A; position: relative; }
-        .pd-bg-1::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 0%, rgba(43,91,255,0.4) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(123,91,255,0.3) 0%, transparent 50%); opacity: 0.6; }
+        .pd-bg-1::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 0%, rgba(122,155,126,0.28) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(10,10,10,0.10) 0%, transparent 50%); opacity: 0.6; }
         .pd-bg-2 { background: #FAFAF9; position: relative; }
-        .pd-bg-2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(43,91,255,0.08) 0%, rgba(123,91,255,0.06) 50%, rgba(184,91,255,0.04) 100%); }
+        .pd-bg-2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(122,155,126,0.10) 0%, rgba(122,155,126,0.05) 50%, rgba(10,10,10,0.03) 100%); }
         .pd-bg-3 { background: white; position: relative; }
         .pd-bg-3::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.02) 50%), linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.02) 50%); background-size: 24px 24px; }
         .pd-bg-4 { background: linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 100%); position: relative; }
-        .pd-bg-4::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(123,91,255,0.25) 0%, transparent 60%); }
+        .pd-bg-4::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(122,155,126,0.22) 0%, transparent 60%); }
         .pd-bg-5 { background: white; position: relative; border: 0.5px solid rgba(0,0,0,0.06); }
-        .pd-bg-5::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(43,91,255,0.04) 0%, transparent 100%); }
+        .pd-bg-5::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(122,155,126,0.06) 0%, transparent 100%); }
 
         .pd-mock { position: absolute; inset: 32px; border-radius: 14px; display: flex; flex-direction: column; gap: 14px; padding: 26px; }
         .pd-mock-dark { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 0.5px solid rgba(255,255,255,0.1); }
@@ -349,8 +349,8 @@ export default function ProjectDeck() {
         .pd-block { flex: 1; border-radius: 10px; margin-top: 8px; position: relative; overflow: hidden; }
         .pd-mock-dark .pd-block { background: rgba(255,255,255,0.08); }
         .pd-mock-light .pd-block { background: rgba(0,0,0,0.04); }
-        .pd-mock-dark .pd-block::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(43,91,255,0.3) 0%, transparent 60%); }
-        .pd-mock-light .pd-block::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(43,91,255,0.06) 0%, transparent 60%); }
+        .pd-mock-dark .pd-block::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(122,155,126,0.25) 0%, transparent 60%); }
+        .pd-mock-light .pd-block::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(122,155,126,0.07) 0%, transparent 60%); }
 
         .pd-tabs { position: absolute; bottom: 56px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; z-index: 2; }
         .pd-dot { width: 5px; height: 5px; border-radius: 50%; background: #B8B8BD; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
