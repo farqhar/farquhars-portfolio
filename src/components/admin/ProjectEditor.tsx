@@ -27,6 +27,8 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
     galleryDefaultWidth:
       typeof project.galleryDefaultWidth === "number" ? project.galleryDefaultWidth : 100,
     heroAutoSize: project.heroAutoSize === true,
+    experienceUrl: project.experienceUrl ?? "",
+    experienceLabel: project.experienceLabel ?? "",
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
   const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
