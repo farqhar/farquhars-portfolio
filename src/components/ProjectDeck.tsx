@@ -387,7 +387,11 @@ export default function ProjectDeck() {
         .pd-section p { font-size: 17px; line-height: 1.6; color: #1A1A1A; margin-bottom: 16px; max-width: 640px; letter-spacing: -0.01em; }
 
         .pd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 32px; padding: 40px 0; border-top: 0.5px solid rgba(0,0,0,0.12); border-bottom: 0.5px solid rgba(0,0,0,0.12); margin: 64px 0; }
-        .pd-stat-value { font-size: clamp(28px, 3.6vw, 44px); font-weight: 600; letter-spacing: -0.03em; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; line-height: 1.05; margin-bottom: 8px; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
+        .pd-stat-value { font-size: clamp(28px, 3.6vw, 44px); font-weight: 800; letter-spacing: -0.03em; color: #0A0A0A; line-height: 1.05; margin-bottom: 8px; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
+
+        .pd-experience { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 40px; padding: 14px 22px; border-radius: 999px; background: #0A0A0A; color: #FFFFFF; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none; transition: background 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1); }
+        .pd-experience:hover { background: #7A9B7E; transform: translateY(-2px); }
+        .pd-experience span { font-size: 16px; line-height: 1; }
         .pd-stat-label { font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 500; }
 
         .pd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; }
