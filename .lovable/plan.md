@@ -1,87 +1,36 @@
-## Three pieces of work
+## 1. Gradient text legibility
 
-1. Host the Measured Aesthetic HTML experience at its own shareable link
-2. Link to it from the Measured Aesthetic project in Work
-3. Roll the new personal brand (Archivo 800 / Work Sans, Ink / Off-white / Sage) across the whole portfolio
+Right now one gradient (`gradient-text-indigo`) runs Ink → Sage and is used on both light and dark surfaces, so on the dark landing hero the first half of the headline is near-black on near-black.
 
----
+Two variants instead of one:
 
-## 1. Measured Aesthetic experience
+- **On light backgrounds** (Work, About, project cards, case study): dark sage `#4E6B52` → brand sage `#7A9B7E`. Green-to-green, no black, still passes contrast on the off-white page.
+- **On the dark landing hero**: white `#FFFFFF` → brand sage `#7A9B7E`, so the line starts legible and resolves into the accent.
 
-**What you need to upload first**
+The solid-fill button gradient (`gradient-indigo`, used on CTAs) gets the same dark-sage → sage treatment so buttons stay readable with white text.
 
-The HTML on its own won't run. It references files that weren't in the upload:
+`gradient-text-purple` is a leftover alias, it gets pointed at the same light-background pair.
 
-```text
-assets/hw-04.png, hw-26, hw-30, hw-43, hw-44, hw-45, hw-46
-assets/sat_positions.js
-components/data.js
-components/viz.js
-../organised-final/grids /grids_rule of thirds .png
-                         /grids_golden ratio.png
-                         /grids_diagonal.png
-                         /grids_centre axis .png
-```
+## 2. Remove remaining purple / blue tints
 
-Zip the project folder (including the `organised-final/grids` folder that sits alongside it) and upload it. Until that lands, the Loading, Saturation, Grids and Gallery sections will be empty.
+These are hardcoded blue-violet RGBA values that survived the rebrand, mostly sitting on top of imagery in the project modal:
 
-**How it gets hosted**
+- `src/components/ProjectDeck.tsx`: the ambient glow behind the modal, the five `pd-bg-*` project backdrops, and the `pd-mock-*` overlays that wash across mock imagery. All swapped to neutral ink or a very low-opacity sage.
+- `src/components/TimelineCarousel.tsx`: a violet `#a855f7` progress bar and two violet ambient orbs.
+- The `--blue` / `--purple` legacy tokens stay pointed at ink/sage so nothing else can reintroduce a violet cast.
 
-The experience is a self-contained scroll piece with its own fonts, snap scrolling and fixed nav. Rewriting it as React would risk breaking the animation timing, so it gets served verbatim:
+Net effect: no colour cast over any uploaded image or video. Backdrops become neutral paper or ink, with sage used only as a faint accent.
 
-- Everything goes into `public/measured-aesthetic/` — `index.html`, `assets/`, `components/`, and the grid images moved into `assets/grids/`.
-- The one code edit to the HTML: change `GRID_BASE` from `../organised-final/grids%20/` to `assets/grids/`, and rename those four files to safe lowercase-hyphen names (no spaces).
-- Images over 100 KB get pushed to the Lovable CDN so the repo stays light; the HTML references the CDN URLs.
-- A small route rule so `/measured-aesthetic` (no trailing slash, no `.html`) serves it and the React router doesn't intercept.
+## 3. On the asset zip
 
-**Result:** `https://farquhars-portfolio.lovable.app/measured-aesthetic` — a clean link to paste into the award submission.
+Uploading through this chat has a 20 MB / 10 file limit, so a large zip won't go through, and files produced inside Claude can't be transferred across to this project directly. Three options that do work, easiest first:
 
----
+- **Drop the assets in your own site storage.** You already have a public `site-media` bucket. Upload the images there through the CMS media uploader, and I'll point the Measured Aesthetic page at those URLs.
+- **Any public link** (Google Drive, Dropbox, WeTransfer, GitHub repo) pasted into chat. I can fetch and unpack it.
+- **Batches through this chat.** Under 10 files and 20 MB per message, as many messages as it takes.
 
-## 2. Link from the Work project
+This is independent of the colour work above, so it doesn't block anything.
 
-- Add an optional `experienceUrl` + `experienceLabel` to the project data model (new `experience_url` / `experience_label` columns on `projects`, both nullable, with the usual grants).
-- New fields in the CMS project editor so you can set the link per project without a code change.
-- In the project detail view, when a URL is present, a prominent button appears under the intro: **"View the live experience →"**, opening in a new tab. Nothing renders when the field is empty, so no other project is affected.
-- Set Measured Aesthetic's to `/measured-aesthetic`.
+### Technical notes
 
----
-
-## 3. Brand rollout
-
-From your brand guidebook:
-
-| Token | Value |
-| --- | --- |
-| Ink | `#0A0A0A` |
-| White | `#FFFFFF` |
-| Off-white | `#F5F5F3` |
-| Photo tile | `#2B2B2B` |
-| Sage | `#7A9B7E` |
-
-Type: **Archivo 800** for headings, **Work Sans** for body, italic for asides.
-
-What changes:
-
-- `index.css` design tokens rewritten: background off-white, foreground ink, primary/accent sage, borders derived from ink at low opacity. The indigo/blue/purple portfolio tokens are retired.
-- The three indigo gradient utilities (`gradient-indigo`, `gradient-text-indigo`, `gradient-text-purple`) become a restrained sage-to-ink treatment, applied sparingly to stay true to the "sage on roughly 1 in 5" rule.
-- Archivo and Work Sans loaded from Google Fonts; `--font-heading` / `--font-body` point at them; the CMS font picker gets both added to its curated list.
-- The dark hero entry (`#0a0a1a`) becomes photo-tile ink `#2B2B2B`, keeping the dark-to-light transition but on brand.
-- Glass morphism panels keep their structure, retinted from white-on-indigo to off-white-on-ink.
-- Sweep of home, Work, About, project modal and CMS to remove any remaining hardcoded indigo classes.
-- The seeded theme row in the database is updated to match, so the CMS Theme panel opens showing the new brand rather than the old indigo defaults.
-
-The Measured Aesthetic experience itself is left exactly as designed — it's its own artefact and shouldn't inherit the site theme.
-
----
-
-## Technical notes
-
-- No new dependencies.
-- One migration: two nullable text columns on `projects`, plus grants.
-- `cms-save` edge function extended to accept the two new fields.
-- Files touched: `public/measured-aesthetic/*` (new), `vite.config.ts` (route handling), `src/index.css`, `tailwind.config.ts`, `src/lib/theme.ts`, `src/data/projectsSeed.ts`, `src/hooks/useProjects.ts`, `src/components/ProjectDeck.tsx`, `src/components/admin/ProjectEditor.tsx`, `src/components/admin/fields/FontField.tsx`, plus colour sweeps across the page and site components.
-
-## Sequence
-
-The brand rollout can start now. The Measured Aesthetic hosting waits on the zip — if you approve this, I'll do the rebrand and the link plumbing first, then drop the experience in as soon as the folder arrives.
+Files touched: `src/index.css` (gradient utilities, plus a new light-on-dark variant), `src/components/HeroSection.tsx` (hero headline and its divider rule use the new dark-surface variant), `src/components/ProjectDeck.tsx`, `src/components/TimelineCarousel.tsx`. No database, CMS, or data-model changes.
