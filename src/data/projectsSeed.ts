@@ -273,7 +273,7 @@ export const projectsSeed: Project[] = [
   },
   {
     slug: "analogue-to-algorithm",
-    title: "Analogue to Algorithm",
+    title: "Measured Aesthetic",
     role: "Designer · Systems Thinker · Author",
     timeline: "6 Months",
     outcomeMetric: "100 Photographs · 1 Data Pipeline",
@@ -284,7 +284,7 @@ export const projectsSeed: Project[] = [
     process:
       "Built a pipeline that extracted brightness values from 100 film photographs and used that structured data to determine layout, spacing, and sequencing across a printed book and digital experience.",
     outcome:
-      "A printed book and digital experience where every layout decision is driven by data — not intuition. The same algorithmic logic that underpins workflow design and AI implementation work.",
+      "A printed book and digital experience where every layout decision is driven by data — not intuition. The same systematic logic that underpins workflow design and AI implementation work.",
     honest:
       "The most surprising outcome was how much the process revealed about the photographs themselves. Data as a lens changes what you see.",
     quotes: [],
@@ -294,7 +294,7 @@ export const projectsSeed: Project[] = [
       "A system that processes 100 film photographs through a brightness data pipeline and uses the output to drive every layout decision in a printed book.",
     client: "University",
     overview:
-      "Built a pipeline that extracted brightness values from 100 film photographs and used that structured data to determine layout, spacing, and sequencing across a printed book and digital experience. The project is less about photography and more about what happens when you apply algorithmic logic to analogue material — the same thinking that underpins workflow design and AI implementation work.",
+      "Built a pipeline that extracted brightness values from 100 film photographs and used that structured data to determine layout, spacing, and sequencing across a printed book and digital experience. The project is less about photography and more about what happens when you let measured data drive aesthetic decisions — the same thinking that underpins workflow design and AI implementation work.",
     stats: [
       { value: "100", label: "Photographs" },
       { value: "1", label: "Data Pipeline" },

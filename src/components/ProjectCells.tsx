@@ -46,7 +46,7 @@ const projects = [
   },
   {
     category: "Data · Photography",
-    title: "Analogue to Algorithm",
+    title: "Measured Aesthetic",
     slug: "analogue-to-algorithm",
     teaser: "280 film photographs. A brightness pipeline. A self-portrait.",
     reveal: "What does data reveal that the eye misses?",
