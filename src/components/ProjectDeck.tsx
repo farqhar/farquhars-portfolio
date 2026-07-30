@@ -316,7 +316,7 @@ export default function ProjectDeck() {
 
         .pd-header { position: absolute; top: 40px; left: 48px; right: 48px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
         .pd-folder-name { font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-        .pd-folder-name::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); box-shadow: 0 0 0 3px rgba(43,91,255,0.1); }
+        .pd-folder-name::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #7A9B7E; box-shadow: 0 0 0 3px rgba(122,155,126,0.14); }
         .pd-item-count { font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.1em; color: #B8B8BD; font-weight: 500; }
 
         .pd-stack { position: relative; width: min(560px, 92vw); height: min(720px, 78vh); display: flex; align-items: center; justify-content: center; z-index: 1; }
