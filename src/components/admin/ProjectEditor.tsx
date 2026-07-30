@@ -269,6 +269,24 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
           />
         </div>
         <div>
+          <label className={labelCls}>Live experience link (optional)</label>
+          <input
+            className={inputCls}
+            placeholder="/measured-aesthetic or https://…"
+            value={draft.experienceUrl ?? ""}
+            onChange={(e) => set("experienceUrl", e.target.value)}
+          />
+          <input
+            className={`${inputCls} mt-2`}
+            placeholder="Button label (defaults to 'View the live experience')"
+            value={draft.experienceLabel ?? ""}
+            onChange={(e) => set("experienceLabel", e.target.value)}
+          />
+          <p className="text-[11px] text-gray-500 mt-1">
+            Shows a button in the project detail view. Leave empty to hide it.
+          </p>
+        </div>
+        <div>
           <label className={labelCls}>Overview (folder detail intro)</label>
           <textarea
             className={inputCls}
