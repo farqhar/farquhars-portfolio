@@ -1,29 +1,22 @@
-## 1. Replace the black to green gradients
+## Rename "Analogue to Algorithm" to "Measured Aesthetic"
 
-The harsh gradients start at pure Ink `#0A0A0A`. They appear in:
-- `src/data/projectsSeed.ts` (three project hero backgrounds: `#0A0A0A → #2B2B2B → sage`)
-- `src/components/ProjectDeck.tsx` (`.pd-bg-4`, plus the dark mock treatments)
+They are the same project, so every user-facing instance of the old name gets replaced. The live Work portfolio already carries the correct name in the database ("Measured Aesthetic"); the stale name only survives in code.
 
-Swap the black end-stop for a softer, warmer deep-sage charcoal so the ramp reads as one family instead of black-to-green:
+### Visible text changes
 
-```
-linear-gradient(135deg, #2A2F2B 0%, #3E463F 55%, #7A9B7E 100%)
-```
+- `src/components/ProjectCells.tsx` — the teaser landing-page card: title becomes "Measured Aesthetic".
+- `src/data/projectsSeed.ts` — fallback project entry: title becomes "Measured Aesthetic", and the two body paragraphs that lean on the old phrasing ("apply algorithmic logic to analogue material") get reworded to describe the same idea without the old project name.
+- `src/components/TimelineCarousel.tsx` — the 2026 timeline entry: "Analogue to Algorithm — 280 film photographs..." becomes "Measured Aesthetic — 280 film photographs...".
+- `src/components/admin/sections/TeaserSection.tsx` — the CMS field label "Analogue cover" becomes "Measured Aesthetic cover".
 
-Same treatment anywhere a `#0A0A0A` gradient stop sits next to sage. Solid Ink used for text and the teaser hero background stays as-is, since that is the brand colour and reads correctly.
+### Behind the scenes, unchanged on purpose
 
-Any project hero backgrounds saved in the database will also be checked and updated to the new ramp so the live site matches.
+- The teaser cell slug `analogue-to-algorithm` and the CMS storage key `analogue_cover` stay as they are. They are internal identifiers, not shown anywhere, and renaming the key would orphan the cover image you have already uploaded.
+- Image filenames (`analogue-contact.jpg`, `analogue-pipeline.jpg`) stay. Renaming them changes nothing visible and risks breaking imports.
+- The seed project's slug stays too, since the live Work page reads from the database where the project is already `measured-aesthetic`.
 
-## 2. Headshot white background
+### Also
 
-The current headshot is a PNG in storage but still has a solid white shape behind the subject. I will download it, run a background removal to produce a true transparent PNG, re-upload it to the media bucket, and point the `headshot_url` setting at the new file. The About page already renders it over the off-white background, so it will sit cleanly once transparent.
+Update the stored project memory so future work refers to it as "Measured Aesthetic" rather than "Analogue to Algorithm".
 
-If the cut-out edges come out rough (hair is the usual risk) I will report back rather than ship a bad mask.
-
-## 3. Title change
-
-Change "AI Operations PM" to "AI Innovation Lead" in:
-- `src/pages/About.tsx` (Then / Now card)
-- `src/components/admin/sections/AboutSection.tsx` (CMS fallback text)
-
-The "AI Operations" skills group heading stays unless you want that renamed too.
+If you would rather I also rename the underlying slugs and asset files for tidiness, say so and I will include that; it just means re-uploading the teaser cover in the CMS.
