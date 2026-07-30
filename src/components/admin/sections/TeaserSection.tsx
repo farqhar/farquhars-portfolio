@@ -32,7 +32,7 @@ const TeaserSection = () => {
         </p>
         <MediaField label="Boondi cover" page="teaser" section="cells" fieldKey="boondi_cover" currentUrl={get("cells", "boondi_cover", "")} folder="teaser/cells" kind="image" />
         <MediaField label="Chippy cover" page="teaser" section="cells" fieldKey="chippy_cover" currentUrl={get("cells", "chippy_cover", "")} folder="teaser/cells" kind="image" />
-        <MediaField label="Analogue cover" page="teaser" section="cells" fieldKey="analogue_cover" currentUrl={get("cells", "analogue_cover", "")} folder="teaser/cells" kind="image" />
+        <MediaField label="Measured Aesthetic cover" page="teaser" section="cells" fieldKey="analogue_cover" currentUrl={get("cells", "analogue_cover", "")} folder="teaser/cells" kind="image" />
       </Section>
     </div>
   );

@@ -61,7 +61,7 @@ const cards = [
     label: "Everything converging",
     num: "05",
     title: "Not a pivot. A destination.",
-    desc: "Joined AIQ. Analogue to Algorithm — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
+    desc: "Joined AIQ. Measured Aesthetic — 280 film photographs, a data pipeline, a self-portrait made from patterns. Accepted into a Master of Commerce. AI, systems, design — all at once.",
     tags: ["AI", "Systems", "MCom"],
     images: [img05Presenting],
     objectPosition: "center 40%",
