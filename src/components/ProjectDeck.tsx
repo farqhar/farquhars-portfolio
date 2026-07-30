@@ -84,6 +84,8 @@ type Project = {
   hero2: string;
   hero2Fit: "cover" | "contain";
   hero2AutoSize: boolean;
+  experienceUrl: string;
+  experienceLabel: string;
 };
 
 const PLACEHOLDER = "/placeholder.svg";
@@ -115,6 +117,8 @@ const dbToCard = (p: DbProject): Project => ({
   hero2: p.hero2 || "",
   hero2Fit: p.hero2Fit === "contain" ? "contain" : "cover",
   hero2AutoSize: p.hero2AutoSize === true,
+  experienceUrl: p.experienceUrl || "",
+  experienceLabel: p.experienceLabel || "",
 });
 
 const VISIBLE_BEHIND = 3;
