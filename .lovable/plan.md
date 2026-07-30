@@ -1,32 +1,18 @@
-## What's actually wrong
+## Diagnosis
 
-No images are missing. All five sets are present and serving correctly (100 originals, 100 dot grids, 100 comp diagrams, 100 grid overlays, 100 colour grids), on both the preview and the published site.
+I audited the local build of the Measured Aesthetic experience and it is complete and correct:
 
-The bug is the URL. The experience loads its files with **relative** paths (`assets/…`, `components/…`, `images/…`).
+- All 5 image sets exist with 100 files each (originals, dot grids, comp diagrams, grid overlays, colour grids).
+- The asset manifest maps all 100 photo IDs across all 5 sets — zero missing entries.
+- Every variant file is a unique image (no accidental duplicates of the original).
+- Browser test: opened the gallery, clicked through 5 sample images and cycled all 5 outputs on each. Every step loaded a different, correct image from the right folder, with zero 404s.
 
-- `…/measured-aesthetic/index.html` → paths resolve correctly, 107/107 images load, zero 404s.
-- `…/measured-aesthetic` (no trailing slash) → the browser treats `measured-aesthetic` as a *file*, so relative paths resolve against the site root: `/assets/hw-30.png`, `/components/data.js`, `/images/originals/…` — all 404. Result is a blank white page with only the CSS outlines and text, exactly what you described.
+So the code and assets are right. The live site is simply serving the previous deployment, which still has the old manifest and the missing variant images.
 
-Confirmed by loading both URLs: the first returns no failed requests, the second returns 404s for every script, handwriting PNG and photograph.
+## Plan
 
-## The fix
+1. Re-run the gallery check across all 100 cards (not just the 5 sampled) to be fully certain nothing slips through.
+2. Publish the project so the live URL picks up the current manifest and the ~400 variant images.
+3. Verify the published URL after deploy: load `/measured-aesthetic/`, open a few gallery items, confirm each output button swaps the image and there are no 404s.
 
-1. **Add `<base href="/measured-aesthetic/">` to `public/measured-aesthetic/index.html`.** One line in the `<head>` makes every relative path resolve correctly no matter which form of the URL is opened — with or without the trailing slash. This is the whole fix for the shared-link problem.
-
-2. **Point the in-site link at the canonical URL.** Set the project's `experience_url` to `/measured-aesthetic/` (with trailing slash) so the "View the live experience" button on the Measured Aesthetic card never produces the broken form.
-
-3. **Check the in-page anchors still work** after adding the base tag — the right-hand section nav uses `#s-arrival`-style hashes, and a `<base>` tag makes bare `#hash` links resolve against the base URL. If any break, switch those hrefs to explicit JS scroll or full paths.
-
-## Verify
-
-Load all three forms in a browser and confirm zero failed requests and images rendering on each:
-
-- `/measured-aesthetic`
-- `/measured-aesthetic/`
-- `/measured-aesthetic/index.html`
-
-Then step through arrival, loading radial, centre of gravity, grids and the gallery lightbox to confirm the handwriting titles, photographs and analysis renders all appear.
-
-## Note
-
-This needs a republish to take effect on `farquhars-portfolio.lovable.app` — it's a frontend change.
+No code changes are expected unless step 1 surfaces a specific broken image.
