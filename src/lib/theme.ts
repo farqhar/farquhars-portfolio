@@ -24,18 +24,18 @@ export type ThemeRow = {
 
 export const DEFAULT_THEME: ThemeRow = {
   colors_json: {
-    background: "#ffffff",
-    foreground: "#0a0a1a",
-    primary: "#6366f1",
-    accent: "#818cf8",
-    muted: "#f1f5f9",
-    border: "#e2e8f0",
+    background: "#F5F5F3",
+    foreground: "#0A0A0A",
+    primary: "#7A9B7E",
+    accent: "#7A9B7E",
+    muted: "#EDEDEA",
+    border: "#DCDCD8",
   },
-  fonts_json: { heading: "Inter", body: "Inter" },
+  fonts_json: { heading: "Archivo", body: "Work Sans" },
   headings_json: {
-    h1: { size: 64, weight: 700, tracking: -0.02 },
-    h2: { size: 40, weight: 600, tracking: -0.01 },
-    h3: { size: 28, weight: 600, tracking: 0 },
+    h1: { size: 64, weight: 800, tracking: -0.02 },
+    h2: { size: 40, weight: 800, tracking: -0.015 },
+    h3: { size: 28, weight: 700, tracking: -0.01 },
   },
 };
 

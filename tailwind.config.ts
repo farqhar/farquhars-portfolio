@@ -55,6 +55,9 @@ export default {
         indigo: "hsl(var(--indigo))",
         blue: "hsl(var(--blue))",
         purple: "hsl(var(--purple))",
+        ink: "hsl(var(--ink))",
+        sage: "hsl(var(--sage))",
+        offwhite: "hsl(var(--offwhite))",
         "card-title": "hsl(var(--card-title))",
         "card-desc": "hsl(var(--card-desc))",
         sidebar: {
