@@ -2,100 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    /* Brand: White #FFFFFF · Ink #0A0A0A · Off-white #F5F5F3 · Sage #7A9B7E */
+    --background: 60 9% 96%;
+    --foreground: 0 0% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 0 0% 4%;
 
-    --primary: 239 84% 67%;
+    --primary: 0 0% 4%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 60 6% 93%;
+    --secondary-foreground: 0 0% 4%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 60 6% 93%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 239 84% 67%;
+    --accent: 127 14% 54%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 239 84% 67%;
+    --border: 60 5% 85%;
+    --input: 60 5% 85%;
+    --ring: 127 14% 54%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
+
+    --font-heading: 'Archivo', system-ui, sans-serif;
+    --font-body: 'Work Sans', system-ui, sans-serif;
 
     /* Portfolio tokens */
-    --hero-bg: 240 67% 5%;
-    --hero-foreground: 210 40% 98%;
-    --hero-muted: 215 25% 72%;
-    --indigo: 239 84% 67%;
-    --blue: 217 91% 60%;
-    --purple: 258 90% 66%;
+    --hero-bg: 0 0% 17%;
+    --hero-foreground: 60 9% 96%;
+    --hero-muted: 0 0% 68%;
+    --ink: 0 0% 4%;
+    --sage: 127 14% 54%;
+    --offwhite: 60 9% 96%;
+    --indigo: 127 14% 54%;
+    --blue: 0 0% 4%;
+    --purple: 127 14% 54%;
     --glass-bg: 0 0% 100% / 0.6;
     --glass-border: 0 0% 100% / 0.85;
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-    --card-title: 222 47% 11%;
-    --card-desc: 215 16% 47%;
-    --tag-bg: 239 84% 67% / 0.08;
-    --tag-text: 239 84% 67%;
+    --card-title: 0 0% 4%;
+    --card-desc: 0 0% 40%;
+    --tag-bg: 127 14% 54% / 0.1;
+    --tag-text: 127 20% 32%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 26%;
+    --sidebar-primary: 0 0% 4%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 60 6% 93%;
+    --sidebar-accent-foreground: 0 0% 4%;
+    --sidebar-border: 60 5% 85%;
+    --sidebar-ring: 127 14% 54%;
   }
 
   .dark {
-    --background: 240 67% 5%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 4%;
+    --foreground: 60 9% 96%;
 
-    --card: 240 67% 5%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 17%;
+    --card-foreground: 60 9% 96%;
 
-    --popover: 240 67% 5%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 17%;
+    --popover-foreground: 60 9% 96%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 60 9% 96%;
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 217 33% 18%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 17%;
+    --secondary-foreground: 60 9% 96%;
 
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 17%;
+    --muted-foreground: 0 0% 68%;
 
-    --accent: 217 33% 18%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 127 14% 54%;
+    --accent-foreground: 0 0% 4%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 60 9% 96%;
 
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 213 27% 84%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 127 14% 54%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 60 9% 96%;
+    --sidebar-primary: 127 14% 54%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 17%;
+    --sidebar-accent-foreground: 60 9% 96%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 127 14% 54%;
   }
 }
 
@@ -106,9 +115,15 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -122,26 +137,26 @@
   }
 
   .glass-dark {
-    background: rgba(10, 10, 26, 0.6);
+    background: rgba(10, 10, 10, 0.62);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(245, 245, 243, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .gradient-indigo {
-    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(239 84% 67%), hsl(258 90% 66%));
+    background: linear-gradient(135deg, hsl(0 0% 4%), hsl(127 14% 40%), hsl(127 14% 54%));
   }
 
   .gradient-text-indigo {
-    background: linear-gradient(135deg, hsl(217 91% 60%), hsl(239 84% 67%), hsl(258 90% 66%));
+    background: linear-gradient(135deg, hsl(0 0% 4%), hsl(127 14% 40%), hsl(127 14% 54%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-purple {
-    background: linear-gradient(135deg, hsl(258 90% 66%), hsl(280 80% 60%), hsl(239 84% 67%));
+    background: linear-gradient(135deg, hsl(127 14% 54%), hsl(127 16% 44%), hsl(0 0% 4%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -164,10 +179,10 @@
 /* Existing keyframes */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 0 40px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 20px rgba(122, 155, 126, 0.32), 0 0 40px rgba(122, 155, 126, 0.12);
   }
   50% {
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5), 0 0 50px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 25px rgba(122, 155, 126, 0.5), 0 0 50px rgba(122, 155, 126, 0.2);
   }
 }
 

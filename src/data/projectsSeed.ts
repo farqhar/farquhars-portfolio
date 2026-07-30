@@ -53,6 +53,10 @@ export type Project = {
   hero2?: string;
   hero2Fit?: "cover" | "contain";
   hero2AutoSize?: boolean;
+  /** Optional link to a standalone live experience for this project. */
+  experienceUrl?: string;
+  /** Button label for the live experience link. */
+  experienceLabel?: string;
 };
 
 const placeholder = "/placeholder.svg";
@@ -91,7 +95,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-4",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
+      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 60%, rgba(122,155,126,0.45) 100%)",
   },
   {
     slug: "aiq-roi-platform",
@@ -230,7 +234,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-1",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #2B5BFF 100%)",
+      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 50%, #7A9B7E 100%)",
   },
   {
     slug: "wollip-signatures",
@@ -300,6 +304,6 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-4",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 60%, rgba(123,91,255,0.4) 100%)",
+      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 60%, rgba(122,155,126,0.45) 100%)",
   },
 ];

@@ -10,6 +10,7 @@ import Work from "./pages/Work.tsx";
 import CaseStudy from "./pages/CaseStudy.tsx";
 import About from "./pages/About.tsx";
 import Admin from "./pages/Admin.tsx";
+import { MeasuredAestheticRedirect } from "./pages/MeasuredAestheticRedirect.tsx";
 import SiteNav from "./components/site/SiteNav";
 import SiteFooter from "./components/site/SiteFooter";
 import AdminLink from "./components/AdminLink";
@@ -28,6 +29,7 @@ const AnimatedRoutes = () => {
         <Route path="/work/:slug" element={<CaseStudy />} />
         <Route path="/about" element={<About />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/measured-aesthetic" element={<MeasuredAestheticRedirect />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

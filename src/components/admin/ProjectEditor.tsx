@@ -27,6 +27,8 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
     galleryDefaultWidth:
       typeof project.galleryDefaultWidth === "number" ? project.galleryDefaultWidth : 100,
     heroAutoSize: project.heroAutoSize === true,
+    experienceUrl: project.experienceUrl ?? "",
+    experienceLabel: project.experienceLabel ?? "",
   });
   const [quotesText, setQuotesText] = useState(project.quotes.join("\n"));
   const [tagsText, setTagsText] = useState((project.tags ?? []).join(", "));
@@ -265,6 +267,24 @@ const ProjectEditor = ({ project, onSave, onCancel, onDelete }: Props) => {
             value={draft.tagline ?? ""}
             onChange={(e) => set("tagline", e.target.value)}
           />
+        </div>
+        <div>
+          <label className={labelCls}>Live experience link (optional)</label>
+          <input
+            className={inputCls}
+            placeholder="/measured-aesthetic or https://…"
+            value={draft.experienceUrl ?? ""}
+            onChange={(e) => set("experienceUrl", e.target.value)}
+          />
+          <input
+            className={`${inputCls} mt-2`}
+            placeholder="Button label (defaults to 'View the live experience')"
+            value={draft.experienceLabel ?? ""}
+            onChange={(e) => set("experienceLabel", e.target.value)}
+          />
+          <p className="text-[11px] text-gray-500 mt-1">
+            Shows a button in the project detail view. Leave empty to hide it.
+          </p>
         </div>
         <div>
           <label className={labelCls}>Overview (folder detail intro)</label>

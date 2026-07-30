@@ -1,6 +1,8 @@
 import { cmsDirty, makeThemeId, useDirtyValue } from "@/lib/cmsDirty";
 
 export const CURATED_FONTS = [
+  "Archivo",
+  "Work Sans",
   "Inter",
   "Instrument Serif",
   "Playfair Display",
