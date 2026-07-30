@@ -170,6 +170,8 @@ Deno.serve(async (req) => {
             return Math.max(25, Math.min(100, Math.round(n)));
           })(),
           hero_auto_size: (v.heroAutoSize ?? v.hero_auto_size) === true,
+          experience_url: String(v.experienceUrl ?? v.experience_url ?? ""),
+          experience_label: String(v.experienceLabel ?? v.experience_label ?? ""),
         };
         const { error } = await admin
           .from("projects")

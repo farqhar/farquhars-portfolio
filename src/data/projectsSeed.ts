@@ -53,6 +53,10 @@ export type Project = {
   hero2?: string;
   hero2Fit?: "cover" | "contain";
   hero2AutoSize?: boolean;
+  /** Optional link to a standalone live experience for this project. */
+  experienceUrl?: string;
+  /** Button label for the live experience link. */
+  experienceLabel?: string;
 };
 
 const placeholder = "/placeholder.svg";

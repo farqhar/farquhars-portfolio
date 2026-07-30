@@ -31,6 +31,8 @@ type Row = {
   hero_fit?: string;
   gallery_default_width?: number;
   hero_auto_size?: boolean;
+  experience_url?: string;
+  experience_label?: string;
 };
 
 const rowToProject = (r: Row): Project => ({
@@ -62,6 +64,8 @@ const rowToProject = (r: Row): Project => ({
   galleryDefaultWidth:
     typeof r.gallery_default_width === "number" ? r.gallery_default_width : 100,
   heroAutoSize: r.hero_auto_size === true,
+  experienceUrl: r.experience_url ?? "",
+  experienceLabel: r.experience_label ?? "",
 });
 
 async function fetchAll(): Promise<Project[]> {
