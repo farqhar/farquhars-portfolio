@@ -1,0 +1,1 @@
+update public.projects set experience_url = '/measured-aesthetic/' where slug = 'measured-aesthetic';

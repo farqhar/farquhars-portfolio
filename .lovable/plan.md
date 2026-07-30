@@ -1,33 +1,32 @@
-## 1. Put Measured Aesthetic first in the portfolio scroll
+## What's actually wrong
 
-The Work page deck is ordered by the `order` value on each project. Measured Aesthetic is currently last (`order` 6), behind Pain Point Discovery (0) through Brand Touchpoint System (5).
+No images are missing. All five sets are present and serving correctly (100 originals, 100 dot grids, 100 comp diagrams, 100 grid overlays, 100 colour grids), on both the preview and the published site.
 
-Change: set Measured Aesthetic to the top and shift the rest down by one, keeping their relative sequence. This also fixes the existing duplicate `order = 4` (Animated Email Signatures and CV Generation Tool share it, so their order is currently arbitrary) by giving every project a distinct value.
+The bug is the URL. The experience loads its files with **relative** paths (`assets/…`, `components/…`, `images/…`).
 
-Resulting order: Measured Aesthetic, Pain Point Discovery, AIQ ROI Platform, CJC Digital Construction Page, Animated Email Signatures, CV Generation Tool, Brand Touchpoint System.
+- `…/measured-aesthetic/index.html` → paths resolve correctly, 107/107 images load, zero 404s.
+- `…/measured-aesthetic` (no trailing slash) → the browser treats `measured-aesthetic` as a *file*, so relative paths resolve against the site root: `/assets/hw-30.png`, `/components/data.js`, `/images/originals/…` — all 404. Result is a blank white page with only the CSS outlines and text, exactly what you described.
 
-## 2. Fix the wrong images in the live experience
+Confirmed by loading both URLs: the first returns no failed requests, the second returns 404s for every script, handwriting PNG and photograph.
 
-Confirmed cause: the asset manifest at `public/measured-aesthetic/components/assets-manifest.js` only has real per-image files for two of the five variants.
+## The fix
 
-- `originals` — 100 real files
-- `dotGrids` — 100 real files
-- `compDiagrams`, `gridOverlays`, `colourGrids` — a single sample file each, and `data.js` falls back to the original whenever a lookup misses
+1. **Add `<base href="/measured-aesthetic/">` to `public/measured-aesthetic/index.html`.** One line in the `<head>` makes every relative path resolve correctly no matter which form of the URL is opened — with or without the trailing slash. This is the whole fix for the shared-link problem.
 
-So every composition, grid and saturation view shows the original photograph. The section-to-variant wiring in `index.html` and `viz.js` is already correct; it is only the files that are missing.
+2. **Point the in-site link at the canonical URL.** Set the project's `experience_url` to `/measured-aesthetic/` (with trailing slash) so the "View the live experience" button on the Measured Aesthetic card never produces the broken form.
 
-Fix:
+3. **Check the in-page anchors still work** after adding the base tag — the right-hand section nav uses `#s-arrival`-style hashes, and a `<base>` tag makes bare `#hash` links resolve against the base URL. If any break, switch those hrefs to explicit JS scroll or full paths.
 
-1. Download the three missing variant sets from the shared Drive folder (`03_comp_diagrams`, `04_grid_overlays`, `06_colour_grids` — 100 files each; `01_originals` and `02_dot_grids` are already in place).
-2. Match each file to its film-scan ID (e.g. `000014840003`, `IMG_2528`) so it lines up with the `fn` field in `data.js`.
-3. Optimise them the same way the existing sets were handled (resize and quantise the PNGs) so the repo does not balloon — the images folder is 29 MB today and 300 unoptimised PNGs would be far larger.
-4. Save them into `public/measured-aesthetic/images/comp-diagrams/`, `grid-overlays/` and `colour-grids/`, and regenerate the manifest with all five variant maps fully populated.
-5. Remove the three leftover placeholder files in `images/outputs/`.
+## Verify
 
-## 3. Verify
+Load all three forms in a browser and confirm zero failed requests and images rendering on each:
 
-Open the experience and step through each section — dot grid, composition/centre of gravity, grid overlays, saturation, and the gallery lightbox that shows all five variants of one image — checking that a different, correct render appears in each and that there are no 404s.
+- `/measured-aesthetic`
+- `/measured-aesthetic/`
+- `/measured-aesthetic/index.html`
+
+Then step through arrival, loading radial, centre of gravity, grids and the gallery lightbox to confirm the handwriting titles, photographs and analysis renders all appear.
 
 ## Note
 
-The Drive folder also has `05_data_txts`. The experience has an unused `dataJson` slot for it, but nothing currently displays raw data files, so I will leave it out unless you want a "view the data record" option added.
+This needs a republish to take effect on `farquhars-portfolio.lovable.app` — it's a frontend change.
