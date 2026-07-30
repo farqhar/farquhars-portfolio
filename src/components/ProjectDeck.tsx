@@ -187,7 +187,7 @@ export default function ProjectDeck() {
           }deg) scale(${1 - 0.08 * eased})`;
           opacity = 1 - eased;
           zIndex = 100;
-          shadow = `0 ${8 - 8 * eased}px ${24 - 24 * eased}px rgba(43,91,255,${
+          shadow = `0 ${8 - 8 * eased}px ${24 - 24 * eased}px rgba(10,10,10,${
             0.1 - 0.1 * eased
           }), 0 ${32 - 32 * eased}px ${80 - 80 * eased}px rgba(0,0,0,${
             0.14 - 0.14 * eased
@@ -198,7 +198,7 @@ export default function ProjectDeck() {
           opacity = 1;
           zIndex = 100;
           shadow =
-            "0 8px 24px rgba(43,91,255,0.10), 0 32px 80px rgba(0,0,0,0.14)";
+            "0 8px 24px rgba(10,10,10,0.10), 0 32px 80px rgba(0,0,0,0.14)";
           pointerEvents = "auto";
         } else if (rel <= VISIBLE_BEHIND) {
           const depth = rel;
