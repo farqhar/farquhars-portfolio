@@ -95,7 +95,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-4",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 60%, rgba(122,155,126,0.45) 100%)",
+      "linear-gradient(135deg, #2A2F2B 0%, #3E463F 55%, rgba(122,155,126,0.55) 100%)",
   },
   {
     slug: "aiq-roi-platform",
@@ -234,7 +234,7 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-1",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 50%, #7A9B7E 100%)",
+      "linear-gradient(135deg, #2A2F2B 0%, #3E463F 55%, #7A9B7E 100%)",
   },
   {
     slug: "wollip-signatures",
@@ -304,6 +304,6 @@ export const projectsSeed: Project[] = [
     bgClass: "bg-4",
     mockType: "dark",
     heroBackground:
-      "linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 60%, rgba(122,155,126,0.45) 100%)",
+      "linear-gradient(135deg, #2A2F2B 0%, #3E463F 55%, rgba(122,155,126,0.55) 100%)",
   },
 ];

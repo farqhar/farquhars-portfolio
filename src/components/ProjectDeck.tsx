@@ -334,7 +334,7 @@ export default function ProjectDeck() {
         .pd-bg-2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(122,155,126,0.10) 0%, rgba(122,155,126,0.05) 50%, rgba(10,10,10,0.03) 100%); }
         .pd-bg-3 { background: white; position: relative; }
         .pd-bg-3::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.02) 50%), linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.02) 50%); background-size: 24px 24px; }
-        .pd-bg-4 { background: linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 100%); position: relative; }
+        .pd-bg-4 { background: linear-gradient(135deg, #2A2F2B 0%, #3E463F 100%); position: relative; }
         .pd-bg-4::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(122,155,126,0.22) 0%, transparent 60%); }
         .pd-bg-5 { background: white; position: relative; border: 0.5px solid rgba(0,0,0,0.06); }
         .pd-bg-5::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(122,155,126,0.06) 0%, transparent 100%); }
