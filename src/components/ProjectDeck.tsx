@@ -315,15 +315,15 @@ export default function ProjectDeck() {
         .pd-glow { position: absolute; top: 50%; left: 50%; width: 800px; height: 800px; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(43,91,255,0.04) 0%, rgba(123,91,255,0.02) 40%, transparent 70%); pointer-events: none; z-index: 0; }
 
         .pd-header { position: absolute; top: 40px; left: 48px; right: 48px; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
-        .pd-folder-name { font-family: 'SF Mono', ui-monospace, 'Menlo', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .pd-folder-name { font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .pd-folder-name::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); box-shadow: 0 0 0 3px rgba(43,91,255,0.1); }
-        .pd-item-count { font-family: 'SF Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.1em; color: #B8B8BD; font-weight: 500; }
+        .pd-item-count { font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.1em; color: #B8B8BD; font-weight: 500; }
 
         .pd-stack { position: relative; width: min(560px, 92vw); height: min(720px, 78vh); display: flex; align-items: center; justify-content: center; z-index: 1; }
         .pd-card { position: absolute; width: min(460px, 84vw); height: min(620px, 72vh); border-radius: 24px; overflow: hidden; background: white; will-change: transform, opacity; cursor: pointer; transform-origin: center center; }
         .pd-card .pd-card-bg { width: 100%; height: 70%; position: relative; overflow: hidden; }
         .pd-card .pd-card-info { background: white; padding: 28px 30px; height: 30%; display: flex; flex-direction: column; justify-content: center; border-top: 0.5px solid rgba(0,0,0,0.06); position: relative; }
-        .pd-card-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 600; margin-bottom: 10px; font-family: 'SF Mono', ui-monospace, monospace; display: flex; align-items: center; gap: 10px; }
+        .pd-card-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 600; margin-bottom: 10px; font-family: 'Work Sans', system-ui, sans-serif; display: flex; align-items: center; gap: 10px; }
         .pd-card-label-dot { width: 5px; height: 5px; border-radius: 50%; background: #0A0A0A; opacity: 0.4; }
         .pd-card-title { font-size: 24px; font-weight: 600; color: #0A0A0A; letter-spacing: -0.022em; line-height: 1.2; }
         .pd-card-sub { font-size: 15px; color: #86868B; margin-top: 6px; letter-spacing: -0.01em; }
@@ -356,7 +356,7 @@ export default function ProjectDeck() {
         .pd-dot { width: 5px; height: 5px; border-radius: 50%; background: #B8B8BD; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .pd-dot.active { background: #0A0A0A; width: 20px; border-radius: 3px; }
 
-        .pd-hint { position: absolute; bottom: 92px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.14em; color: #B8B8BD; text-transform: uppercase; font-family: 'SF Mono', ui-monospace, monospace; white-space: nowrap; opacity: 1; transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 2; display: flex; align-items: center; gap: 12px; }
+        .pd-hint { position: absolute; bottom: 92px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.14em; color: #B8B8BD; text-transform: uppercase; font-family: 'Work Sans', system-ui, sans-serif; white-space: nowrap; opacity: 1; transition: opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1); z-index: 2; display: flex; align-items: center; gap: 12px; }
         .pd-hint.hidden { opacity: 0; }
         .pd-bob { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; animation: pd-bob 2s cubic-bezier(0.25,0.1,0.25,1) infinite; }
         @keyframes pd-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
@@ -370,20 +370,20 @@ export default function ProjectDeck() {
         .pd-close.visible { opacity: 1; pointer-events: all; }
         .pd-close:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.12); }
 
-        .pd-back { display: inline-flex; align-items: center; gap: 8px; font-family: 'SF Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; margin-bottom: 48px; cursor: pointer; transition: color 0.3s cubic-bezier(0.25,0.1,0.25,1); background: none; border: none; padding: 0; }
+        .pd-back { display: inline-flex; align-items: center; gap: 8px; font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; margin-bottom: 48px; cursor: pointer; transition: color 0.3s cubic-bezier(0.25,0.1,0.25,1); background: none; border: none; padding: 0; }
         .pd-back:hover { color: #0A0A0A; }
 
-        .pd-meta { display: flex; gap: 24px; font-family: 'SF Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; margin-bottom: 24px; flex-wrap: wrap; }
+        .pd-meta { display: flex; gap: 24px; font-family: 'Work Sans', system-ui, sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #86868B; margin-bottom: 24px; flex-wrap: wrap; }
         .pd-meta span { display: flex; align-items: center; gap: 8px; }
         .pd-meta span::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: #B8B8BD; }
 
-        .pd-title { font-size: clamp(40px, 6vw, 72px); font-weight: 600; letter-spacing: -0.04em; line-height: 1.02; margin-bottom: 24px; background: linear-gradient(135deg, #2B5BFF 0%, #7B5BFF 50%, #B85BFF 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .pd-title { font-family: 'Archivo', system-ui, sans-serif; font-size: clamp(40px, 6vw, 72px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; margin-bottom: 24px; color: #0A0A0A; }
         .pd-tagline { font-size: clamp(18px, 2.4vw, 24px); line-height: 1.45; letter-spacing: -0.015em; color: #1A1A1A; max-width: 640px; margin-bottom: 64px; font-weight: 400; }
         .pd-hero { width: 100%; aspect-ratio: 16/10; border-radius: 20px; margin-bottom: 80px; overflow: hidden; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.12); }
 
         .pd-section { margin-bottom: 64px; }
-        .pd-section-label { font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #86868B; margin-bottom: 16px; font-weight: 600; }
-        .pd-section h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 24px; color: #0A0A0A; }
+        .pd-section-label { font-family: 'Work Sans', system-ui, sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #86868B; margin-bottom: 16px; font-weight: 600; }
+        .pd-section h2 { font-family: 'Archivo', system-ui, sans-serif; font-size: clamp(24px, 3vw, 36px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 24px; color: #0A0A0A; }
         .pd-section p { font-size: 17px; line-height: 1.6; color: #1A1A1A; margin-bottom: 16px; max-width: 640px; letter-spacing: -0.01em; }
 
         .pd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 32px; padding: 40px 0; border-top: 0.5px solid rgba(0,0,0,0.12); border-bottom: 0.5px solid rgba(0,0,0,0.12); margin: 64px 0; }
@@ -392,10 +392,10 @@ export default function ProjectDeck() {
         .pd-experience { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 40px; padding: 14px 22px; border-radius: 999px; background: #0A0A0A; color: #FFFFFF; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none; transition: background 0.25s ease, transform 0.25s cubic-bezier(0.16,1,0.3,1); }
         .pd-experience:hover { background: #7A9B7E; transform: translateY(-2px); }
         .pd-experience span { font-size: 16px; line-height: 1; }
-        .pd-stat-label { font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 500; }
+        .pd-stat-label { font-family: 'Work Sans', system-ui, sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #86868B; font-weight: 500; }
 
         .pd-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; }
-        .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'SF Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
+        .pd-tag { padding: 8px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.12); font-family: 'Work Sans', system-ui, sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #1A1A1A; background: white; }
 
         /* Two-column detail layout */
         .pd-detail-wrap { max-width: 1320px; margin: 0 auto; padding: 80px 32px 120px; transform: translateY(20px); opacity: 0; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.1s; display: flex; flex-direction: column; gap: 56px; }
