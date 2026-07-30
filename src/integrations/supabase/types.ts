@@ -53,6 +53,8 @@ export type Database = {
           client: string
           cover: string
           created_at: string
+          experience_label: string
+          experience_url: string
           files: Json
           gallery: Json
           gallery_default_width: number
@@ -84,6 +86,8 @@ export type Database = {
           client?: string
           cover?: string
           created_at?: string
+          experience_label?: string
+          experience_url?: string
           files?: Json
           gallery?: Json
           gallery_default_width?: number
@@ -115,6 +119,8 @@ export type Database = {
           client?: string
           cover?: string
           created_at?: string
+          experience_label?: string
+          experience_url?: string
           files?: Json
           gallery?: Json
           gallery_default_width?: number
