@@ -40,7 +40,7 @@ const AboutSection = () => {
       <Section title="Then / Now">
         <TextField label="Then — title" page="about" section="thennow" fieldKey="then_title" fallback={get("thennow", "then_title", "Graphic Designer")} />
         <TextField label="Then — body" page="about" section="thennow" fieldKey="then_body" fallback={get("thennow", "then_body", "Brand systems, identity, type, motion. Working out what something is and how it should feel.")} multiline />
-        <TextField label="Now — title" page="about" section="thennow" fieldKey="now_title" fallback={get("thennow", "now_title", "AI Operations PM")} />
+        <TextField label="Now — title" page="about" section="thennow" fieldKey="now_title" fallback={get("thennow", "now_title", "AI Innovation Lead")} />
         <TextField label="Now — body" page="about" section="thennow" fieldKey="now_body" fallback={get("thennow", "now_body", "Designing AI workflows, internal tools, and the operating system around them. Same problem, different surface.")} multiline />
       </Section>
 
