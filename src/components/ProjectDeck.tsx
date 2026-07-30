@@ -306,7 +306,7 @@ export default function ProjectDeck() {
           If your portfolio already defines fonts/colours globally, you can
           remove the :root vars here and rely on globals. */}
       <style>{`
-        .pd-root { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; -webkit-user-select: none; color: #0A0A0A; }
+        .pd-root { font-family: 'Work Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; -webkit-user-select: none; color: #0A0A0A; }
         .pd-root * { box-sizing: border-box; }
 
         .pd-scroll { position: relative; width: 100%; height: 700vh; background: #FAFAF9; }
@@ -334,7 +334,7 @@ export default function ProjectDeck() {
         .pd-bg-2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(43,91,255,0.08) 0%, rgba(123,91,255,0.06) 50%, rgba(184,91,255,0.04) 100%); }
         .pd-bg-3 { background: white; position: relative; }
         .pd-bg-3::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.02) 50%), linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.02) 50%); background-size: 24px 24px; }
-        .pd-bg-4 { background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 100%); position: relative; }
+        .pd-bg-4 { background: linear-gradient(135deg, #0A0A0A 0%, #2B2B2B 100%); position: relative; }
         .pd-bg-4::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(123,91,255,0.25) 0%, transparent 60%); }
         .pd-bg-5 { background: white; position: relative; border: 0.5px solid rgba(0,0,0,0.06); }
         .pd-bg-5::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(43,91,255,0.04) 0%, transparent 100%); }
