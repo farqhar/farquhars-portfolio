@@ -1,35 +1,29 @@
-The Drive link works and is publicly readable: `project.zip`, 291 MB. That is far too large to sit in the repo, so the work is mostly about sorting what belongs in the codebase from what belongs in storage.
+## 1. Replace the black to green gradients
 
-## What the experience is currently missing
+The harsh gradients start at pure Ink `#0A0A0A`. They appear in:
+- `src/data/projectsSeed.ts` (three project hero backgrounds: `#0A0A0A → #2B2B2B → sage`)
+- `src/components/ProjectDeck.tsx` (`.pd-bg-4`, plus the dark mock treatments)
 
-`public/measured-aesthetic/index.html` is already hosted and references these, none of which exist yet:
+Swap the black end-stop for a softer, warmer deep-sage charcoal so the ramp reads as one family instead of black-to-green:
 
-- `components/data.js` and `components/viz.js` — the dataset and visualisation code
-- `assets/sat_positions.js` — satellite position data
-- `assets/hw-04, hw-26, hw-30, hw-43, hw-44, hw-45, hw-46 .png` — the handwritten headings
-- `assets/grids/grids-rule-of-thirds.png`, `grids-golden-ratio.png`, `grids-diagonal.png`, `grids-centre-axis.png`
-- The photo library used by the gallery and grid overlays, whose paths come from inside `data.js`
+```
+linear-gradient(135deg, #2A2F2B 0%, #3E463F 55%, #7A9B7E 100%)
+```
 
-## Approach
+Same treatment anywhere a `#0A0A0A` gradient stop sits next to sage. Solid Ink used for text and the teaser hero background stays as-is, since that is the brand colour and reads correctly.
 
-**1. Fetch and inventory.** Download the zip to a scratch folder outside the project, unpack it, and print a size-sorted tree. Nothing enters the repo at this stage. I'll confirm the zip contains no `.git` folder before touching anything.
+Any project hero backgrounds saved in the database will also be checked and updated to the new ramp so the live site matches.
 
-**2. Split by size.** Two destinations:
+## 2. Headshot white background
 
-- **Into the repo** (`public/measured-aesthetic/`): the JS files, the seven handwriting PNGs, and the four grid overlays. These are small and referenced by fixed relative paths.
-- **Into your `site-media` storage bucket**: the photo library. These are the bulk of the 291 MB and have no business in the codebase. They get uploaded under a `measured-aesthetic/` prefix and served from the public bucket URL.
+The current headshot is a PNG in storage but still has a solid white shape behind the subject. I will download it, run a background removal to produce a true transparent PNG, re-upload it to the media bucket, and point the `headshot_url` setting at the new file. The About page already renders it over the off-white background, so it will sit cleanly once transparent.
 
-If the photo set turns out to be small (under roughly 20 MB total), I'll keep it in the repo instead and skip the bucket, since that's simpler.
+If the cut-out edges come out rough (hair is the usual risk) I will report back rather than ship a bad mask.
 
-**3. Rewire paths.** Read `components/data.js` to see how photo paths are constructed, then set the base path to the bucket URL in one place. The `GRID_BASE` and handwriting paths stay relative, since those files ship with the page. The gallery's `onerror` fallback to `outputs.original` gets pointed at the same base so a missing derivative still shows the source photo.
+## 3. Title change
 
-**4. Verify.** Load `/measured-aesthetic` in a headless browser, screenshot each section (Loading, Saturation, Grids, Rules, Gallery), and check the console for 404s. I'll iterate until there are no missing-asset errors and every section renders. You'll get the screenshots.
+Change "AI Operations PM" to "AI Innovation Lead" in:
+- `src/pages/About.tsx` (Then / Now card)
+- `src/components/admin/sections/AboutSection.tsx` (CMS fallback text)
 
-## Two things worth flagging
-
-- If the zip contains a full working project rather than just the experience folder, I'll take only the files the hosted page references, not the whole tree.
-- If any filenames differ from what the HTML expects (for example the grid overlays being named differently), I'll rename on the way in rather than editing the HTML, so the page stays as close to your original as possible.
-
-### Technical notes
-
-Files touched: new files under `public/measured-aesthetic/assets/` and `public/measured-aesthetic/components/`, plus a base-path edit in `index.html` or `data.js` if photos go to the bucket. Uploads use the existing public `site-media` bucket. No database schema, CMS, or React changes.
+The "AI Operations" skills group heading stays unless you want that renamed too.

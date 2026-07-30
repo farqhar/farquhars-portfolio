@@ -46,7 +46,7 @@ const thenNow = {
     points: ["Visual systems", "Brand voice", "Editorial craft"],
   },
   now: {
-    title: "AI Operations PM",
+    title: "AI Innovation Lead",
     body: "Designing AI workflows, internal tools, and the operating system around them. Same problem, different surface.",
     points: ["Workflow design", "Tooling roadmaps", "Cross-team translation"],
   },
